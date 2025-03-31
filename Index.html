@@ -23,7 +23,7 @@
             --border-color: #dee2e6;
             --accent-color-success: #198754;
             --accent-color-danger: #dc3545;
-            --accent-color-info: #0dcaf0;
+            --accent-color-info: #0dcaf0; /* Used for Study button */
             --focus-shadow-color: rgba(13, 110, 253, 0.25);
             --border-radius-container: 32px;
             --border-radius-large: 24px;
@@ -43,200 +43,626 @@
         h2 { font-size: 1.3em; font-weight: 500; color: var(--secondary-text-color); border-bottom: none; padding-bottom: 0; margin: 0; }
         .delete-mode-toggle { background: none; border: none; font-size: 1.3em; cursor: pointer; color: var(--secondary-text-color); transition: color 0.2s; padding: 5px; line-height: 1; }
         .delete-mode-toggle:hover { color: var(--accent-color-danger); }
+        .delete-mode-toggle.hidden { display: none; } /* Style to hide the toggle button */
         .delete-controls { margin-top: 10px; margin-bottom: 15px; text-align: right; }
         .delete-confirm-btn { background-color: var(--accent-color-danger); color: white; border: none; padding: 9px 18px; border-radius: var(--border-radius-pill); font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease; }
         .delete-confirm-btn:hover { background-color: #c82333; }
 
-        /* --- PIN Entry Dialog (Reverted) --- */
+        /* --- PIN Entry Dialog --- */
         #pin-entry-dialog { text-align: center; padding: 35px; border: none; border-radius: var(--border-radius-large); background-color: #f8f9fa; max-width: 420px; margin: 60px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
         #pin-entry-dialog h1 { margin-bottom: 25px; }
         #pin-entry-dialog label { display: block; margin-bottom: 18px; font-weight: 500; color: #495057; font-size: 1.15em; }
-        /* Single password input */
-        #pin-entry-dialog input[type="password"] {
-            padding: 14px; border: 1px solid #ced4da; border-radius: var(--border-radius-medium); font-size: 1.4em; text-align: center; width: 100%; max-width: 220px; margin-bottom: 20px; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: white;
-        }
+        #pin-entry-dialog input[type="password"] { padding: 14px; border: 1px solid #ced4da; border-radius: var(--border-radius-medium); font-size: 1.4em; text-align: center; width: 100%; max-width: 220px; margin: 0 auto 20px auto; display: block; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: white; -moz-appearance: textfield; }
+        #pin-entry-dialog input[type="password"]::-webkit-outer-spin-button, #pin-entry-dialog input[type="password"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         #pin-entry-dialog input[type="password"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); }
-        /* Submit button */
-        #pin-submit-btn { padding: 14px 30px; font-size: 1.05em; font-weight: 500; cursor: pointer; border: none; border-radius: var(--border-radius-pill); background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; }
+        #pin-submit-btn { padding: 14px 30px; font-size: 1.05em; font-weight: 500; cursor: pointer; border: none; border-radius: var(--border-radius-pill); background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; display: block; width: 100%; max-width: 220px; margin: 0 auto; }
         #pin-submit-btn:hover { background-color: #0b5ed7; }
         #pin-submit-btn:active { transform: scale(0.97); }
-        /* Restore focus style */
-        #pin-submit-btn:focus,
-        #pin-submit-btn:focus-visible {
-             outline: none; /* Remove default outline if needed */
-             box-shadow: 0 0 0 4px var(--focus-shadow-color); /* Restore custom box-shadow */
-        }
+        #pin-submit-btn:focus, #pin-submit-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-shadow-color); }
         #pin-error { color: var(--accent-color-danger); margin-top: 18px; font-weight: 500; min-height: 1.2em; }
 
-        /* --- Styles from User Indicator down to end of <style> (No Changes) --- */
-        #user-indicator { position: fixed; top: 20px; right: 25px; z-index: 1001; } #user-circle { width: 52px; height: 52px; border-radius: 50%; cursor: pointer; background-color: var(--secondary-text-color); box-shadow: 0 4px 10px rgba(0,0,0,0.25); display: flex; justify-content: center; align-items: center; color: white; font-weight: 500; font-size: 1.2em; transition: background-color 0.3s ease, transform 0.2s ease; } #user-circle:hover { transform: scale(1.05); } #logout-popup { position: absolute; top: 65px; right: 0; background-color: var(--container-background); border-radius: var(--border-radius-medium); box-shadow: 0 5px 15px rgba(0,0,0,0.15); padding: 12px; display: none; min-width: 160px; } #logout-popup span { display: block; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #eee; margin-bottom: 8px; color: var(--base-text-color); } #logout-popup button { background: none; border: none; color: var(--accent-color-danger); cursor: pointer; padding: 10px 12px; font-size: 0.95em; display: block; width: 100%; text-align: left; border-radius: var(--border-radius-small); } #logout-popup button:hover { background-color: #f8f9fa; } #app-content { display: block; } .add-form-container { max-width: 750px; margin: 0 auto 40px auto; } #add-todo-form { display: flex; } #add-todo-form input[type="text"] { flex-grow: 1; padding: 15px 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius-pill) 0 0 var(--border-radius-pill); font-size: 1.05em; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: #f8f9fa; } #add-todo-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); z-index: 1; background-color: white; } #add-todo-form button { padding: 15px 28px; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; border-radius: 0 var(--border-radius-pill) var(--border-radius-pill) 0; font-size: 1.05em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; margin-left: -1px; } #add-todo-form button:hover { background-color: #157347; } #add-todo-form button:active { transform: scale(0.98); } .pending-list-area { margin-bottom: 40px; } .completed-lists-area { display: flex; flex-wrap: wrap; gap: 30px; } .task-list-column { flex: 1; min-width: 300px; padding: 20px 25px; border: none; border-radius: var(--border-radius-large); background-color: #f8f9faf0; margin-bottom: 20px; } .pending-list-area .task-list-column { min-width: 100%; background-color: #f0f8ffcc; } .completed-lists-area .task-list-column { background-color: #f8f9faf0; } .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--user-a-color); animation: spin 1s ease infinite; margin: 20px auto; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } .task-list { list-style: none; padding: 0; min-height: 60px; margin-top: 15px; } .task-list li { display: flex; align-items: center; padding: 15px 18px; border-bottom: 1px solid #e9ecef; background-color: var(--container-background); margin-bottom: 12px; border-radius: var(--border-radius-medium); box-shadow: 0 3px 6px rgba(0,0,0,0.06); transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; position: relative; } .task-list li:last-child { border-bottom: none; margin-bottom: 0; } .task-list li:hover { background-color: #f1f3f5; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.08); } .completion-section { display: flex; align-items: center; margin-right: 12px; } .task-checkbox { margin: 0 5px; cursor: pointer; width: 20px; height: 20px; accent-color: var(--user-a-color); } .user-a-active .task-checkbox { accent-color: var(--user-a-color); } .user-b-active .task-checkbox { accent-color: var(--user-b-color); } .delete-checkbox { margin-right: 15px; cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-color-danger); } li .task-checkbox { display: block; } li.delete-mode .task-checkbox { display: none; } li .delete-checkbox { display: none; } li.delete-mode .delete-checkbox { display: block; } li.pending-list-li .task-checkbox { display: none; } .completion-indicator { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--secondary-text-color); margin: 0 4px; display: inline-block; transition: background-color 0.2s, border-color 0.2s; } .completion-indicator.user-a { border-color: var(--user-a-color); } .completion-indicator.user-b { border-color: var(--user-b-color); } .completion-indicator.user-a.is-complete { background-color: var(--user-a-color); } .completion-indicator.user-b.is-complete { background-color: var(--user-b-color); } .mark-done-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; padding: 0 5px; margin-left: 5px; color: var(--secondary-text-color); line-height: 1; transition: color 0.2s; } .mark-done-btn:hover { color: var(--accent-color-success); } .user-a-active .mark-done-btn.is-complete { color: var(--user-a-color); } .user-b-active .mark-done-btn.is-complete { color: var(--user-b-color); } .task-list li .todo-text { flex-grow: 1; margin-right: 10px; word-break: break-word; font-size: 1em; } .actions-container { display: flex; align-items: center; margin-left: auto; padding-left: 10px; flex-wrap: wrap; gap: 8px; } .action-button { padding: 7px 15px; font-size: 0.88em; cursor: pointer; border: 1.5px solid; border-radius: var(--border-radius-pill); white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1; } .working-on-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: white; } .working-on-btn:hover { background-color: #cff4fc; } .stop-working-btn { color: white; } .user-a-active .stop-working-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); } .user-b-active .stop-working-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); } .stop-working-btn:hover { opacity: 0.85; } .working-indicator { font-size: 0.88em; font-weight: 500; white-space: nowrap; padding: 6px 12px; border-radius: var(--border-radius-pill); display: inline-block; line-height: 1; } .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); border: 1px solid var(--user-a-color); } .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); border: 1px solid var(--user-b-color); } .completed-list li { background-color: #f1f3f5cc; } .completed-list li:hover { background-color: #e9ecef; transform: none; box-shadow: 0 3px 6px rgba(0,0,0,0.06); } .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); } .completed-list .actions-container { display: none; } .completed-list .completion-indicator, .completed-list .mark-done-btn { display: none; } .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 30px; font-style: italic; padding: 15px; } .hidden { display: none !important; } .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; } @media (max-width: 992px) { .completed-lists-area { gap: 20px; } .completed-lists-area .task-list-column { min-width: calc(50% - 20px); } .add-form-container { max-width: 90%; } } @media (max-width: 768px) { body { padding-top: 20px; padding-bottom: 30px; } .container { padding: 30px 20px 40px 20px; border-radius: var(--border-radius-large); } h1 { font-size: 1.7em; } .completed-lists-area .task-list-column { min-width: 100%; } #user-indicator { top: 15px; right: 20px; } #user-circle { width: 44px; height: 44px; font-size: 1.1em; } #logout-popup { top: 55px; } #add-todo-form input[type="text"] { font-size: 1em; } #add-todo-form button { font-size: 1em; padding: 14px 20px; } .add-form-container { max-width: 100%; } } @media (max-width: 480px) { body { padding-top: 15px; padding-bottom: 20px; } .container { padding: 25px 15px 30px 15px; border-radius: var(--border-radius-medium); } h1 { font-size: 1.5em; margin-bottom: 30px; } h2 { font-size: 1.2em; } #pin-entry-dialog { padding: 25px; border-radius: var(--border-radius-medium); } /* Style single password input */ #pin-entry-dialog input[type="password"] { font-size: 1.3em; padding: 13px; max-width: 180px; } #pin-entry-dialog button { width: 100%; max-width: 180px; margin: 15px auto 0 auto; display: block; padding: 13px; } .task-list-column { padding: 15px; border-radius: var(--border-radius-medium); } .task-list li { padding: 14px 16px; border-radius: var(--border-radius-small); } .actions-container { flex-wrap: wrap; gap: 6px; } .action-button, .working-indicator { font-size: 0.85em; padding: 6px 12px; } }
+        /* --- User Indicator & App Content --- */
+        #user-indicator { position: fixed; top: 20px; right: 25px; z-index: 1001; } #user-circle { width: 52px; height: 52px; border-radius: 50%; cursor: pointer; background-color: var(--secondary-text-color); box-shadow: 0 4px 10px rgba(0,0,0,0.25); display: flex; justify-content: center; align-items: center; color: white; font-weight: 500; font-size: 1.2em; transition: background-color 0.3s ease, transform 0.2s ease; } #user-circle:hover { transform: scale(1.05); } #logout-popup { position: absolute; top: 65px; right: 0; background-color: var(--container-background); border-radius: var(--border-radius-medium); box-shadow: 0 5px 15px rgba(0,0,0,0.15); padding: 12px; display: none; min-width: 160px; } #logout-popup span { display: block; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #eee; margin-bottom: 8px; color: var(--base-text-color); } #logout-popup button { background: none; border: none; color: var(--accent-color-danger); cursor: pointer; padding: 10px 12px; font-size: 0.95em; display: block; width: 100%; text-align: left; border-radius: var(--border-radius-small); } #logout-popup button:hover { background-color: #f8f9fa; } #app-content { display: block; } .add-form-container { max-width: 750px; margin: 0 auto 40px auto; } #add-todo-form { display: flex; } #add-todo-form input[type="text"] { flex-grow: 1; padding: 15px 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius-pill) 0 0 var(--border-radius-pill); font-size: 1.05em; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: #f8f9fa; } #add-todo-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); z-index: 1; background-color: white; } #add-todo-form button { padding: 15px 28px; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; border-radius: 0 var(--border-radius-pill) var(--border-radius-pill) 0; font-size: 1.05em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; margin-left: -1px; } #add-todo-form button:hover { background-color: #157347; } #add-todo-form button:active { transform: scale(0.98); } #add-todo-form button:disabled { background-color: #6c757d; cursor: not-allowed; } #add-todo-form input:disabled { background-color: #e9ecef; }
+        .pending-list-area { margin-bottom: 40px; } .completed-lists-area { display: flex; flex-wrap: wrap; gap: 30px; } .task-list-column { flex: 1; min-width: 300px; padding: 20px 25px; border: none; border-radius: var(--border-radius-large); background-color: #f8f9faf0; margin-bottom: 20px; } .pending-list-area .task-list-column { min-width: 100%; background-color: #f0f8ffcc; } .completed-lists-area .task-list-column { background-color: #f8f9faf0; } .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--user-a-color); animation: spin 1s ease infinite; margin: 20px auto; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- Task List Styling --- */
+        .task-list { list-style: none; padding: 0; min-height: 60px; margin-top: 15px; }
+        .task-list li { display: flex; align-items: center; padding: 15px 18px; border-bottom: 1px solid #e9ecef; background-color: var(--container-background); margin-bottom: 12px; border-radius: var(--border-radius-medium); box-shadow: 0 3px 6px rgba(0,0,0,0.06); transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; position: relative; }
+        .task-list li:last-child { border-bottom: none; margin-bottom: 0; }
+        .task-list li:hover { background-color: #f1f3f5; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.08); }
+        .completion-section { display: flex; align-items: center; margin-right: 12px; }
+        .task-checkbox { margin: 0 5px; cursor: pointer; width: 20px; height: 20px; accent-color: var(--user-a-color); }
+        .user-a-active .task-checkbox { accent-color: var(--user-a-color); }
+        .user-b-active .task-checkbox { accent-color: var(--user-b-color); }
+        .delete-checkbox { margin-right: 15px; cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-color-danger); }
+        li .task-checkbox { display: block; }
+        li.delete-mode .task-checkbox { display: none; }
+        li .delete-checkbox { display: none; }
+        li.delete-mode .delete-checkbox { display: block; }
+        li.pending-list-li .completion-indicator, li.pending-list-li .mark-done-btn { display: inline-block; }
+        li.completed-list li .task-checkbox { display: block; }
+        .completed-list li .completion-indicator, .completed-list li .mark-done-btn { display: none; }
+        .completion-indicator { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--secondary-text-color); margin: 0 4px; display: inline-block; transition: background-color 0.2s, border-color 0.2s; }
+        .completion-indicator.user-a { border-color: var(--user-a-color); } .completion-indicator.user-b { border-color: var(--user-b-color); }
+        .completion-indicator.user-a.is-complete { background-color: var(--user-a-color); } .completion-indicator.user-b.is-complete { background-color: var(--user-b-color); }
+        .mark-done-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; padding: 0 5px; margin-left: 5px; color: var(--secondary-text-color); line-height: 1; transition: color 0.2s; }
+        .mark-done-btn:hover { color: var(--accent-color-success); }
+        .user-a-active .mark-done-btn.is-complete { color: var(--user-a-color); } .user-b-active .mark-done-btn.is-complete { color: var(--user-b-color); }
+        .task-list li .todo-text { flex-grow: 1; margin-right: 10px; word-break: break-word; font-size: 1em; }
+        .actions-container { display: flex; align-items: center; margin-left: auto; padding-left: 10px; flex-wrap: wrap; gap: 8px; }
+        .action-button { padding: 7px 15px; font-size: 0.88em; cursor: pointer; border: 1.5px solid; border-radius: var(--border-radius-pill); white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1; }
+        .studying-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: white; } /* Renamed class */
+        .studying-btn:hover { background-color: #cff4fc; } /* Renamed class */
+        .stop-studying-btn { color: white; } /* Renamed class */
+        .user-a-active .stop-studying-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); } /* Renamed class */
+        .user-b-active .stop-studying-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); } /* Renamed class */
+        .stop-studying-btn:hover { opacity: 0.85; } /* Renamed class */
+        .studying-indicator { font-size: 0.88em; font-weight: 500; white-space: nowrap; padding: 6px 12px; border-radius: var(--border-radius-pill); display: inline-block; line-height: 1; } /* Renamed class */
+        /* Specific indicator colors remain linked to user colors */
+        .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); border: 1px solid var(--user-a-color); }
+        .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); border: 1px solid var(--user-b-color); }
+        .completed-list li { background-color: #f1f3f5cc; } .completed-list li:hover { background-color: #e9ecef; transform: none; box-shadow: 0 3px 6px rgba(0,0,0,0.06); }
+        .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); }
+        .completed-list .actions-container { display: none; }
+
+        /* --- Utility & Responsive --- */
+        .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 30px; font-style: italic; padding: 15px; }
+        .hidden { display: none !important; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        @media (max-width: 992px) { .completed-lists-area { gap: 20px; } .completed-lists-area .task-list-column { min-width: calc(50% - 20px); } .add-form-container { max-width: 90%; } }
+        @media (max-width: 768px) { body { padding-top: 20px; padding-bottom: 30px; } .container { padding: 30px 20px 40px 20px; border-radius: var(--border-radius-large); } h1 { font-size: 1.7em; } .completed-lists-area .task-list-column { min-width: 100%; } #user-indicator { top: 15px; right: 20px; } #user-circle { width: 44px; height: 44px; font-size: 1.1em; } #logout-popup { top: 55px; } #add-todo-form input[type="text"] { font-size: 1em; } #add-todo-form button { font-size: 1em; padding: 14px 20px; } .add-form-container { max-width: 100%; } }
+        @media (max-width: 480px) { body { padding-top: 15px; padding-bottom: 20px; } .container { padding: 25px 15px 30px 15px; border-radius: var(--border-radius-medium); } h1 { font-size: 1.5em; margin-bottom: 30px; } h2 { font-size: 1.2em; } #pin-entry-dialog { padding: 25px; border-radius: var(--border-radius-medium); } #pin-entry-dialog input[type="password"] { font-size: 1.3em; padding: 13px; max-width: 180px; } #pin-submit-btn { padding: 13px; max-width: 180px; } .task-list-column { padding: 15px; border-radius: var(--border-radius-medium); } .task-list li { padding: 14px 16px; border-radius: var(--border-radius-small); } .actions-container { flex-wrap: wrap; gap: 6px; } .action-button, .studying-indicator { font-size: 0.85em; padding: 6px 12px; } } /* Updated .studying-indicator */
     </style>
 </head>
 <body>
 
-    <!-- PIN Entry Dialog (Reverted to single input) -->
+    <!-- PIN Entry Dialog -->
     <div id="pin-entry-dialog">
         <h1>Study Tracker Access</h1>
         <label for="pin-input">Enter Your PIN:</label>
-        <div>
-             <!-- Single password input -->
-            <input type="password" id="pin-input" autocomplete="off" inputmode="numeric">
-        </div>
+        <input type="password" id="pin-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
         <button id="pin-submit-btn">Enter</button>
         <p id="pin-error"> </p>
     </div>
 
     <!-- Main App Container -->
     <div class="container hidden" id="main-app-container">
-         <!-- HTML structure remains the same -->
-        <div id="user-indicator" class="hidden"><div id="user-circle" title="Click for options">?</div><div id="logout-popup"><span id="popup-user-name">User</span><button id="logout-button">Logout</button></div></div>
+        <div id="user-indicator" class="hidden">
+            <div id="user-circle" title="Click for options">?</div>
+            <div id="logout-popup">
+                <span id="popup-user-name">User</span>
+                <button id="logout-button">Logout</button>
+            </div>
+        </div>
         <h1>To-Study List</h1>
         <div id="app-content">
-            <div class="add-form-container"><form id="add-todo-form"><label for="todo-input" class="visually-hidden">Add new topic</label><input type="text" id="todo-input" placeholder="Add new topic..." required autocomplete="off" name="new-topic-ignore-autocomplete"><button type="submit">Add Topic</button></form></div>
-            <div id="loading-indicator" class="hidden"><div class="spinner"></div><p class="status-message">Loading tasks...</p></div>
-            <div class="pending-list-area"><div class="task-list-column"><div class="column-header"><h2>Pending Topics</h2><button class="delete-mode-toggle" data-list-type="pending" title="Toggle Delete Mode">🗑️</button></div><div class="delete-controls hidden" id="delete-controls-pending"><button class="delete-confirm-btn" data-list-type="pending">Delete Selected</button></div><ul id="pending-list" class="task-list"></ul><p class="status-message empty-list hidden" id="empty-pending">No pending topics!</p></div></div>
+            <div class="add-form-container">
+                <form id="add-todo-form">
+                    <label for="todo-input" class="visually-hidden">Add new topic</label>
+                    <input type="text" id="todo-input" placeholder="Add new topic..." required autocomplete="off" name="new-topic-ignore-autocomplete">
+                    <button type="submit">Add Topic</button>
+                </form>
+            </div>
+            <div id="loading-indicator" class="hidden">
+                <div class="spinner"></div>
+                <p class="status-message">Loading tasks...</p>
+            </div>
+            <div class="pending-list-area">
+                <div class="task-list-column">
+                    <div class="column-header">
+                        <h2>Pending Topics</h2>
+                        <button class="delete-mode-toggle hidden" data-list-type="pending" title="Toggle Delete Mode">🗑️</button>
+                    </div>
+                    <div class="delete-controls hidden" id="delete-controls-pending">
+                        <button class="delete-confirm-btn" data-list-type="pending">Delete Selected</button>
+                    </div>
+                    <ul id="pending-list" class="task-list"></ul>
+                    <p class="status-message empty-list hidden" id="empty-pending">No pending topics!</p>
+                </div>
+            </div>
             <div class="completed-lists-area">
-                <div class="task-list-column"><div class="column-header"><h2 id="completed-A-title">Completed by Parth</h2><button class="delete-mode-toggle" data-list-type="completedA" title="Toggle Delete Mode">🗑️</button></div><div class="delete-controls hidden" id="delete-controls-completedA"><button class="delete-confirm-btn" data-list-type="completedA">Delete Selected</button></div><ul id="completed-by-A-list" class="task-list completed-list"></ul><p class="status-message empty-list hidden" id="empty-completed-A">No topics completed by Parth yet.</p></div>
-                <div class="task-list-column"><div class="column-header"><h2 id="completed-B-title">Completed by Nitika</h2><button class="delete-mode-toggle" data-list-type="completedB" title="Toggle Delete Mode">🗑️</button></div><div class="delete-controls hidden" id="delete-controls-completedB"><button class="delete-confirm-btn" data-list-type="completedB">Delete Selected</button></div><ul id="completed-by-B-list" class="task-list completed-list"></ul><p class="status-message empty-list hidden" id="empty-completed-B">No topics completed by Nitika yet.</p></div>
+                <div class="task-list-column">
+                    <div class="column-header">
+                        <h2 id="completed-A-title">Completed by Parth</h2>
+                        <button class="delete-mode-toggle hidden" data-list-type="completedA" title="Toggle Delete Mode">🗑️</button>
+                    </div>
+                    <div class="delete-controls hidden" id="delete-controls-completedA">
+                        <button class="delete-confirm-btn" data-list-type="completedA">Delete Selected</button>
+                    </div>
+                    <ul id="completed-by-A-list" class="task-list completed-list"></ul>
+                    <p class="status-message empty-list hidden" id="empty-completed-A">No topics completed by Parth yet.</p>
+                </div>
+                <div class="task-list-column">
+                    <div class="column-header">
+                        <h2 id="completed-B-title">Completed by Nitika</h2>
+                        <button class="delete-mode-toggle hidden" data-list-type="completedB" title="Toggle Delete Mode">🗑️</button>
+                    </div>
+                    <div class="delete-controls hidden" id="delete-controls-completedB">
+                        <button class="delete-confirm-btn" data-list-type="completedB">Delete Selected</button>
+                    </div>
+                    <ul id="completed-by-B-list" class="task-list completed-list"></ul>
+                    <p class="status-message empty-list hidden" id="empty-completed-B">No topics completed by Nitika yet.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Configuration --- (No Changes)
+        // --- Configuration ---
         const USERS = { 'UserA': { name: 'Parth', pin: '2108', color: 'var(--user-a-color)', lightColor: 'var(--user-a-light-color)', indicatorClass: 'indicator-user-a' }, 'UserB': { name: 'Nitika', pin: '0821', color: 'var(--user-b-color)', lightColor: 'var(--user-b-light-color)', indicatorClass: 'indicator-user-b' } };
         const USER_A_ID = 'UserA'; const USER_B_ID = 'UserB';
-        // --- Firebase Config --- (No Changes)
+        // --- Firebase Config ---
         const firebaseConfig = { apiKey: "AIzaSyBZ4_nvAE0_ZlDbnYSdD0QvAZnNL0Usb9Q", authDomain: "to-do-pbz.firebaseapp.com", projectId: "to-do-pbz", storageBucket: "to-do-pbz.firebasestorage.app", messagingSenderId: "358081287969", appId: "1:358081287969:web:02b9a125fb403c1e269060" };
-        // --- Firebase Initialization --- (No Changes)
+        // --- Firebase Initialization ---
         let db; try { if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); } db = firebase.firestore(); } catch (e) { console.error("Firebase initialization failed:", e); alert("Could not connect to the database."); } const todosRef = db ? db.collection('todos') : null;
 
-        // --- DOM Element References --- (Reverted pinInputs)
-        const pinDialog = document.getElementById('pin-entry-dialog'); const mainAppContainer = document.getElementById('main-app-container');
-        const pinInput = document.getElementById('pin-input'); // Single PIN input
-        const pinSubmitBtn = document.getElementById('pin-submit-btn'); const pinError = document.getElementById('pin-error'); const userIndicator = document.getElementById('user-indicator'); const userCircle = document.getElementById('user-circle'); const logoutPopup = document.getElementById('logout-popup'); const popupUserName = document.getElementById('popup-user-name'); const logoutButton = document.getElementById('logout-button'); const addTodoForm = document.getElementById('add-todo-form'); const todoInput = document.getElementById('todo-input'); const loadingIndicator = document.getElementById('loading-indicator'); const pendingListEl = document.getElementById('pending-list'); const completedListAEl = document.getElementById('completed-by-A-list'); const completedListBEl = document.getElementById('completed-by-B-list'); const emptyPending = document.getElementById('empty-pending'); const emptyCompletedA = document.getElementById('empty-completed-A'); const emptyCompletedB = document.getElementById('empty-completed-B'); const completedATitle = document.getElementById('completed-A-title'); const completedBTitle = document.getElementById('completed-B-title'); const deleteModeToggles = document.querySelectorAll('.delete-mode-toggle'); const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
+        // --- DOM Element References ---
+        const pinDialog = document.getElementById('pin-entry-dialog');
+        const mainAppContainer = document.getElementById('main-app-container');
+        const pinInput = document.getElementById('pin-input');
+        const pinSubmitBtn = document.getElementById('pin-submit-btn');
+        const pinError = document.getElementById('pin-error');
+        const userIndicator = document.getElementById('user-indicator');
+        const userCircle = document.getElementById('user-circle');
+        const logoutPopup = document.getElementById('logout-popup');
+        const popupUserName = document.getElementById('popup-user-name');
+        const logoutButton = document.getElementById('logout-button');
+        const addTodoForm = document.getElementById('add-todo-form');
+        const todoInput = document.getElementById('todo-input');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const pendingListEl = document.getElementById('pending-list');
+        const completedListAEl = document.getElementById('completed-by-A-list');
+        const completedListBEl = document.getElementById('completed-by-B-list');
+        const emptyPending = document.getElementById('empty-pending');
+        const emptyCompletedA = document.getElementById('empty-completed-A');
+        const emptyCompletedB = document.getElementById('empty-completed-B');
+        const completedATitle = document.getElementById('completed-A-title');
+        const completedBTitle = document.getElementById('completed-B-title');
+        const deleteModeToggles = document.querySelectorAll('.delete-mode-toggle');
+        const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
 
-        // --- State --- (No Changes)
+        // --- State ---
         let currentUserIdentifier = null; let currentUserData = null; let isAuthenticated = false; let unsubscribeTodos = null; let isDataLoading = true; let deleteModes = { pending: false, completedA: false, completedB: false };
 
-        // --- Initialization --- (No Changes)
+        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', initializeApp);
-        function initializeApp() { console.log('initializeApp: Running...'); if (!checkElementsExist()) { return; } if (!todosRef) { console.error("initializeApp: Firestore 'todos' collection ref not available."); pinError.textContent = "Database connection error."; return; } setupEventListeners(); checkStoredUser(); updateColumnTitles(); console.log('initializeApp: Complete.'); }
-        // --- Updated Element Check ---
-        function checkElementsExist() {
-            const essentialElements = [pinDialog, mainAppContainer, pinInput, pinSubmitBtn, userIndicator]; // Check single pinInput
-             if (essentialElements.some(el => !el)) { console.error("CRITICAL ERROR: Essential UI elements missing."); alert("Error loading UI."); return false; } return true;
+        function initializeApp() {
+            console.log('initializeApp: Running...');
+            if (!checkElementsExist()) { return; }
+            if (!todosRef) {
+                console.error("initializeApp: Firestore 'todos' collection ref not available.");
+                if(pinError) pinError.textContent = "Database connection error.";
+                return;
+            }
+            setupEventListeners();
+            checkStoredUser();
+            updateColumnTitles();
+            console.log('initializeApp: Complete.');
         }
-        // --- Reverted Event Listener Setup ---
+
+        // --- Element Check ---
+        function checkElementsExist() {
+            const essentialElements = [
+                pinDialog, mainAppContainer, pinInput, pinSubmitBtn, userIndicator,
+                userCircle, logoutPopup, popupUserName, logoutButton, addTodoForm, todoInput,
+                loadingIndicator, pendingListEl, completedListAEl, completedListBEl,
+                emptyPending, emptyCompletedA, emptyCompletedB, completedATitle, completedBTitle
+            ];
+            if (essentialElements.some(el => !el)) {
+                console.error("CRITICAL ERROR: Essential UI elements missing.");
+                alert("Error loading UI. Some elements could not be found.");
+                return false;
+            }
+            if (!deleteModeToggles || deleteModeToggles.length === 0 || !deleteConfirmBtns || deleteConfirmBtns.length === 0) {
+                 console.warn("Warning: Delete mode buttons not found. Delete functionality might be affected.");
+            }
+            return true;
+        }
+
+        // --- Event Listener Setup ---
         function setupEventListeners() {
             console.log('setupEventListeners: Running...');
-
-            pinSubmitBtn.addEventListener('click', handlePinSubmit);
-            console.log('setupEventListeners: Added click listener to pinSubmitBtn.');
-
-            // Attach listener to single PIN input
+            if (pinSubmitBtn) pinSubmitBtn.addEventListener('click', handlePinSubmit);
+            else console.error('setupEventListeners: ERROR - Could not find pinSubmitBtn!');
             if (pinInput) {
                 pinInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        console.log('setupEventListeners: Enter key pressed on pinInput.');
-                        handlePinSubmit();
-                    }
+                    if (e.key === 'Enter') { e.preventDefault(); handlePinSubmit(); }
                 });
-                 console.log('setupEventListeners: Added keypress listener to pinInput.');
-            } else {
-                 console.error('setupEventListeners: ERROR - Could not find pinInput element!');
-            }
-
-
-            userCircle.addEventListener('click', toggleLogoutPopup);
-            logoutButton.addEventListener('click', logout);
-            addTodoForm.addEventListener('submit', handleAddTodo);
+            } else { console.error('setupEventListeners: ERROR - Could not find pinInput element!'); }
+            if (userCircle) userCircle.addEventListener('click', toggleLogoutPopup);
+            else console.error('setupEventListeners: ERROR - Could not find userCircle!');
+            if (logoutButton) logoutButton.addEventListener('click', logout);
+            else console.error('setupEventListeners: ERROR - Could not find logoutButton!');
+            if (addTodoForm) addTodoForm.addEventListener('submit', handleAddTodo);
+            else console.error('setupEventListeners: ERROR - Could not find addTodoForm!');
             deleteModeToggles.forEach(btn => btn.addEventListener('click', toggleDeleteMode));
             deleteConfirmBtns.forEach(btn => btn.addEventListener('click', handleDeleteSelected));
             document.addEventListener('click', handleOutsideClicks);
-
             console.log('setupEventListeners: Complete.');
         }
-        // --- updateColumnTitles, handleOutsideClicks, checkStoredUser, displayLogin --- (No changes needed)
-        function updateColumnTitles() { if(completedATitle) completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`; if(completedBTitle) completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`; }
-        function handleOutsideClicks(event) { if (userIndicator && logoutPopup && !userIndicator.contains(event.target) && logoutPopup.style.display === 'block') { logoutPopup.style.display = 'none'; } }
-        function checkStoredUser() { console.log("checkStoredUser: Checking local storage..."); const storedUserId = localStorage.getItem('currentUserIdentifier'); if (storedUserId && USERS[storedUserId]) { console.log(`checkStoredUser: Found stored user ID: ${storedUserId}`); authenticateUser(storedUserId); } else { console.log("checkStoredUser: No valid stored user found."); displayLogin(); } }
-        function displayLogin() { console.log("displayLogin: Showing PIN dialog."); pinDialog.classList.remove('hidden'); mainAppContainer.classList.add('hidden'); userIndicator.classList.add('hidden'); isAuthenticated = false; if(pinInput) pinInput.value=''; } // Clear single PIN input
 
-        // --- Reverted handlePinSubmit ---
-        function handlePinSubmit() {
-            const enteredPin = pinInput.value; // Read from single input
-            console.log('handlePinSubmit: Entered PIN =', enteredPin);
-            pinError.textContent = '\u00A0';
-
-            // You might want validation here (e.g., check length) if desired
-            // if (!enteredPin || enteredPin.length < 4) { ... }
-
-            let foundUser = Object.keys(USERS).find(id => USERS[id].pin === enteredPin);
-            console.log('handlePinSubmit: Found User ID =', foundUser);
-
-            if (foundUser) {
-                authenticateUser(foundUser);
-            } else {
-                pinError.textContent = 'Incorrect PIN.';
-                if(pinInput) {
-                    pinInput.value = ''; // Clear single input on error
-                    pinInput.focus();
-                    pinInput.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' } ], { duration: 350, easing: 'ease-in-out' });
-                }
+        // --- UI Updates & Auth Flow ---
+        function updateColumnTitles() {
+             if(completedATitle && USERS[USER_A_ID]) completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`;
+             if(completedBTitle && USERS[USER_B_ID]) completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`;
+        }
+        function handleOutsideClicks(event) {
+            if (userIndicator && logoutPopup && !userIndicator.contains(event.target) && logoutPopup.style.display === 'block') {
+                logoutPopup.style.display = 'none';
             }
         }
-        // --- Removed clearPinInputs helper ---
-        // --- authenticateUser --- (No changes needed)
-        function authenticateUser(userId) { console.log(`authenticateUser: Authenticating User ID = ${userId}`); currentUserIdentifier = userId; currentUserData = USERS[userId]; isAuthenticated = true; isDataLoading = true; localStorage.setItem('currentUserIdentifier', currentUserIdentifier); console.log('authenticateUser: Updating UI...'); pinDialog.classList.add('hidden'); mainAppContainer.classList.remove('hidden'); loadingIndicator.classList.remove('hidden'); document.body.classList.remove('user-a-active', 'user-b-active'); document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active'); userCircle.style.backgroundColor = currentUserData.color; userCircle.textContent = currentUserData.name.charAt(0); userCircle.title = `Logged in as ${currentUserData.name}`; popupUserName.textContent = currentUserData.name; userIndicator.classList.remove('hidden'); logoutPopup.style.display = 'none'; console.log('authenticateUser: UI updates complete.'); loadAndRenderTasks(); }
-        // --- logout (Reverted pinInput clear) ---
-        function logout() { console.log("logout: Logging out user."); if (unsubscribeTodos) unsubscribeTodos(); unsubscribeTodos = null; isAuthenticated = false; currentUserIdentifier = null; currentUserData = null; isDataLoading = false; localStorage.removeItem('currentUserIdentifier'); document.body.classList.remove('user-a-active', 'user-b-active'); Object.keys(deleteModes).forEach(key => { if (deleteModes[key]) toggleDeleteModeUI(key, false); deleteModes[key] = false; }); if(pinInput) pinInput.value = ''; displayLogin(); loadingIndicator.classList.add('hidden'); console.log("logout: Logout complete."); }
-        // --- toggleLogoutPopup, toggleDeleteMode, toggleDeleteModeUI --- (No changes needed)
-         function toggleLogoutPopup() { logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block'; }
-         function toggleDeleteMode(event) { const listType = event.target.dataset.listType; if (!listType) return; console.log(`toggleDeleteMode: Toggling for list type: ${listType}`); const newDeleteState = !deleteModes[listType]; deleteModes[listType] = newDeleteState; toggleDeleteModeUI(listType, newDeleteState); }
-         function toggleDeleteModeUI(listType, isActive) { const listElement = getListElementByType(listType); const controlsElement = document.getElementById(`delete-controls-${listType}`); if (!listElement || !controlsElement) return; console.log(`toggleDeleteModeUI: Setting delete mode for ${listType} to ${isActive}`); listElement.classList.toggle('delete-mode-active', isActive); controlsElement.classList.toggle('hidden', !isActive); listElement.querySelectorAll('li').forEach(li => { li.classList.toggle('delete-mode', isActive); if (!isActive) { const delCheckbox = li.querySelector('.delete-checkbox'); if (delCheckbox) delCheckbox.checked = false; } }); const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`); if(toggleButton) { toggleButton.style.color = isActive ? 'var(--accent-color-danger)' : 'var(--secondary-text-color)'; toggleButton.textContent = isActive ? '✕' : '🗑️'; } }
+        function checkStoredUser() {
+            console.log("checkStoredUser: Checking local storage...");
+            const storedUserId = localStorage.getItem('currentUserIdentifier');
+            if (storedUserId && USERS[storedUserId]) {
+                console.log(`checkStoredUser: Found stored user ID: ${storedUserId}`);
+                authenticateUser(storedUserId);
+            } else {
+                console.log("checkStoredUser: No valid stored user found.");
+                displayLogin();
+            }
+        }
+        function displayLogin() {
+            console.log("displayLogin: Showing PIN dialog.");
+            if(pinDialog) pinDialog.classList.remove('hidden');
+            if(mainAppContainer) mainAppContainer.classList.add('hidden');
+            if(userIndicator) userIndicator.classList.add('hidden');
+            isAuthenticated = false;
+            if(pinInput) { pinInput.value = ''; pinInput.focus(); }
+            if(pinError) pinError.textContent = '\u00A0';
+        }
+        function handlePinSubmit() {
+            if (!pinInput || !pinError) { console.error("handlePinSubmit: Missing pin input or error element."); return; }
+            const enteredPin = pinInput.value;
+            console.log('handlePinSubmit: Entered PIN =', enteredPin);
+            pinError.textContent = '\u00A0';
+            if (!enteredPin) { pinError.textContent = 'Please enter a PIN.'; pinInput.focus(); return; }
+            let foundUser = Object.keys(USERS).find(id => USERS[id].pin === enteredPin);
+            console.log('handlePinSubmit: Found User ID =', foundUser);
+            if (foundUser) { authenticateUser(foundUser); }
+            else {
+                pinError.textContent = 'Incorrect PIN.';
+                pinInput.value = ''; pinInput.focus();
+                if (typeof pinInput.animate === 'function') { pinInput.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' } ], { duration: 350, easing: 'ease-in-out' }); }
+            }
+        }
+        function authenticateUser(userId) {
+            console.log(`authenticateUser: Authenticating User ID = ${userId}`);
+            currentUserIdentifier = userId;
+            currentUserData = USERS[userId];
+            isAuthenticated = true;
+            isDataLoading = true;
+            localStorage.setItem('currentUserIdentifier', currentUserIdentifier);
+
+            console.log('authenticateUser: Updating UI...');
+            if(pinDialog) pinDialog.classList.add('hidden');
+            if(mainAppContainer) mainAppContainer.classList.remove('hidden');
+            if(loadingIndicator) loadingIndicator.classList.remove('hidden');
+            document.body.classList.remove('user-a-active', 'user-b-active');
+            document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active');
+
+            if(userCircle && currentUserData) {
+                userCircle.style.backgroundColor = currentUserData.color;
+                userCircle.textContent = currentUserData.name.charAt(0);
+                userCircle.title = `Logged in as ${currentUserData.name}`;
+            }
+            if(popupUserName && currentUserData) popupUserName.textContent = currentUserData.name;
+            if(userIndicator) userIndicator.classList.remove('hidden');
+            if(logoutPopup) logoutPopup.style.display = 'none';
+
+            // Show/Hide Delete Toggles based on logged-in user
+            const deleteToggleA = document.querySelector('.delete-mode-toggle[data-list-type="completedA"]');
+            const deleteToggleB = document.querySelector('.delete-mode-toggle[data-list-type="completedB"]');
+            const deleteTogglePending = document.querySelector('.delete-mode-toggle[data-list-type="pending"]');
+            if (deleteTogglePending) deleteTogglePending.classList.remove('hidden'); // Always show pending toggle
+            if (deleteToggleA && deleteToggleB) {
+                 deleteToggleA.classList.toggle('hidden', currentUserIdentifier !== USER_A_ID);
+                 deleteToggleB.classList.toggle('hidden', currentUserIdentifier !== USER_B_ID);
+            } else { console.warn("authenticateUser: Could not find completed list delete toggles."); }
+
+            console.log('authenticateUser: UI updates complete.');
+            loadAndRenderTasks(); // Start loading data
+        }
+        function logout() {
+            console.log("logout: Logging out user.");
+            if (unsubscribeTodos) unsubscribeTodos();
+            unsubscribeTodos = null;
+            isAuthenticated = false;
+            currentUserIdentifier = null;
+            currentUserData = null;
+            isDataLoading = false;
+            localStorage.removeItem('currentUserIdentifier');
+            document.body.classList.remove('user-a-active', 'user-b-active');
+
+            Object.keys(deleteModes).forEach(key => {
+                if (deleteModes[key]) toggleDeleteModeUI(key, false);
+                deleteModes[key] = false;
+            });
+
+            clearAllLists();
+
+            // Hide all delete toggles on logout
+            const allDeleteToggles = document.querySelectorAll('.delete-mode-toggle');
+            allDeleteToggles.forEach(toggle => toggle.classList.add('hidden'));
+
+            if(pinInput) pinInput.value = '';
+            displayLogin();
+            if(loadingIndicator) loadingIndicator.classList.add('hidden');
+            console.log("logout: Logout complete.");
+        }
+        function toggleLogoutPopup() {
+             if (logoutPopup) logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block';
+         }
+        function toggleDeleteMode(event) {
+             const listType = event.target.dataset.listType;
+             if (!listType || typeof deleteModes[listType] === 'undefined') return;
+             // Security check
+             if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) return;
+             if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) return;
+
+             console.log(`toggleDeleteMode: Toggling for list type: ${listType}`);
+             const newDeleteState = !deleteModes[listType];
+             deleteModes[listType] = newDeleteState;
+             toggleDeleteModeUI(listType, newDeleteState);
+         }
+        function toggleDeleteModeUI(listType, isActive) {
+             const listElement = getListElementByType(listType);
+             const controlsElement = document.getElementById(`delete-controls-${listType}`);
+             if (!listElement || !controlsElement) { console.warn(`toggleDeleteModeUI: Could not find elements for list type ${listType}`); return; }
+             console.log(`toggleDeleteModeUI: Setting delete mode for ${listType} to ${isActive}`);
+             listElement.classList.toggle('delete-mode-active', isActive);
+             controlsElement.classList.toggle('hidden', !isActive);
+             listElement.querySelectorAll('li').forEach(li => {
+                 li.classList.toggle('delete-mode', isActive);
+                 if (!isActive) { const delCheckbox = li.querySelector('.delete-checkbox'); if (delCheckbox) delCheckbox.checked = false; }
+             });
+             const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`);
+             if(toggleButton) {
+                 toggleButton.style.color = isActive ? 'var(--accent-color-danger)' : 'var(--secondary-text-color)';
+                 toggleButton.textContent = isActive ? '✕' : '🗑️';
+                 toggleButton.title = isActive ? 'Cancel Delete Mode' : 'Toggle Delete Mode';
+             }
+         }
 
         // --- Firestore Operations ---
 
-        // --- loadAndRenderTasks --- (No changes needed in logic)
-        function loadAndRenderTasks() { if (!isAuthenticated || !todosRef) { console.log("loadAndRenderTasks: Aborted."); return; } if (unsubscribeTodos) { console.log("loadAndRenderTasks: Unsubscribing previous listener."); unsubscribeTodos(); } console.log("loadAndRenderTasks: Starting Firestore listener..."); if(isDataLoading) loadingIndicator.classList.remove('hidden'); unsubscribeTodos = todosRef.orderBy('createdAt', 'asc') .onSnapshot(snapshot => { console.log(`loadAndRenderTasks: Snapshot received with ${snapshot.size} docs.`); clearAllLists(); if (isDataLoading) { loadingIndicator.classList.add('hidden'); isDataLoading = false; } let counts = { pending: 0, completedA: 0, completedB: 0 }; snapshot.forEach(doc => { const data = doc.data(); const id = doc.id; if (!data || typeof data.text === 'undefined') { console.warn("Skipping doc missing text:", id); return; } const isCompletedA = data.completedByA ?? false; const isCompletedB = data.completedByB ?? false; const workingOnMap = data.workingOn && typeof data.workingOn === 'object' ? data.workingOn : { [USER_A_ID]: false, [USER_B_ID]: false }; const taskData = { ...data, id, completedByA: isCompletedA, completedByB: isCompletedB, workingOn: workingOnMap }; if (!isCompletedA || !isCompletedB) { renderTask(taskData, pendingListEl); counts.pending++; } if (isCompletedA) { renderTask(taskData, completedListAEl); counts.completedA++; } if (isCompletedB) { renderTask(taskData, completedListBEl); counts.completedB++; } }); updateEmptyMessages(counts); Object.keys(deleteModes).forEach(listType => { if (deleteModes[listType]) toggleDeleteModeUI(listType, true); }); }, error => { console.error("Error fetching todos: ", error); loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists(); pendingListEl.innerHTML = '<li class="status-message" style="color: var(--accent-color-danger);">Error loading tasks. Check connection/rules.</li>'; }); }
-        // --- clearAllLists, hideStatusMessages, updateEmptyMessages --- (No Changes)
-        function clearAllLists() { pendingListEl.innerHTML = ''; completedListAEl.innerHTML = ''; completedListBEl.innerHTML = ''; hideStatusMessages(); }
-        function hideStatusMessages() { emptyPending.classList.add('hidden'); emptyCompletedA.classList.add('hidden'); emptyCompletedB.classList.add('hidden'); }
-        function updateEmptyMessages(counts) { emptyPending.classList.toggle('hidden', counts.pending > 0); emptyCompletedA.classList.toggle('hidden', counts.completedA > 0); emptyCompletedB.classList.toggle('hidden', counts.completedB > 0); }
+        // --- loadAndRenderTasks (Uses 'studying' field and sorts) ---
+        function loadAndRenderTasks() {
+            if (!isAuthenticated || !todosRef) { console.log("loadAndRenderTasks: Aborted."); if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; return; }
+            if (unsubscribeTodos) { console.log("loadAndRenderTasks: Unsubscribing previous listener."); unsubscribeTodos(); }
+            console.log("loadAndRenderTasks: Starting Firestore listener...");
+            if(isDataLoading && loadingIndicator) loadingIndicator.classList.remove('hidden');
 
-        // --- renderTask --- (No changes needed in logic)
-        function renderTask(taskData, targetListElement) { const { id, text, completedByA, completedByB, workingOn } = taskData; const li = document.createElement('li'); li.setAttribute('data-id', id); const listType = getListTypeFromElement(targetListElement); const isPendingList = listType === 'pending'; li.classList.toggle('delete-mode', deleteModes[listType]); if (isPendingList) li.classList.add('pending-list-li'); const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB); const deleteCheckbox = document.createElement('input'); deleteCheckbox.type = 'checkbox'; deleteCheckbox.className = 'delete-checkbox'; deleteCheckbox.title = 'Mark for deletion'; li.appendChild(deleteCheckbox); const completionSection = document.createElement('div'); completionSection.className = 'completion-section'; if (isPendingList) { const indicatorA = document.createElement('span'); indicatorA.className = 'completion-indicator user-a'; if (completedByA) indicatorA.classList.add('is-complete'); indicatorA.title = `${USERS[USER_A_ID].name} ${completedByA ? 'completed' : 'pending'}`; completionSection.appendChild(indicatorA); const indicatorB = document.createElement('span'); indicatorB.className = 'completion-indicator user-b'; if (completedByB) indicatorB.classList.add('is-complete'); indicatorB.title = `${USERS[USER_B_ID].name} ${completedByB ? 'completed' : 'pending'}`; completionSection.appendChild(indicatorB); const markDoneBtn = document.createElement('button'); markDoneBtn.className = 'mark-done-btn'; markDoneBtn.innerHTML = '✔'; markDoneBtn.title = `Mark as ${isCompletedByCurrentUser ? 'pending' : 'done'} by ${currentUserData.name}`; if (isCompletedByCurrentUser) markDoneBtn.classList.add('is-complete'); markDoneBtn.addEventListener('click', () => toggleComplete(id, isCompletedByCurrentUser)); completionSection.appendChild(markDoneBtn); } else { const taskCheckbox = document.createElement('input'); taskCheckbox.type = 'checkbox'; taskCheckbox.className = 'task-checkbox'; taskCheckbox.checked = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB); if ((currentUserIdentifier === USER_A_ID && listType === 'completedA') || (currentUserIdentifier === USER_B_ID && listType === 'completedB')) { taskCheckbox.title = `Mark as pending again`; taskCheckbox.addEventListener('change', () => toggleComplete(id, true)); } else { taskCheckbox.disabled = true; taskCheckbox.title = `Completed by other user`; } completionSection.appendChild(taskCheckbox); } li.appendChild(completionSection); const textSpan = document.createElement('span'); textSpan.className = 'todo-text'; textSpan.textContent = text; li.appendChild(textSpan); if (isPendingList) { const actionsContainer = document.createElement('div'); actionsContainer.className = 'actions-container'; const userAWorking = workingOn[USER_A_ID] ?? false; const userBWorking = workingOn[USER_B_ID] ?? false; const currentUserWorking = workingOn[currentUserIdentifier] ?? false; if(userAWorking) { const indicatorA = document.createElement('span'); indicatorA.className = `working-indicator ${USERS[USER_A_ID].indicatorClass}`; indicatorA.textContent = `${USERS[USER_A_ID].name}`; indicatorA.title = `${USERS[USER_A_ID].name} is working`; actionsContainer.appendChild(indicatorA); } if(userBWorking) { const indicatorB = document.createElement('span'); indicatorB.className = `working-indicator ${USERS[USER_B_ID].indicatorClass}`; indicatorB.textContent = `${USERS[USER_B_ID].name}`; indicatorB.title = `${USERS[USER_B_ID].name} is working`; actionsContainer.appendChild(indicatorB); } const actionBtn = document.createElement('button'); actionBtn.className = 'action-button'; if (currentUserWorking) { actionBtn.classList.add('stop-working-btn'); actionBtn.textContent = `Stop`; actionBtn.title = `Click to stop working on this`; } else { actionBtn.classList.add('working-on-btn'); actionBtn.textContent = 'Work'; actionBtn.title = 'Click to start working on this'; } actionBtn.addEventListener('click', () => toggleWorkingOn(id)); actionsContainer.appendChild(actionBtn); li.appendChild(actionsContainer); } targetListElement.appendChild(li); }
+            unsubscribeTodos = todosRef.orderBy('createdAt', 'asc')
+                .onSnapshot(snapshot => {
+                    console.log(`loadAndRenderTasks: Snapshot received with ${snapshot.size} docs.`);
+                    let allTasksData = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data(); const id = doc.id;
+                        if (!data || typeof data.text !== 'string' || data.text.trim() === '') { console.warn("Skipping doc:", id); return; }
+                        const isCompletedA = data.completedByA === true; const isCompletedB = data.completedByB === true;
+                        // *** Read the 'studying' field ***
+                        const studyingMap = (data.studying && typeof data.studying === 'object')
+                            ? { [USER_A_ID]: data.studying[USER_A_ID] === true, [USER_B_ID]: data.studying[USER_B_ID] === true }
+                            : { [USER_A_ID]: false, [USER_B_ID]: false }; // Default if 'studying' field is missing/invalid
+                        allTasksData.push({ id: id, text: data.text, completedByA: isCompletedA, completedByB: isCompletedB, studying: studyingMap, addedBy: data.addedBy, createdAt: data.createdAt });
+                    });
 
-        // --- handleAddTodo --- (No Changes)
-        function handleAddTodo(e) { e.preventDefault(); if (!isAuthenticated || !todosRef) return; const text = todoInput.value.trim(); if (text) { todosRef.add({ text: text, completedByA: false, completedByB: false, workingOn: { [USER_A_ID]: false, [USER_B_ID]: false }, addedBy: currentUserIdentifier, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { console.log("Todo added"); todoInput.value = ''; todoInput.focus(); }).catch(error => { console.error("Error adding todo: ", error); alert("Error adding topic."); }); } }
+                    let pendingTasksData = []; let completedAData = []; let completedBData = [];
+                    allTasksData.forEach(taskData => {
+                        if (!taskData.completedByA || !taskData.completedByB) { pendingTasksData.push(taskData); }
+                        if (taskData.completedByA) { completedAData.push(taskData); }
+                        if (taskData.completedByB) { completedBData.push(taskData); }
+                    });
 
-        // --- toggleComplete (Reverted - no longer stops work) ---
-        function toggleComplete(id, wasChecked) {
-            if (!isAuthenticated || !todosRef) return;
-            const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB';
-            const isCompleting = !wasChecked;
+                    // *** Sort pending tasks based on 'studying' status ***
+                    pendingTasksData.sort((a, b) => {
+                        const aIsStudying = (a.studying[USER_A_ID] || a.studying[USER_B_ID]);
+                        const bIsStudying = (b.studying[USER_A_ID] || b.studying[USER_B_ID]);
+                        if (aIsStudying && !bIsStudying) return -1; // Active first
+                        if (!aIsStudying && bIsStudying) return 1; // Active first
+                        const tsA = a.createdAt?.toMillis() ?? 0; const tsB = b.createdAt?.toMillis() ?? 0; return tsA - tsB; // Then by time
+                    });
+                    completedAData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0));
+                    completedBData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0));
 
-            // Only update the completion status
-            let updateData = { [updateField]: isCompleting };
+                    clearAllLists();
+                    if (isDataLoading) { if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; }
+                    pendingTasksData.forEach(task => renderTask(task, pendingListEl));
+                    completedAData.forEach(task => renderTask(task, completedListAEl));
+                    completedBData.forEach(task => renderTask(task, completedListBEl));
+                    updateEmptyMessages({ pending: pendingTasksData.length, completedA: completedAData.length, completedB: completedBData.length });
+                    Object.keys(deleteModes).forEach(listType => { if (deleteModes[listType]) { toggleDeleteModeUI(listType, true); } });
 
-            todosRef.doc(id).update(updateData)
-                .then(() => console.log(`Todo ${id} completion updated by ${currentUserData.name}`))
-                .catch(error => {
-                     console.error("Error updating completion: ", error);
-                     alert("Error updating status.");
+                }, error => {
+                    console.error("Error fetching todos: ", error);
+                    if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists();
+                    if (pendingListEl) pendingListEl.innerHTML = '<li class="status-message" style="color: var(--accent-color-danger);">Error loading tasks. Please check connection.</li>';
                 });
         }
 
-        // --- toggleWorkingOn --- (No Changes)
-        function toggleWorkingOn(id) { if (!isAuthenticated || !db) return; const docRef = todosRef.doc(id); docRef.get().then(doc => { if (!doc.exists) throw "Document missing!"; const data = doc.data(); const currentWorkingOn = (data.workingOn && typeof data.workingOn === 'object') ? data.workingOn : {}; const workingOnUpdate = { ...currentWorkingOn, [USER_A_ID]: currentWorkingOn[USER_A_ID] ?? false, [USER_B_ID]: currentWorkingOn[USER_B_ID] ?? false }; workingOnUpdate[currentUserIdentifier] = !workingOnUpdate[currentUserIdentifier]; return docRef.update({ workingOn: workingOnUpdate }); }).then(() => { console.log(`Working status for ${id} updated by ${currentUserData.name}.`); }).catch(error => { console.error("Error toggling working status:", error); alert("Could not update working status."); }); }
-        // --- handleDeleteSelected --- (No Changes)
-        function handleDeleteSelected(event) { if (!isAuthenticated || !db) return; const listType = event.target.dataset.listType; const listElement = getListElementByType(listType); if (!listElement) return; const selectedCheckboxes = listElement.querySelectorAll('li.delete-mode .delete-checkbox:checked'); const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('li')?.dataset.id).filter(id => !!id); if (idsToDelete.length === 0) { alert("Please select at least one task to delete."); return; } if (!confirm(`Are you sure you want to permanently delete ${idsToDelete.length} selected task(s)? This cannot be undone.`)) { return; } const batch = db.batch(); idsToDelete.forEach(id => { batch.delete(todosRef.doc(id)); }); batch.commit().then(() => { console.log(`${idsToDelete.length} tasks deleted successfully.`); toggleDeleteModeUI(listType, false); deleteModes[listType] = false; }).catch(error => { console.error("Error deleting tasks:", error); alert("Failed to delete selected tasks. Please try again."); }); }
+        // --- List Management ---
+        function clearAllLists() { if (pendingListEl) pendingListEl.innerHTML = ''; if (completedListAEl) completedListAEl.innerHTML = ''; if (completedListBEl) completedListBEl.innerHTML = ''; hideStatusMessages(); }
+        function hideStatusMessages() { if (emptyPending) emptyPending.classList.add('hidden'); if (emptyCompletedA) emptyCompletedA.classList.add('hidden'); if (emptyCompletedB) emptyCompletedB.classList.add('hidden'); }
+        function updateEmptyMessages(counts) { if (emptyPending) emptyPending.classList.toggle('hidden', counts.pending > 0); if (emptyCompletedA) emptyCompletedA.classList.toggle('hidden', counts.completedA > 0); if (emptyCompletedB) emptyCompletedB.classList.toggle('hidden', counts.completedB > 0); }
 
-        // Helper functions (No Changes)
-        function getListElementByType(listType) { return listType === 'pending' ? pendingListEl : listType === 'completedA' ? completedListAEl : listType === 'completedB' ? completedListBEl : null; }
-        function getListTypeFromElement(element) { return element === pendingListEl ? 'pending' : element === completedListAEl ? 'completedA' : element === completedListBEl ? 'completedB' : null; }
+        // --- Task Rendering (Uses 'studying' field and new CSS classes) ---
+        function renderTask(taskData, targetListElement) {
+             if (!targetListElement || !currentUserData || !USERS[USER_A_ID] || !USERS[USER_B_ID]) { console.error("renderTask: Missing target element or user data."); return; }
+             // *** Use the 'studying' field from taskData ***
+             const { id, text, completedByA, completedByB, studying } = taskData;
+             const li = document.createElement('li');
+             li.setAttribute('data-id', id);
+             const listType = getListTypeFromElement(targetListElement);
+             if (!listType) { console.warn(`renderTask: Could not determine list type.`); return; }
+             li.classList.toggle('delete-mode', deleteModes[listType]);
+             li.classList.toggle('pending-list-li', listType === 'pending');
+
+             const deleteCheckbox = document.createElement('input'); deleteCheckbox.type = 'checkbox'; deleteCheckbox.className = 'delete-checkbox'; deleteCheckbox.title = 'Mark for deletion'; li.appendChild(deleteCheckbox);
+             const completionSection = document.createElement('div'); completionSection.className = 'completion-section';
+             if (listType === 'pending') {
+                 const indicatorA = document.createElement('span'); indicatorA.className = 'completion-indicator user-a'; indicatorA.classList.toggle('is-complete', completedByA); indicatorA.title = `${USERS[USER_A_ID].name} ${completedByA ? 'completed' : 'pending'}`; completionSection.appendChild(indicatorA);
+                 const indicatorB = document.createElement('span'); indicatorB.className = 'completion-indicator user-b'; indicatorB.classList.toggle('is-complete', completedByB); indicatorB.title = `${USERS[USER_B_ID].name} ${completedByB ? 'completed' : 'pending'}`; completionSection.appendChild(indicatorB);
+                 const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB);
+                 const markDoneBtn = document.createElement('button'); markDoneBtn.className = 'mark-done-btn'; markDoneBtn.innerHTML = '✔'; markDoneBtn.title = `Mark as ${isCompletedByCurrentUser ? 'pending' : 'done'} by ${currentUserData.name}`; markDoneBtn.classList.toggle('is-complete', isCompletedByCurrentUser); markDoneBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleComplete(id, isCompletedByCurrentUser); }); completionSection.appendChild(markDoneBtn);
+             } else {
+                 const taskCheckbox = document.createElement('input'); taskCheckbox.type = 'checkbox'; taskCheckbox.className = 'task-checkbox'; taskCheckbox.checked = true;
+                 const isCurrentUserList = (currentUserIdentifier === USER_A_ID && listType === 'completedA') || (currentUserIdentifier === USER_B_ID && listType === 'completedB');
+                 if (isCurrentUserList) { taskCheckbox.title = `Mark as pending again`; taskCheckbox.addEventListener('change', (e) => { e.stopPropagation(); toggleComplete(id, true); }); }
+                 else { taskCheckbox.disabled = true; const otherUserName = listType === 'completedA' ? USERS[USER_A_ID].name : USERS[USER_B_ID].name; taskCheckbox.title = `Completed by ${otherUserName}`; }
+                 completionSection.appendChild(taskCheckbox);
+             }
+             li.appendChild(completionSection);
+             const textSpan = document.createElement('span'); textSpan.className = 'todo-text'; textSpan.textContent = text; li.appendChild(textSpan);
+
+             // *** Actions Container using 'studying' field and new CSS ***
+             if (listType === 'pending') {
+                 const actionsContainer = document.createElement('div'); actionsContainer.className = 'actions-container';
+                 const userAStudying = studying[USER_A_ID] ?? false; // Use 'studying' field
+                 const userBStudying = studying[USER_B_ID] ?? false; // Use 'studying' field
+                 const currentUserStudying = studying[currentUserIdentifier] ?? false; // Use 'studying' field
+
+                 if (userAStudying) {
+                     const indicatorA = document.createElement('span');
+                     // Use renamed CSS class .studying-indicator
+                     indicatorA.className = `studying-indicator ${USERS[USER_A_ID].indicatorClass}`;
+                     indicatorA.textContent = `${USERS[USER_A_ID].name}`;
+                     indicatorA.title = `${USERS[USER_A_ID].name} is studying this`; // Updated title
+                     actionsContainer.appendChild(indicatorA);
+                 }
+                 if (userBStudying) {
+                     const indicatorB = document.createElement('span');
+                     // Use renamed CSS class .studying-indicator
+                     indicatorB.className = `studying-indicator ${USERS[USER_B_ID].indicatorClass}`;
+                     indicatorB.textContent = `${USERS[USER_B_ID].name}`;
+                     indicatorB.title = `${USERS[USER_B_ID].name} is studying this`; // Updated title
+                     actionsContainer.appendChild(indicatorB);
+                 }
+
+                 const actionBtn = document.createElement('button');
+                 actionBtn.className = 'action-button';
+                 if (currentUserStudying) {
+                     actionBtn.classList.add('stop-studying-btn'); // Use renamed class
+                     actionBtn.textContent = `Stop`; // Keep "Stop" text
+                     actionBtn.title = `Click to stop studying this`; // Updated title
+                 } else {
+                     actionBtn.classList.add('studying-btn'); // Use renamed class
+                     actionBtn.textContent = 'Study'; // Updated text
+                     actionBtn.title = 'Click to start studying this'; // Updated title
+                 }
+                 actionBtn.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     toggleStudying(id); // Call renamed function
+                 });
+                 actionsContainer.appendChild(actionBtn);
+                 li.appendChild(actionsContainer);
+             }
+             targetListElement.appendChild(li);
+         }
+
+        // --- Task Actions ---
+
+        // --- handleAddTodo (Initializes 'studying' field) ---
+        function handleAddTodo(e) {
+             e.preventDefault();
+             if (!isAuthenticated || !todosRef || !todoInput || !currentUserIdentifier) { console.warn("handleAddTodo: Aborted"); return; }
+             const text = todoInput.value.trim();
+             if (text) {
+                 const newTask = {
+                     text: text,
+                     completedByA: false,
+                     completedByB: false,
+                     studying: { [USER_A_ID]: false, [USER_B_ID]: false }, // Initialize 'studying' field
+                     addedBy: currentUserIdentifier,
+                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                 };
+                 todoInput.disabled = true;
+                 const submitButton = addTodoForm.querySelector('button[type="submit"]');
+                 if(submitButton) submitButton.disabled = true;
+
+                 todosRef.add(newTask)
+                     .then((docRef) => {
+                         console.log("Todo added with ID: ", docRef.id);
+                         todoInput.value = '';
+                     })
+                     .catch(error => {
+                         console.error("Error adding todo: ", error);
+                         alert("Error adding topic. Please try again.");
+                     })
+                     .finally(() => {
+                         todoInput.disabled = false;
+                         if(submitButton) submitButton.disabled = false;
+                         todoInput.blur(); // Remove focus
+                     });
+             }
+        }
+
+        function toggleComplete(id, wasChecked) {
+            if (!isAuthenticated || !todosRef || !currentUserIdentifier) { console.warn("toggleComplete: Aborted."); return; }
+            const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB';
+            const isCompleting = !wasChecked;
+            let updateData = { [updateField]: isCompleting };
+            console.log(`toggleComplete: User ${currentUserData.name} setting ${updateField} to ${isCompleting} for task ${id}`);
+            todosRef.doc(id).update(updateData)
+                .then(() => { console.log(`Todo ${id} completion updated.`); })
+                .catch(error => { console.error(`Error updating ${updateField} for todo ${id}: `, error); alert(`Error updating status.`); });
+        }
+
+        // --- toggleStudying (Renamed function, uses 'studying' field) ---
+        function toggleStudying(id) {
+             if (!isAuthenticated || !db || !todosRef || !currentUserIdentifier) { console.warn("toggleStudying: Aborted."); return; }
+             const docRef = todosRef.doc(id);
+             docRef.get().then(doc => {
+                 if (!doc.exists) { console.error(`toggleStudying: Doc ${id} missing!`); throw new Error("Document not found"); }
+                 const data = doc.data();
+                 // *** Read/Initialize the 'studying' field ***
+                 const currentStudying = (data.studying && typeof data.studying === 'object')
+                     ? data.studying
+                     : { [USER_A_ID]: false, [USER_B_ID]: false }; // Default structure
+
+                 const studyingUpdate = {
+                     [USER_A_ID]: currentStudying[USER_A_ID] === true,
+                     [USER_B_ID]: currentStudying[USER_B_ID] === true
+                 };
+
+                 studyingUpdate[currentUserIdentifier] = !studyingUpdate[currentUserIdentifier];
+
+                 console.log(`toggleStudying: Updating studying status for task ${id}. New status for ${currentUserData.name}: ${studyingUpdate[currentUserIdentifier]}`);
+                 // *** Update the 'studying' field in Firestore ***
+                 return docRef.update({ studying: studyingUpdate });
+             })
+             .then(() => { console.log(`Studying status for ${id} updated by ${currentUserData.name}.`); })
+             .catch(error => { console.error(`Error toggling studying status for task ${id}:`, error); alert("Could not update studying status."); });
+        }
+
+        function handleDeleteSelected(event) {
+             if (!isAuthenticated || !db || !todosRef) { console.warn("handleDeleteSelected: Aborted."); return; }
+             const listType = event.target.dataset.listType;
+             const listElement = getListElementByType(listType);
+             if (!listElement || !listType) { console.error("handleDeleteSelected: Missing list element/type."); return; }
+             if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) { alert(`Only ${USERS[USER_A_ID].name} can delete from this list.`); return; }
+             if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) { alert(`Only ${USERS[USER_B_ID].name} can delete from this list.`); return; }
+             const selectedCheckboxes = listElement.querySelectorAll('li.delete-mode .delete-checkbox:checked');
+             const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('li')?.dataset.id).filter(id => !!id);
+             if (idsToDelete.length === 0) { alert("Please select at least one task to delete."); return; }
+             if (!confirm(`Are you sure you want to permanently delete ${idsToDelete.length} selected task(s)? This cannot be undone.`)) { return; }
+             console.log(`handleDeleteSelected: Deleting ${idsToDelete.length} tasks from ${listType}:`, idsToDelete);
+             const batch = db.batch(); idsToDelete.forEach(id => { batch.delete(todosRef.doc(id)); });
+             batch.commit()
+                 .then(() => { console.log(`${idsToDelete.length} tasks deleted.`); toggleDeleteModeUI(listType, false); deleteModes[listType] = false; })
+                 .catch(error => { console.error("Error deleting tasks:", error); alert("Failed to delete selected tasks."); });
+        }
+
+        // --- Helper functions ---
+        function getListElementByType(listType) {
+            switch (listType) {
+                case 'pending': return pendingListEl; case 'completedA': return completedListAEl; case 'completedB': return completedListBEl;
+                default: console.warn(`getListElementByType: Unknown list type "${listType}"`); return null;
+            }
+        }
+        function getListTypeFromElement(element) {
+             if (element === pendingListEl) return 'pending'; if (element === completedListAEl) return 'completedA'; if (element === completedListBEl) return 'completedB'; return null;
+        }
 
     </script>
 
