@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBBS Study Tracker</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <style>
+        /* --- Configuration & Colors --- */
+        :root {
+            --user-a-color: #007bff; /* Blue for Parth */
+            --user-a-light-color: #cce5ff;
+            --user-b-color: #e83e8c; /* Pink for Nitika */
+            --user-b-light-color: #f8d7da;
+
+            --base-text-color: #343a40;
+            --secondary-text-color: #6c757d;
+            --background-color: #f8f9fa;
+            --container-background: #ffffff;
+            --border-color: #dee2e6;
+            --accent-color-success: #28a745;
+            --accent-color-danger: #dc3545;
+            --accent-color-info: #17a2b8;
+             --focus-shadow-color: rgba(0, 123, 255, 0.25);
+        }
+
+        /* --- Basic Reset & Body --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--base-text-color);
+            padding: 0; /* Remove body padding */
+            transition: background-color 0.3s ease; /* Smooth background changes */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center; /* Center container horizontally */
+            align-items: flex-start; /* Align container to top */
+            padding-top: 40px; /* Add some top padding */
+            padding-bottom: 40px;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            width: 95%; /* Responsive width */
+            max-width: 1100px; /* Max width */
+            background-color: var(--container-background);
+            padding: 30px 40px; /* More padding */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* --- Headlines --- */
+        h1 {
+            color: var(--base-text-color);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+         h2 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        /* --- PIN Entry Dialog --- */
+        #pin-entry-dialog {
+            text-align: center;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #f1f3f5;
+            max-width: 400px;
+            margin: 50px auto; /* Center dialog */
+        }
+        #pin-entry-dialog label { display: block; margin-bottom: 15px; font-weight: 500; color: #495057; font-size: 1.1em;}
+        #pin-entry-dialog input[type="password"] {
+            padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 1.3em; text-align: center; width: 100%; max-width: 200px; margin-bottom: 15px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #pin-entry-dialog input[type="password"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 3px var(--focus-shadow-color); }
+        #pin-entry-dialog button {
+            padding: 12px 25px; font-size: 1em; font-weight: 500; cursor: pointer; border: none; border-radius: 6px; background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        #pin-entry-dialog button:hover { background-color: #0056b3; }
+        #pin-entry-dialog button:active { transform: scale(0.98); }
+        #pin-error { color: var(--accent-color-danger); margin-top: 15px; font-weight: 500; min-height: 1.2em; }
+
+        /* --- User Indicator (Top Right) --- */
+        #user-indicator {
+            position: fixed; /* Fix to viewport */
+            top: 20px;
+            right: 30px;
+            z-index: 1000;
+        }
+        #user-circle {
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            background-color: var(--secondary-text-color); /* Default grey */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-weight: bold; font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        #logout-popup {
+            position: absolute; top: 50px; right: 0; background-color: var(--container-background); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; display: none; /* Hidden by default */
+        }
+        #logout-popup button { background: none; border: none; color: var(--accent-color-danger); cursor: pointer; padding: 8px 12px; font-size: 0.9em; display: block; width: 100%; text-align: left; border-radius: 4px; }
+        #logout-popup button:hover { background-color: #f8f9fa; }
+
+        /* --- Main App Content Styling --- */
+        #app-content { display: block; /* Default to block, will be flex later if needed */}
+
+        /* Add Topic Form */
+        #add-todo-form { display: flex; margin-bottom: 30px; }
+        #add-todo-form input[type="text"] {
+            flex-grow: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 6px 0 0 6px; font-size: 1em; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #add-todo-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 3px var(--focus-shadow-color); z-index: 1; /* Ensure shadow overlap */}
+        #add-todo-form button {
+            padding: 12px 20px; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; border-radius: 0 6px 6px 0; font-size: 1em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; margin-left: -1px; /* Overlap border */
+        }
+        #add-todo-form button:hover { background-color: #218838; }
+        #add-todo-form button:active { transform: scale(0.98); }
+
+        /* Task Lists Area (Flex Layout for Columns) */
+        .task-lists-area {
+             display: flex;
+             flex-wrap: wrap; /* Allow wrapping on smaller screens */
+             gap: 25px; /* Space between columns */
+             margin-top: 20px;
+        }
+        .task-list-column {
+             flex: 1; /* Try to take equal space */
+             min-width: 280px; /* Minimum width before wrapping */
+             padding: 15px 20px;
+             border: 1px solid #e9ecef;
+             border-radius: 8px;
+             background-color: #f8f9faef; /* Slightly transparent background */
+        }
+
+        /* Individual Task List Styling */
+        .task-list { list-style: none; padding: 0; min-height: 50px; /* Prevent collapse when empty */ }
+        .task-list li {
+            display: flex; align-items: center; padding: 12px 10px; border-bottom: 1px solid #e9ecef; background-color: var(--container-background); margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* For absolute positioning of indicators */
+        }
+         .task-list li:last-child { border-bottom: none; margin-bottom: 0; }
+         .task-list li:hover { background-color: #f1f3f5; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.07); }
+
+        /* Task Checkbox */
+        .task-list li input[type="checkbox"] {
+            margin-right: 15px; cursor: pointer; width: 20px; height: 20px; accent-color: var(--user-a-color); /* Default to user A color, override below */
+        }
+         /* User-specific checkbox color */
+        .user-a-active .task-list li input[type="checkbox"] { accent-color: var(--user-a-color); }
+        .user-b-active .task-list li input[type="checkbox"] { accent-color: var(--user-b-color); }
+
+        /* Task Text */
+        .task-list li .todo-text { flex-grow: 1; margin-right: 10px; word-break: break-word; font-size: 0.95em; }
+
+        /* "Working On It" Elements */
+        .action-button { /* Common style for working/stop buttons */
+            padding: 5px 10px; font-size: 0.8em; cursor: pointer; border: 1px solid; border-radius: 15px; /* Pill shape */ margin-right: 8px; white-space: nowrap; transition: all 0.2s ease; font-weight: 500;
+        }
+        .working-on-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: white; }
+        .working-on-btn:hover { background-color: #e3f2fd; }
+
+        .stop-working-btn { /* Specific style when user is working */
+            background-color: var(--user-a-color); /* Default */
+            color: white; border-color: var(--user-a-color);
+        }
+         .user-a-active .stop-working-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); }
+         .user-b-active .stop-working-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); }
+         .stop-working-btn:hover { opacity: 0.85; }
+
+
+        .working-indicator {
+            font-size: 0.8em; font-weight: 500; margin-right: 8px; white-space: nowrap; padding: 4px 8px; border-radius: 15px;
+        }
+         /* User-specific indicator colors */
+        .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); }
+        .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); }
+
+
+        /* Completed List Specific Styles */
+        .completed-list li { background-color: #f1f3f5; } /* Grey out background */
+        .completed-list li:hover { background-color: #e9ecef; transform: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); }
+        .completed-list .action-button, .completed-list .working-indicator { display: none; } /* Hide buttons/indicators */
+        .completed-list input[type="checkbox"] { display: none; } /* Hide checkbox */
+
+        /* Loading / Empty States */
+        .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 25px; font-style: italic; padding: 10px; }
+
+        /* Utility Classes */
+        .hidden { display: none !important; } /* Force hide */
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; } /* For accessibility */
+
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+             body { padding-top: 20px; padding-bottom: 20px; }
+             .container { padding: 20px; }
+             h1 { font-size: 1.5em; }
+             .task-lists-area { flex-direction: column; /* Stack columns */ }
+             #user-indicator { top: 15px; right: 15px; }
+             #user-circle { width: 35px; height: 35px; font-size: 0.8em; }
+             #logout-popup { top: 45px; }
+             #add-todo-form input[type="text"] { font-size: 0.9em; }
+             #add-todo-form button { font-size: 0.9em; padding: 10px 15px; }
+        }
+         @media (max-width: 480px) {
+             .container { padding: 15px; }
+             h1 { font-size: 1.3em; }
+             h2 { font-size: 1.1em; }
+              #pin-entry-dialog { padding: 20px; }
+              #pin-entry-dialog input[type="password"] { font-size: 1.1em; }
+              #pin-entry-dialog button { width: 100%; margin-top: 10px; }
+             .task-list-column { padding: 10px 15px; }
+             .task-list li { padding: 10px 8px; }
+             .action-button, .working-indicator { font-size: 0.75em; padding: 4px 8px; }
+         }
+
+    </style>
+</head>
+<body>
+
+    <!-- PIN Entry Dialog (Initially Visible) -->
+    <div id="pin-entry-dialog">
+        <h1>Study Tracker Access</h1>
+        <label for="pin-input">Enter Your PIN:</label>
+        <div>
+            <input type="password" id="pin-input" autocomplete="off" inputmode="numeric">
+            <button id="pin-submit-btn">Enter</button>
+        </div>
+        <p id="pin-error"> </p> <!-- Placeholder for error message -->
+    </div>
+
+    <!-- Main App Container (Initially Hidden) -->
+    <div class="container hidden" id="main-app-container">
+
+        <!-- User Indicator (Top Right) -->
+        <div id="user-indicator" class="hidden">
+            <div id="user-circle" title="Click for options">?</div> <!-- Initial set by JS -->
+            <div id="logout-popup">
+                <span id="popup-user-name" style="display: block; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #eee; margin-bottom: 5px;">User</span>
+                <button id="logout-button">Logout</button>
+            </div>
+        </div>
+
+        <h1>MBBS Topics Study List</h1>
+
+        <div id="app-content">
+            <form id="add-todo-form">
+                 <label for="todo-input" class="visually-hidden">Add new topic to read</label>
+                <input type="text" id="todo-input" placeholder="Add new topic to read..." required>
+                <button type="submit">Add Topic</button>
+            </form>
+
+            <div class="task-lists-area">
+                <!-- Pending Tasks Column -->
+                <div class="task-list-column">
+                    <h2>Pending Topics</h2>
+                    <ul id="pending-list" class="task-list"></ul>
+                    <p class="status-message loading hidden" id="loading-pending">Loading...</p>
+                    <p class="status-message empty-list hidden" id="empty-pending">No pending topics! Add one above.</p>
+                </div>
+
+                <!-- Completed by User A (Parth) Column -->
+                <div class="task-list-column">
+                    <h2 id="completed-A-title">Completed by Parth</h2>
+                    <ul id="completed-by-A-list" class="task-list completed-list"></ul>
+                     <p class="status-message empty-list hidden" id="empty-completed-A">No topics completed only by Parth yet.</p>
+                </div>
+
+                <!-- Completed by User B (Nitika) Column -->
+                <div class="task-list-column">
+                    <h2 id="completed-B-title">Completed by Nitika</h2>
+                    <ul id="completed-by-B-list" class="task-list completed-list"></ul>
+                     <p class="status-message empty-list hidden" id="empty-completed-B">No topics completed only by Nitika yet.</p>
+                </div>
+            </div>
+        </div> <!-- /app-content -->
+    </div> <!-- /main-app-container -->
+
+    <script>
+        // --- Configuration ---
+        // WARNING: PINs visible in source code! Highly insecure.
+        const USERS = {
+            'UserA': { name: 'Parth', pin: '2108', color: 'var(--user-a-color)', lightColor: 'var(--user-a-light-color)', indicatorClass: 'indicator-user-a' },
+            'UserB': { name: 'Nitika', pin: '0821', color: 'var(--user-b-color)', lightColor: 'var(--user-b-light-color)', indicatorClass: 'indicator-user-b' }
+        };
+        const USER_A_ID = 'UserA';
+        const USER_B_ID = 'UserB';
+
+        // --- Firebase Config ---
+        // WARNING: Insecure setup. Use only if risks accepted. Firestore rules must allow public access.
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZ4_nvAE0_ZlDbnYSdD0QvAZnNL0Usb9Q", // YOUR KEY
+            authDomain: "to-do-pbz.firebaseapp.com",
+            projectId: "to-do-pbz",
+            storageBucket: "to-do-pbz.firebasestorage.app",
+            messagingSenderId: "358081287969",
+            appId: "1:358081287969:web:02b9a125fb403c1e269060"
+        };
+
+        // --- Firebase Initialization ---
+        let db; // Declare db globally
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore(); // Initialize Firestore
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            alert("Could not connect to the database. Please check the console for errors.");
+        }
+        const todosRef = db ? db.collection('todos') : null; // Reference conditional on successful init
+
+        // --- DOM Elements ---
+        const pinDialog = document.getElementById('pin-entry-dialog');
+        const mainAppContainer = document.getElementById('main-app-container');
+        const pinInput = document.getElementById('pin-input');
+        const pinSubmitBtn = document.getElementById('pin-submit-btn');
+        const pinError = document.getElementById('pin-error');
+        const userIndicator = document.getElementById('user-indicator');
+        const userCircle = document.getElementById('user-circle');
+        const logoutPopup = document.getElementById('logout-popup');
+        const popupUserName = document.getElementById('popup-user-name');
+        const logoutButton = document.getElementById('logout-button');
+        const appContent = document.getElementById('app-content'); // Assuming this exists
+        const addTodoForm = document.getElementById('add-todo-form');
+        const todoInput = document.getElementById('todo-input');
+        const pendingList = document.getElementById('pending-list');
+        const completedListA = document.getElementById('completed-by-A-list');
+        const completedListB = document.getElementById('completed-by-B-list');
+        const loadingPending = document.getElementById('loading-pending');
+        const emptyPending = document.getElementById('empty-pending');
+        const emptyCompletedA = document.getElementById('empty-completed-A');
+        const emptyCompletedB = document.getElementById('empty-completed-B');
+        const completedATitle = document.getElementById('completed-A-title');
+        const completedBTitle = document.getElementById('completed-B-title');
+
+        // --- State ---
+        let currentUserIdentifier = null; // 'UserA' or 'UserB'
+        let currentUserData = null; // {name, pin, color, etc.}
+        let isAuthenticated = false;
+        let unsubscribeTodos = null;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        function initializeApp() {
+             if (!todosRef) {
+                 console.error("Firestore 'todos' collection reference is not available.");
+                 // Maybe display an error message on the page
+                 pinError.textContent = "Database connection error.";
+                 return;
+             }
+             setupEventListeners();
+             checkStoredUser();
+             updateColumnTitles(); // Update titles even if not logged in initially
+        }
+
+        function setupEventListeners() {
+            pinSubmitBtn.addEventListener('click', handlePinSubmit);
+            pinInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handlePinSubmit(); });
+            userCircle.addEventListener('click', toggleLogoutPopup);
+            logoutButton.addEventListener('click', logout);
+            addTodoForm.addEventListener('submit', handleAddTodo);
+             // Close logout popup if clicking outside
+             document.addEventListener('click', (event) => {
+                 if (!userIndicator.contains(event.target) && logoutPopup.style.display === 'block') {
+                     logoutPopup.style.display = 'none';
+                 }
+             });
+        }
+
+        function updateColumnTitles() {
+            completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`;
+            completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`;
+        }
+
+        function checkStoredUser() {
+            const storedUserId = localStorage.getItem('currentUserIdentifier');
+            if (storedUserId && USERS[storedUserId]) {
+                authenticateUser(storedUserId);
+            } else {
+                 // Ensure PIN dialog is visible if no stored user
+                 pinDialog.classList.remove('hidden');
+                 mainAppContainer.classList.add('hidden');
+                 userIndicator.classList.add('hidden');
+            }
+        }
+
+        function handlePinSubmit() {
+            const enteredPin = pinInput.value;
+            pinError.textContent = '\u00A0'; // Clear error
+
+            let foundUser = null;
+            for (const userId in USERS) {
+                if (USERS[userId].pin === enteredPin) {
+                    foundUser = userId;
+                    break;
+                }
+            }
+
+            if (foundUser) {
+                authenticateUser(foundUser);
+            } else {
+                pinError.textContent = 'Incorrect PIN.';
+                pinInput.value = '';
+                pinInput.focus();
+                 pinInput.animate([ // Shake animation for error
+                     { transform: 'translateX(0)' }, { transform: 'translateX(-5px)' },
+                     { transform: 'translateX(5px)' }, { transform: 'translateX(-5px)' },
+                     { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }
+                 ], { duration: 300, easing: 'ease-in-out' });
+            }
+        }
+
+        function authenticateUser(userId) {
+            currentUserIdentifier = userId;
+            currentUserData = USERS[userId];
+            isAuthenticated = true;
+
+            localStorage.setItem('currentUserIdentifier', currentUserIdentifier);
+
+            // Update UI for logged-in state
+            pinDialog.classList.add('hidden');
+            mainAppContainer.classList.remove('hidden');
+             // Add class to body for user-specific styling if needed
+             document.body.classList.remove('user-a-active', 'user-b-active');
+             document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active');
+
+
+             // Setup User Indicator
+             userCircle.style.backgroundColor = currentUserData.color;
+             userCircle.textContent = currentUserData.name.charAt(0); // First initial
+             userCircle.title = `Logged in as ${currentUserData.name}`;
+             popupUserName.textContent = currentUserData.name;
+             userIndicator.classList.remove('hidden');
+             logoutPopup.style.display = 'none'; // Ensure popup is hidden initially
+
+            loadAndRenderTasks();
+        }
+
+        function logout() {
+            currentUserIdentifier = null;
+            currentUserData = null;
+            isAuthenticated = false;
+
+            localStorage.removeItem('currentUserIdentifier');
+
+            // Update UI for logged-out state
+            pinDialog.classList.remove('hidden');
+            mainAppContainer.classList.add('hidden');
+            userIndicator.classList.add('hidden');
+            logoutPopup.style.display = 'none';
+            pinInput.value = '';
+            pinError.textContent = '\u00A0';
+            document.body.classList.remove('user-a-active', 'user-b-active');
+
+
+            if (unsubscribeTodos) {
+                unsubscribeTodos();
+                unsubscribeTodos = null;
+                console.log("Stopped Firestore listener.");
+            }
+            // Clear lists immediately? Optional. Might be better to just hide the container.
+            // clearAllLists();
+        }
+
+         function toggleLogoutPopup() {
+             logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block';
+         }
+
+        function clearAllLists() {
+            pendingList.innerHTML = '';
+            completedListA.innerHTML = '';
+            completedListB.innerHTML = '';
+            hideStatusMessages(); // Hide all status messages
+        }
+
+        // --- Firestore Operations ---
+
+        function loadAndRenderTasks() {
+            if (!isAuthenticated || !todosRef) return;
+            if (unsubscribeTodos) unsubscribeTodos(); // Stop previous listener
+
+            loadingPending.classList.remove('hidden');
+            hideStatusMessages(); // Hide empty messages initially
+
+            unsubscribeTodos = todosRef.orderBy('createdAt', 'asc')
+                .onSnapshot(snapshot => {
+                    loadingPending.classList.add('hidden');
+                    clearAllLists(); // Clear lists before processing snapshot
+
+                    let pendingCount = 0, completedACount = 0, completedBCount = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const id = doc.id;
+
+                        if (!data || typeof data.completedByA === 'undefined' || typeof data.completedByB === 'undefined') {
+                            console.warn("Skipping malformed doc:", id, data); return;
+                        }
+
+                        if (data.completedByA && data.completedByB) { /* Fully done - ignore */ }
+                        else if (data.completedByA) { renderTask(data, id, completedListA); completedACount++; }
+                        else if (data.completedByB) { renderTask(data, id, completedListB); completedBCount++; }
+                        else { renderTask(data, id, pendingList); pendingCount++; }
+                    });
+
+                    // Show 'empty' messages if respective lists are empty
+                    emptyPending.classList.toggle('hidden', pendingCount > 0);
+                    emptyCompletedA.classList.toggle('hidden', completedACount > 0);
+                    emptyCompletedB.classList.toggle('hidden', completedBCount > 0);
+
+                    console.log("Tasks loaded/updated.");
+                }, error => {
+                    console.error("Error fetching todos: ", error);
+                    loadingPending.classList.add('hidden');
+                    clearAllLists(); // Clear lists on error
+                    pendingList.innerHTML = '<li class="status-message" style="color: var(--accent-color-danger);">Error loading tasks. Check connection/rules.</li>';
+                });
+        }
+
+        function hideStatusMessages() {
+             emptyPending.classList.add('hidden');
+             emptyCompletedA.classList.add('hidden');
+             emptyCompletedB.classList.add('hidden');
+             loadingPending.classList.add('hidden'); // Ensure loading is hidden too
+        }
+
+        // Render a single task item
+        function renderTask(data, id, targetListElement) {
+            const li = document.createElement('li');
+            li.setAttribute('data-id', id);
+            // Add animation class later if needed
+
+            const isPendingList = targetListElement === pendingList;
+            const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && data.completedByA) || (currentUserIdentifier === USER_B_ID && data.completedByB);
+
+            // 1. Checkbox (only interactive in pending list)
+            if (isPendingList) {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isCompletedByCurrentUser;
+                checkbox.title = `Mark as completed by ${currentUserData.name}`;
+                checkbox.addEventListener('change', () => toggleComplete(id, isCompletedByCurrentUser));
+                li.appendChild(checkbox);
+            }
+
+            // 2. "Working On It" Button/Indicator (only in pending list)
+             if (isPendingList) {
+                 if (data.workingOnBy) { // Someone is working on it
+                     if (data.workingOnBy === currentUserIdentifier) { // Current user is working
+                         const stopBtn = document.createElement('button');
+                         stopBtn.className = 'action-button stop-working-btn';
+                         stopBtn.textContent = `Stop`;
+                         stopBtn.title = `Click to mark as no longer working on this`;
+                         stopBtn.addEventListener('click', () => toggleWorkingOn(id));
+                         li.appendChild(stopBtn);
+                     } else { // Other user is working
+                         const otherUserId = data.workingOnBy;
+                         const otherUserData = USERS[otherUserId];
+                         const indicator = document.createElement('span');
+                         indicator.className = `working-indicator ${otherUserData.indicatorClass}`;
+                         indicator.textContent = `${otherUserData.name} working`;
+                         indicator.title = `${otherUserData.name} is currently working on this`;
+                         li.appendChild(indicator);
+                     }
+                 } else { // Nobody working on it
+                     const workBtn = document.createElement('button');
+                     workBtn.className = 'action-button working-on-btn';
+                     workBtn.textContent = 'Work on this';
+                     workBtn.title = 'Click to indicate you are working on this task';
+                     workBtn.addEventListener('click', () => toggleWorkingOn(id));
+                     li.appendChild(workBtn);
+                 }
+             }
+
+            // 3. Task Text
+            const textSpan = document.createElement('span');
+            textSpan.className = 'todo-text';
+            textSpan.textContent = data.text;
+            li.appendChild(textSpan);
+
+            // Optional: Delete Button could be added here
+
+            targetListElement.appendChild(li);
+             // Simple fade-in animation for new items (if adding dynamically)
+            // li.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
+        }
+
+        // Add a new todo
+        function handleAddTodo(e) {
+            e.preventDefault();
+            if (!isAuthenticated || !todosRef) return;
+
+            const text = todoInput.value.trim();
+            if (text) {
+                todosRef.add({
+                    text: text,
+                    completedByA: false,
+                    completedByB: false,
+                    workingOnBy: null,
+                    addedBy: currentUserIdentifier, // Track who added it
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    console.log("Todo added by", currentUserData.name);
+                    todoInput.value = ''; // Clear input
+                    todoInput.focus(); // Keep focus for quick adds
+                })
+                .catch(error => {
+                    console.error("Error adding todo: ", error);
+                    alert("Error adding topic. Please try again.");
+                });
+            }
+        }
+
+        // Toggle current user's complete status
+        function toggleComplete(id, wasChecked) {
+             if (!isAuthenticated || !todosRef) return;
+
+            const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB';
+            const newValue = !wasChecked;
+
+            todosRef.doc(id).update({ [updateField]: newValue })
+            .then(() => console.log(`Todo ${id} completion updated by ${currentUserData.name} to ${newValue}`))
+            .catch(error => {
+                 console.error("Error updating todo completion: ", error);
+                 alert("Error updating topic status.");
+                 // Revert checkbox UI optimistically? Or rely on Firestore sync.
+            });
+        }
+
+        // Toggle "Working On It" status using a transaction
+        function toggleWorkingOn(id) {
+            if (!isAuthenticated || !db) return; // Need db for transaction
+
+            const docRef = todosRef.doc(id);
+
+            db.runTransaction(transaction => {
+                return transaction.get(docRef).then(doc => {
+                    if (!doc.exists) throw "Document does not exist!";
+
+                    const data = doc.data();
+                    let newWorkingOnBy = null;
+
+                    if (data.workingOnBy === currentUserIdentifier) { newWorkingOnBy = null; } // Stop working
+                    else if (!data.workingOnBy) { newWorkingOnBy = currentUserIdentifier; } // Start working
+                    else {
+                        // Someone else is working - notify user and abort
+                         const otherUserName = USERS[data.workingOnBy]?.name || 'Someone';
+                         alert(`${otherUserName} is already working on this topic!`);
+                         return Promise.reject('Already claimed'); // Abort transaction
+                    }
+                    transaction.update(docRef, { workingOnBy: newWorkingOnBy });
+                });
+            }).then(() => {
+                console.log(`Working status for ${id} updated successfully by ${currentUserData.name}.`);
+            }).catch(error => {
+                // Only log errors not related to 'Already claimed' which was handled with an alert
+                if (error !== 'Already claimed') {
+                     console.error("Working status transaction failed: ", error);
+                     alert("Error updating 'working on' status.");
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
