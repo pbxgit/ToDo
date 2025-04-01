@@ -10,322 +10,435 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        /* --- Configuration & Colors --- */
-        :root {
-            --user-a-color: #0d6efd;
-            --user-a-light-color: #cfe2ff;
-            --user-b-color: #d63384;
-            --user-b-light-color: #f7d6e6;
-            --base-text-color: #212529;
-            --secondary-text-color: #6c757d;
-            --background-color: #f4f7f6;
-            --container-background: #ffffff;
-            --border-color: #dee2e6;
-            --light-border-color: #e9ecef; /* Lighter border for popups */
-            --accent-color-success: #198754;
-            --accent-color-danger: #dc3545;
-            --accent-color-info: #0dcaf0; /* Used for Study button / Add Subtopic */
-            --accent-color-warning: #ffc107; /* For dialogs */
-            --focus-shadow-color: rgba(13, 110, 253, 0.25);
-            --hover-background-light: #f8f9fa; /* Light hover for buttons/menus */
-            --border-radius-container: 32px;
-            --border-radius-large: 24px;
-            --border-radius-medium: 16px;
-            --border-radius-small: 12px;
-            --border-radius-pill: 50px;
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap');
+
+    /* --- Configuration & Colors --- */
+    :root {
+        /* Light Mode Colors */
+        --user-a-color: #0d6efd;
+        --user-a-light-color: #cfe2ff;
+        --user-b-color: #d63384;
+        --user-b-light-color: #f7d6e6;
+        --base-text-color: #212529;
+        --secondary-text-color: #6c757d;
+        --background-color: #f8f9fa; /* Slightly off-white */
+        --container-background: #ffffff;
+        --border-color: #dee2e6;
+        --light-border-color: #e9ecef;
+        --input-background-color: #f1f3f5; /* Slightly grey input bg */
+        --hover-background-light: #f1f3f5;
+        --accent-color-success: #198754;
+        --accent-color-danger: #dc3545;
+        --accent-color-info: #0dcaf0;
+        --accent-color-warning: #ffc107;
+        --focus-shadow-color: rgba(13, 110, 253, 0.25);
+        --shadow-color-soft: rgba(0, 0, 0, 0.06);
+        --shadow-color-medium: rgba(0, 0, 0, 0.1);
+        --connector-color: #ced4da; /* Lighter connector */
+        --connector-width: 1.5px;
+
+        /* Dark Mode Colors - Defined but applied via body.dark-mode */
+        --user-a-color-dark: #4dabf7; /* Lighter blue */
+        --user-a-light-color-dark: #1e3a5a;
+        --user-b-color-dark: #f06595; /* Lighter pink */
+        --user-b-light-color-dark: #5a1e3a;
+        --base-text-color-dark: #e9ecef; /* Light grey text */
+        --secondary-text-color-dark: #adb5bd; /* Medium grey text */
+        --background-color-dark: #121212; /* Very dark grey */
+        --container-background-dark: #1e1e1e; /* Slightly lighter dark */
+        --border-color-dark: #495057;
+        --light-border-color-dark: #343a40;
+        --input-background-color-dark: #2c2c2c; /* Dark input bg */
+        --hover-background-light-dark: #343a40;
+        --accent-color-success-dark: #20c997; /* Tealish green */
+        --accent-color-danger-dark: #f06595; /* Pinkish red */
+        --accent-color-info-dark: #3bc9db; /* Lighter cyan */
+        --accent-color-warning-dark: #ffd43b; /* Lighter yellow */
+        --focus-shadow-color-dark: rgba(77, 171, 247, 0.3);
+        --shadow-color-soft-dark: rgba(255, 255, 255, 0.05);
+        --shadow-color-medium-dark: rgba(255, 255, 255, 0.08);
+        --connector-color-dark: #555;
+
+        /* Shared Dimensions */
+        --border-radius-container: 28px; /* Slightly less round */
+        --border-radius-large: 20px;
+        --border-radius-medium: 10px;
+        --border-radius-small: 6px;
+        --border-radius-pill: 50px;
+        --transition-speed: 0.25s;
+    }
+
+    /* Dark Mode Rule Application */
+    body.dark-mode {
+        --user-a-color: var(--user-a-color-dark);
+        --user-a-light-color: var(--user-a-light-color-dark);
+        --user-b-color: var(--user-b-color-dark);
+        --user-b-light-color: var(--user-b-light-color-dark);
+        --base-text-color: var(--base-text-color-dark);
+        --secondary-text-color: var(--secondary-text-color-dark);
+        --background-color: var(--background-color-dark);
+        --container-background: var(--container-background-dark);
+        --border-color: var(--border-color-dark);
+        --light-border-color: var(--light-border-color-dark);
+        --input-background-color: var(--input-background-color-dark);
+        --hover-background-light: var(--hover-background-light-dark);
+        --accent-color-success: var(--accent-color-success-dark);
+        --accent-color-danger: var(--accent-color-danger-dark);
+        --accent-color-info: var(--accent-color-info-dark);
+        --accent-color-warning: var(--accent-color-warning-dark);
+        --focus-shadow-color: var(--focus-shadow-color-dark);
+        --shadow-color-soft: var(--shadow-color-soft-dark);
+        --shadow-color-medium: var(--shadow-color-medium-dark);
+        --connector-color: var(--connector-color-dark);
+    }
+
+    /* --- Basic Reset & Body --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        background-color: var(--background-color);
+        color: var(--base-text-color);
+        padding: 0;
+        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        min-height: 100vh;
+        font-synthesis: none; /* Improves font rendering */
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* --- Main Container --- */
+    .container {
+        width: 95%;
+        max-width: 1400px; /* Slightly wider */
+        background-color: var(--container-background);
+        padding: 40px 45px 55px 45px; /* Adjusted padding */
+        border-radius: var(--border-radius-container);
+        box-shadow: 0 8px 25px var(--shadow-color-medium); /* Softer shadow */
+        transition: opacity 0.5s ease-in-out, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+        margin: 40px auto 60px auto;
+        position: relative;
+        border: 1px solid var(--light-border-color); /* Subtle border */
+    }
+
+    /* --- Headlines --- */
+    h1 {
+        font-family: 'Playfair Display', serif; /* Use Playfair Display */
+        color: var(--base-text-color);
+        margin-bottom: 40px; /* More space */
+        text-align: center;
+        font-weight: 600; /* Bolder */
+        font-size: 2.1em; /* Slightly larger */
+        transition: color var(--transition-speed) ease;
+    }
+    .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; /* More space */ border-bottom: 1px solid var(--border-color); padding-bottom: 12px; transition: border-color var(--transition-speed) ease; }
+    h2 { font-size: 1.3em; font-weight: 500; color: var(--secondary-text-color); border-bottom: none; padding-bottom: 0; margin: 0; transition: color var(--transition-speed) ease;}
+    .delete-mode-toggle { background: none; border: none; font-size: 1.4em; cursor: pointer; color: var(--secondary-text-color); transition: color 0.2s; padding: 5px; line-height: 1; }
+    .delete-mode-toggle:hover { color: var(--accent-color-danger); }
+    .delete-mode-toggle.hidden { display: none; }
+    .delete-controls { margin-top: 15px; margin-bottom: 15px; text-align: right; }
+    .delete-confirm-btn { background-color: var(--accent-color-danger); color: white; border: none; padding: 9px 18px; border-radius: var(--border-radius-pill); font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; }
+    .delete-confirm-btn:hover { background-color: color-mix(in srgb, var(--accent-color-danger) 85%, black); transform: translateY(-1px); }
+    .delete-confirm-btn:active { transform: scale(0.98); }
+
+    /* --- PIN Entry Dialog --- */
+    #pin-entry-dialog { text-align: center; padding: 40px 35px; border: 1px solid var(--border-color); border-radius: var(--border-radius-large); background-color: var(--container-background); max-width: 400px; margin: 8vh auto; box-shadow: 0 6px 20px var(--shadow-color-soft); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+    #pin-entry-dialog h1 { margin-bottom: 25px; font-size: 1.6em; transition: color var(--transition-speed) ease; }
+    #pin-entry-dialog label { display: block; margin-bottom: 15px; font-weight: 500; color: var(--secondary-text-color); font-size: 1.1em; transition: color var(--transition-speed) ease; }
+    #pin-entry-dialog input[type="password"] { padding: 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); font-size: 1.6em; text-align: center; width: 100%; max-width: 200px; margin: 0 auto 25px auto; display: block; transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; background-color: var(--background-color); color: var(--base-text-color); -moz-appearance: textfield; letter-spacing: 0.2em; }
+    #pin-entry-dialog input[type="password"]::-webkit-outer-spin-button, #pin-entry-dialog input[type="password"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #pin-entry-dialog input[type="password"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); background-color: var(--container-background); }
+    #pin-submit-btn { padding: 14px 30px; font-size: 1.05em; font-weight: 500; cursor: pointer; border: none; border-radius: var(--border-radius-pill); background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; display: block; width: 100%; max-width: 200px; margin: 0 auto; }
+    #pin-submit-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
+    #pin-submit-btn:active { transform: scale(0.97); }
+    #pin-submit-btn:focus, #pin-submit-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-shadow-color); }
+    #pin-error { color: var(--accent-color-danger); margin-top: 20px; font-weight: 500; min-height: 1.2em; font-size: 0.95em; }
+
+    /* --- User Indicator & Logout Popup --- */
+    #user-indicator { position: fixed; top: 20px; right: 25px; z-index: 1001; }
+    #user-circle { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; background-color: var(--secondary-text-color); box-shadow: 0 4px 12px var(--shadow-color-medium); display: flex; justify-content: center; align-items: center; color: white; font-weight: 500; font-size: 1.15em; transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color var(--transition-speed) ease; border: 2px solid var(--container-background); }
+    #user-circle:hover { transform: scale(1.05); box-shadow: 0 6px 16px var(--shadow-color-medium); }
+    #logout-popup { position: absolute; top: 60px; /* Adjusted */ right: 0; background-color: var(--container-background); border-radius: var(--border-radius-medium); box-shadow: 0 8px 25px var(--shadow-color-medium); padding: 8px 0; display: none; min-width: 200px; z-index: 10; overflow: hidden; border: 1px solid var(--light-border-color); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+    #logout-popup span#popup-user-name { display: block; padding: 10px 16px; font-weight: 500; border-bottom: 1px solid var(--light-border-color); margin-bottom: 6px; color: var(--base-text-color); font-size: 1.0em; transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+    #logout-popup button { background: none; border: none; cursor: pointer; padding: 10px 16px; font-size: 0.95em; display: block; width: 100%; text-align: left; border-radius: 0; transition: background-color 0.2s ease, color var(--transition-speed) ease; font-weight: 400; color: var(--base-text-color); }
+    #logout-popup button:hover { background-color: var(--hover-background-light); }
+    #logout-popup .manage-subjects-btn { color: var(--user-a-color); padding-top: 6px; transition: color var(--transition-speed) ease; } /* Add transition */
+    #logout-popup button#logout-button { color: var(--accent-color-danger); font-weight: 500; }
+    /* Dark Mode Toggle Styles */
+    .theme-toggle-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; cursor: default; border-top: 1px solid var(--light-border-color); margin-top: 6px; transition: border-color var(--transition-speed) ease; }
+    .theme-toggle-item span { font-size: 0.95em; color: var(--base-text-color); transition: color var(--transition-speed) ease; }
+    .theme-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .theme-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; /* Faster */ border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; /* Faster */ border-radius: 50%; }
+    input:checked + .slider { background-color: var(--user-a-color); }
+    input:checked + .slider:before { transform: translateX(20px); }
+    body.dark-mode .slider { background-color: #555; } /* Dark background for slider off state */
+
+
+    /* --- Add Topic Form Styling --- */
+    .add-form-container { max-width: 720px; margin: 0 auto 40px auto; }
+    #add-todo-form { display: flex; flex-direction: column; gap: 12px; }
+    #add-todo-form .form-group { width: 100%; }
+    #add-todo-form .form-row { display: flex; flex-direction: column; gap: 12px; }
+    #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; }
+    #add-todo-form label { font-size: 0.85em; color: var(--secondary-text-color); margin-bottom: 4px; padding-left: 8px; font-weight: 500; transition: color var(--transition-speed) ease; }
+    #add-todo-form input[type="text"], #add-todo-form select { width: 100%; border-radius: var(--border-radius-medium); background-color: var(--input-background-color); padding: 13px 16px; /* Adjusted padding */ font-size: 1em; border: 1px solid var(--border-color); transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; line-height: 1.4; color: var(--base-text-color); box-sizing: border-box; }
+    #add-todo-form select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 3.2rem; cursor: pointer; }
+    body.dark-mode #add-todo-form select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); }
+    #add-todo-form select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--base-text-color); }
+    #add-todo-form select:hover, #add-todo-form input[type="text"]:hover { background-color: var(--hover-background-light); border-color: var(--secondary-text-color); }
+    #add-todo-form select option { padding: 8px 12px; color: var(--base-text-color); background-color: var(--container-background); } /* Ensure options respect theme */
+    body:not(.dark-mode) #add-todo-form select option { color: #212529; background-color: #ffffff; } /* Explicit light mode option colors */
+    body.dark-mode #add-todo-form select option { color: #e9ecef; background-color: #2c2c2c; } /* Explicit dark mode option colors */
+    #add-todo-form input[type="text"]:focus, #add-todo-form select:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); z-index: 1; background-color: var(--container-background); }
+    #add-todo-form select:disabled { background-color: var(--hover-background-light); cursor: not-allowed; opacity: 0.6; border-color: var(--border-color); box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); }
+    #add-todo-form button[type="submit"] { padding: 13px 25px; border-radius: var(--border-radius-medium); height: fit-content; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; font-size: 1em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; }
+    #add-todo-form button:hover { background-color: color-mix(in srgb, var(--accent-color-success) 85%, black); transform: translateY(-1px); } #add-todo-form button:active { transform: scale(0.98); } #add-todo-form button:disabled { background-color: var(--secondary-text-color); cursor: not-allowed; opacity: 0.6;}
+    @media (min-width: 768px) { #add-todo-form { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 15px; } #add-todo-form .topic-input-group { flex: 2 1 300px; margin-bottom: 0; } #add-todo-form .form-row { flex-direction: row; flex: 1 1 300px; gap: 15px; align-items: flex-end; width: auto; } #add-todo-form .subject-select-group { flex-grow: 1; flex-basis: 180px; width: auto; } #add-todo-form button[type="submit"] { width: auto; flex-shrink: 0; margin-top: 0; } }
+
+    /* --- Layout Grid --- */
+    .main-layout-grid { display: grid; grid-template-columns: 1fr; gap: 35px; /* Increased gap */ margin-top: 25px; }
+    @media (min-width: 1100px) {
+        .main-layout-grid {
+            grid-template-columns: 1.6fr 1fr; /* Pending column, Area for stacked completed columns */
+            grid-template-areas:
+                "pending completed-area"; /* Define areas */
+            gap: 35px;
+            align-items: start;
         }
-        /* --- Basic Reset & Body --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; background-color: var(--background-color); color: var(--base-text-color); padding: 0; transition: background-color 0.3s ease; min-height: 100vh; }
-        /* --- Main Container --- */
-        .container { width: 95%; max-width: 1250px; background-color: var(--container-background); padding: 40px 45px 50px 45px; border-radius: var(--border-radius-container); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09); transition: opacity 0.5s ease-in-out; margin: 40px auto 60px auto; position: relative; }
-        #app-content, h1, #loading-indicator { position: relative; z-index: 1; }
-        /* --- Headlines --- */
-        h1 { color: var(--base-text-color); margin-bottom: 35px; text-align: center; font-weight: 500; font-size: 1.9em; }
-        .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        h2 { font-size: 1.3em; font-weight: 500; color: var(--secondary-text-color); border-bottom: none; padding-bottom: 0; margin: 0; }
-        .delete-mode-toggle { background: none; border: none; font-size: 1.3em; cursor: pointer; color: var(--secondary-text-color); transition: color 0.2s; padding: 5px; line-height: 1; }
-        .delete-mode-toggle:hover { color: var(--accent-color-danger); }
-        .delete-mode-toggle.hidden { display: none; }
-        .delete-controls { margin-top: 10px; margin-bottom: 15px; text-align: right; }
-        .delete-confirm-btn { background-color: var(--accent-color-danger); color: white; border: none; padding: 9px 18px; border-radius: var(--border-radius-pill); font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease; }
-        .delete-confirm-btn:hover { background-color: #c82333; }
-
-        /* --- PIN Entry Dialog --- */
-        #pin-entry-dialog { text-align: center; padding: 35px; border: none; border-radius: var(--border-radius-large); background-color: #f8f9fa; max-width: 420px; margin: 60px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
-        #pin-entry-dialog h1 { margin-bottom: 25px; }
-        #pin-entry-dialog label { display: block; margin-bottom: 18px; font-weight: 500; color: #495057; font-size: 1.15em; }
-        #pin-entry-dialog input[type="password"] { padding: 14px; border: 1px solid #ced4da; border-radius: var(--border-radius-medium); font-size: 1.4em; text-align: center; width: 100%; max-width: 220px; margin: 0 auto 20px auto; display: block; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: white; -moz-appearance: textfield; }
-        #pin-entry-dialog input[type="password"]::-webkit-outer-spin-button, #pin-entry-dialog input[type="password"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        #pin-entry-dialog input[type="password"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); }
-        #pin-submit-btn { padding: 14px 30px; font-size: 1.05em; font-weight: 500; cursor: pointer; border: none; border-radius: var(--border-radius-pill); background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; display: block; width: 100%; max-width: 220px; margin: 0 auto; }
-        #pin-submit-btn:hover { background-color: #0b5ed7; }
-        #pin-submit-btn:active { transform: scale(0.97); }
-        #pin-submit-btn:focus, #pin-submit-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-shadow-color); }
-        #pin-error { color: var(--accent-color-danger); margin-top: 18px; font-weight: 500; min-height: 1.2em; }
-
-        /* --- User Indicator & Improved Logout Popup --- */
-        #user-indicator { position: fixed; top: 20px; right: 25px; z-index: 1001; }
-        #user-circle { width: 52px; height: 52px; border-radius: 50%; cursor: pointer; background-color: var(--secondary-text-color); box-shadow: 0 4px 10px rgba(0,0,0,0.25); display: flex; justify-content: center; align-items: center; color: white; font-weight: 500; font-size: 1.2em; transition: background-color 0.3s ease, transform 0.2s ease; }
-        #user-circle:hover { transform: scale(1.05); }
-        #logout-popup { position: absolute; top: 65px; right: 0; background-color: var(--container-background); border-radius: var(--border-radius-medium); box-shadow: 0 8px 20px rgba(0,0,0,0.12); padding: 8px 0; display: none; min-width: 180px; z-index: 10; overflow: hidden; }
-        #logout-popup span { display: block; padding: 10px 16px; font-weight: 500; border-bottom: 1px solid var(--light-border-color); margin-bottom: 6px; color: var(--base-text-color); font-size: 1.05em; }
-        #logout-popup button { background: none; border: none; cursor: pointer; padding: 10px 16px; font-size: 0.98em; display: block; width: 100%; text-align: left; border-radius: 0; transition: background-color 0.2s ease; font-weight: 400; }
-        #logout-popup button:hover { background-color: var(--hover-background-light); }
-        #logout-popup .manage-subjects-btn { color: var(--user-a-color); padding-top: 6px; }
-        #logout-popup button#logout-button { color: var(--accent-color-danger); }
-
-
-        #app-content { display: block; }
-        .add-form-container { max-width: 680px; margin: 0 auto 40px auto; }
-
-        /* --- Add Topic Form Styling --- */
-        /* Default: Stacked */
-        #add-todo-form { display: flex; flex-direction: column; gap: 10px; }
-        #add-todo-form .form-group { width: 100%; }
-        #add-todo-form .form-row { display: flex; flex-direction: column; gap: 10px; }
-        #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; }
-
-        #add-todo-form label { font-size: 0.9em; color: var(--secondary-text-color); margin-bottom: 4px; padding-left: 5px; }
-        #add-todo-form input[type="text"] {
-            width: 100%; border-radius: var(--border-radius-medium); background-color: var(--hover-background-light);
-            padding: 14px 18px; font-size: 1em; border: 1px solid var(--border-color);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            line-height: 1.4; color: var(--base-text-color);
+        .pending-list-area { grid-area: pending; margin-bottom: 0; }
+        /* Assign the stack container to the grid area */
+        .completed-lists-stack {
+            grid-area: completed-area;
+            display: flex;
+            flex-direction: column;
+            gap: 35px; /* Gap between the stacked completed columns */
+            height: 100%; /* Allow stack to fill height if needed */
         }
-
-        /* === FIXED: Select Styling === */
-        #add-todo-form select {
-            /* Core styles matching input */
-            width: 100%;
-            border-radius: var(--border-radius-medium);
-            background-color: var(--hover-background-light); /* Match input bg */
-            padding: 14px 18px; /* Base padding like input */
-            font-size: 1em;
-            border: 1px solid var(--border-color); /* Match input border */
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            line-height: 1.4;
-            color: var(--base-text-color); /* Match input text color */
-            box-sizing: border-box; /* Ensure padding/border included in width */
-
-            /* Custom appearance */
-            appearance: none; /* Remove default arrow/style */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-
-            /* Custom arrow */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23495057' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center; /* Position arrow */
-            background-size: 1em; /* Arrow size */
-            padding-right: 3rem; /* Make space for the arrow (adjust as needed) */
-
-            cursor: pointer;
-        }
-        #add-todo-form select:hover {
-             background-color: #f1f3f5; /* Subtle hover, can adjust */
-             border-color: #adb5bd; /* Optional: Darker border on hover */
-        }
-        #add-todo-form select:focus { /* Focus style matches input */
-             outline: none;
-             border-color: var(--user-a-color);
-             box-shadow: 0 0 0 4px var(--focus-shadow-color);
-             z-index: 1;
-             background-color: white; /* Optional: Change bg on focus */
-        }
-        #add-todo-form select:disabled { /* Disabled style */
-            background-color: #e9ecef;
-            cursor: not-allowed;
-            opacity: 0.7;
-            border-color: var(--border-color);
-            box-shadow: none;
-            /* Use a greyed-out arrow */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-        }
-        /* === End Select Styling === */
-
-        #add-todo-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); z-index: 1; background-color: white; }
-
-        #add-todo-form button[type="submit"] { padding: 14px 28px; border-radius: var(--border-radius-medium); height: fit-content; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; font-size: 1em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; }
-        #add-todo-form button:hover { background-color: #157347; } #add-todo-form button:active { transform: scale(0.98); } #add-todo-form button:disabled { background-color: #6c757d; cursor: not-allowed; opacity: 0.7;}
-
-        /* Form Layout for Larger Screens */
-        @media (min-width: 768px) {
-            #add-todo-form { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 15px; }
-            #add-todo-form .topic-input-group { flex: 2 1 300px; margin-bottom: 0; }
-            #add-todo-form .form-row { flex-direction: row; flex: 1 1 300px; gap: 15px; align-items: flex-end; width: auto; }
-            #add-todo-form .subject-select-group { flex-grow: 1; flex-basis: 180px; width: auto; }
-            #add-todo-form button[type="submit"] { width: auto; flex-shrink: 0; margin-top: 0; }
-        }
+         /* Remove grid area assignment from individual completed columns */
+        .completed-list-area-a { margin-bottom: 0; }
+        .completed-list-area-b { margin-bottom: 0; }
+    }
 
 
-        /* --- Layout Grid --- */
-        .main-layout-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; }
-        @media (min-width: 992px) {
-            .main-layout-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "pending completed-a" "pending completed-b"; gap: 30px; }
-            .pending-list-area { grid-area: pending; margin-bottom: 0; }
-            .completed-list-area-a { grid-area: completed-a; }
-            .completed-list-area-b { grid-area: completed-b; }
-        }
+    /* Individual column styling */
+    .task-list-column { padding: 20px 25px; border: 1px solid var(--border-color); border-radius: var(--border-radius-large); background-color: color-mix(in srgb, var(--background-color) 95%, black); /* Slightly darker bg */ margin-bottom: 0; min-width: 0; display: flex; flex-direction: column; height: 100%; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+    .pending-list-area .task-list-column { background-color: color-mix(in srgb, var(--user-a-light-color) 15%, var(--background-color)); } /* Subtle tint */
+    body.dark-mode .pending-list-area .task-list-column { background-color: color-mix(in srgb, var(--user-a-light-color-dark) 10%, var(--background-color-dark));}
+    .spinner { border: 4px solid var(--border-color); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--user-a-color); animation: spin 1s ease infinite; margin: 20px auto; transition: border-color var(--transition-speed) ease, border-left-color var(--transition-speed) ease; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Individual column styling */
-        .task-list-column { padding: 20px 25px; border: none; border-radius: var(--border-radius-large); background-color: #f8f9faf0; margin-bottom: 0; min-width: 0; display: flex; flex-direction: column; }
-        .pending-list-area .task-list-column { background-color: #f0f8ffcc; }
-        .completed-list-area-a .task-list-column, .completed-list-area-b .task-list-column { background-color: #f8f9faf0; }
-        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--user-a-color); animation: spin 1s ease infinite; margin: 20px auto; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* --- Subject Filter Pills --- */
+    .filter-pills-container { margin-top: 5px; margin-bottom: 15px; padding-bottom: 15px; /* More space */ border-bottom: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 8px; transition: border-color var(--transition-speed) ease; }
+    .filter-pill { background-color: var(--input-background-color); border: 1px solid var(--border-color); color: var(--secondary-text-color); padding: 5px 14px; /* Slightly wider */ border-radius: var(--border-radius-pill); font-size: 0.88em; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .filter-pill:hover { background-color: var(--hover-background-light); border-color: var(--secondary-text-color); color: var(--base-text-color); }
+    .filter-pill.active { background-color: var(--user-a-color); color: white !important; border-color: var(--user-a-color); }
+    .filter-pill[data-subject="--all--"].active { background-color: var(--user-a-color); color: white !important; border-color: var(--user-a-color); }
 
-        /* --- Subject Filter Pills --- */
-        .filter-pills-container { margin-top: 5px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 8px; }
-        .filter-pill { background-color: #f8f9fa; border: 1px solid #dee2e6; color: var(--secondary-text-color); padding: 5px 12px; border-radius: var(--border-radius-pill); font-size: 0.9em; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .filter-pill:hover { background-color: #e9ecef; border-color: #adb5bd; }
-        .filter-pill.active { background-color: var(--user-a-color); color: white; border-color: var(--user-a-color); }
-        .filter-pill[data-subject="--all--"].active { background-color: var(--user-a-color); color: white; border-color: var(--user-a-color); }
+    /* --- Task List Styling --- */
+    .task-list { list-style: none; padding: 0; margin-top: 15px; flex-grow: 1; }
+    .task-list li { display: flex; flex-direction: column; align-items: stretch; padding: 12px 18px; /* Adjusted padding */ border: 1px solid var(--light-border-color); background-color: var(--container-background); margin-bottom: 12px; border-radius: var(--border-radius-medium); box-shadow: 0 2px 5px var(--shadow-color-soft); transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color var(--transition-speed) ease; position: relative; }
+    .task-list li:last-child { margin-bottom: 0; }
+    .pending-list-item:hover { background-color: var(--hover-background-light); box-shadow: 0 4px 8px var(--shadow-color-soft); border-color: var(--border-color); }
+
+    /* --- Main Task Content & Indicators --- */
+    .main-task-content { display: flex; align-items: center; width: 100%; gap: 12px; /* Increased gap */ }
+    .completion-section { display: flex; align-items: center; flex-shrink: 0; margin-right: 0; }
+    .topic-completion-checkbox { cursor: pointer; width: 22px; height: 22px; margin: 0; accent-color: var(--user-a-color); transition: accent-color var(--transition-speed) ease; }
+    .user-a-active .topic-completion-checkbox { accent-color: var(--user-a-color); }
+    .user-b-active .topic-completion-checkbox { accent-color: var(--user-b-color); }
+    .completed-list li .topic-completion-checkbox { /* Specific size for completed */
+        width: 20px;
+        height: 20px;
+    }
+    .delete-checkbox { margin: 0 0 0 8px; cursor: pointer; width: 20px; height: 20px; accent-color: var(--accent-color-danger); flex-shrink: 0; }
+    li .delete-checkbox { display: none; }
+    li.delete-mode .delete-checkbox { display: block; }
+    li.delete-mode .completion-section,
+    li.delete-mode .topic-indicators-container,
+    li.delete-mode .actions-container,
+    li.delete-mode .subtopics-section { display: none !important; } /* Hide more in delete mode */
+
+    .task-list li .todo-text { flex-grow: 1; word-break: break-word; font-size: 1.05em; font-weight: 500; line-height: 1.45; color: var(--base-text-color); transition: color var(--transition-speed) ease; }
+    .task-subject { font-size: 0.8em; color: var(--secondary-text-color); background-color: var(--input-background-color); padding: 3px 9px; border-radius: var(--border-radius-small); white-space: nowrap; margin-left: 8px; border: 1px solid var(--light-border-color); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, color var(--transition-speed) ease; }
+
+    /* Topic indicators (circles) */
+    .topic-indicators-container { display: flex; gap: 5px; align-items: center; margin-left: 10px; flex-shrink: 0; }
+    .topic-indicator { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--border-color); display: inline-block; transition: all 0.2s; background-color: transparent; }
+    .topic-indicator.user-a { border-color: var(--user-a-color); }
+    .topic-indicator.user-b { border-color: var(--user-b-color); }
+    .topic-indicator.user-a.is-complete { background-color: var(--user-a-color); border-color: var(--user-a-color); }
+    .topic-indicator.user-b.is-complete { background-color: var(--user-b-color); border-color: var(--user-b-color); }
+
+    .actions-container { display: flex; align-items: center; margin-left: auto; padding-left: 12px; flex-wrap: nowrap; gap: 8px; }
+    .action-button { padding: 7px 15px; font-size: 0.88em; cursor: pointer; border: 1.5px solid; border-radius: var(--border-radius-pill); white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1; }
+    .studying-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: transparent; }
+    .studying-btn:hover { background-color: color-mix(in srgb, var(--accent-color-info) 15%, transparent); }
+    .stop-studying-btn { color: white; }
+    .user-a-active .stop-studying-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); }
+    .user-b-active .stop-studying-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); }
+    .stop-studying-btn:hover { opacity: 0.9; }
+    .studying-indicator { font-size: 0.85em; font-weight: 500; white-space: nowrap; padding: 5px 10px; border-radius: var(--border-radius-pill); display: inline-block; line-height: 1; margin: 2px; font-style: italic; }
+    .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); border: 1px solid var(--user-a-color); transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease; } /* Add transitions */
+    .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); border: 1px solid var(--user-b-color); transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease; } /* Add transitions */
+    .add-subtopic-toggle-btn { background: none; border: none; color: var(--secondary-text-color); cursor: pointer; padding: 5px; line-height: 1; font-size: 1.6em; /* Larger '+' */ font-weight: 300; /* Thinner '+' */ transition: color 0.2s, transform 0.2s; margin-left: 8px; }
+    .add-subtopic-toggle-btn:hover { color: var(--accent-color-info); transform: scale(1.1); }
+
+    .completed-list li { background-color: color-mix(in srgb, var(--secondary-text-color) 5%, var(--container-background)); opacity: 0.85; }
+    .completed-list li:hover { background-color: color-mix(in srgb, var(--secondary-text-color) 8%, var(--container-background)); opacity: 0.9; transform: none; box-shadow: 0 3px 6px var(--shadow-color-soft); }
+    .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); }
+    .completed-list .actions-container, .completed-list .subtopics-section { display: none; }
+
+    /* --- Subtopic Styling --- */
+    .subtopics-section {
+        margin-top: 12px;
+        padding: 10px 0 8px 25px; /* Space on left for lines */
+        margin-left: 18px; /* Indent section relative to parent checkbox */
+        position: relative;
+        /* Removed border-left */
+        background-color: transparent;
+        border-radius: 0;
+        transition: border-color var(--transition-speed) ease; /* Keep transition for potential future borders */
+    }
+    .subtopics-section::before { content: none; } /* Remove old connector */
+    .subtopics-controls { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 1; padding-left: 0; margin-left: -18px; /* Align with parent text */ }
+    .toggle-subtopics-btn { background: none; border: none; cursor: pointer; font-size: 0.9em; color: var(--secondary-text-color); padding: 0; line-height: 1; margin-right: 6px; transition: color var(--transition-speed) ease, transform 0.2s; }
+    .subtopics-controls:hover .toggle-subtopics-btn { color: var(--base-text-color); }
+    .toggle-subtopics-btn[aria-expanded="false"] { transform: rotate(-90deg); }
+    .toggle-subtopics-btn[aria-expanded="true"] { transform: rotate(0deg); }
+    .subtopics-summary { font-size: 0.85em; color: var(--secondary-text-color); pointer-events: none; background-color: transparent; padding: 0 3px; transition: color var(--transition-speed) ease; font-style: italic; }
+    .subtopic-list { list-style: none; padding: 0; margin-top: 5px; position: relative; z-index: 1; }
+    /* Main Subtopic Item Layout */
+    .subtopic-item {
+        display: flex;
+        align-items: center; /* Align checkbox, indicators, text vertically */
+        margin: 0;
+        font-size: 0.95em;
+        padding: 6px 0; /* Adjusted padding */
+        border: none;
+        position: relative; /* Needed for connector lines */
+        gap: 8px; /* Space between checkbox, indicators, text, button */
+    }
+
+    /* L-Shaped Connector Lines using Pseudo-elements */
+    .subtopic-item::before {
+        content: '';
+        position: absolute;
+        left: -15px; /* Position left relative to section padding */
+        top: 0;
+        width: var(--connector-width);
+        height: 100%; /* Full height initially */
+        background-color: var(--connector-color);
+        transition: background-color var(--transition-speed) ease;
+        z-index: 0; /* Behind content */
+    }
+    .subtopic-item::after {
+        content: '';
+        position: absolute;
+        left: -15px; /* Align with vertical line */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%);
+        width: 15px; /* Length of horizontal line */
+        height: var(--connector-width);
+        background-color: var(--connector-color);
+        transition: background-color var(--transition-speed) ease;
+        z-index: 0; /* Behind content */
+    }
+    /* Adjust vertical line for the LAST subtopic item */
+    .subtopic-list > .subtopic-item:last-of-type::before {
+        height: 50%; /* Only draw line to the middle */
+    }
+    /* Ensure form doesn't get lines */
+    .add-subtopic-form::before,
+    .add-subtopic-form::after {
+        display: none !important;
+    }
+    /* Hide lines if subtopic list is hidden */
+     .subtopic-list.hidden + .add-subtopic-form::before,
+     .subtopic-list.hidden + .add-subtopic-form::after {
+         display: none !important;
+     }
+     .subtopic-list.hidden .subtopic-item::before,
+     .subtopic-list.hidden .subtopic-item::after {
+         display: none;
+     }
 
 
-        /* --- Task List Styling --- */
-        .task-list { list-style: none; padding: 0; margin-top: 15px; flex-grow: 1; }
-        .task-list li { display: flex; flex-direction: column; align-items: stretch; padding: 15px 18px; border-bottom: 1px solid var(--light-border-color); background-color: var(--container-background); margin-bottom: 12px; border-radius: var(--border-radius-medium); box-shadow: 0 3px 6px rgba(0,0,0,0.06); transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; position: relative; }
-        .task-list li:last-child { border-bottom: none; margin-bottom: 0; }
-        .task-list li:hover { background-color: #f1f3f5; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.08); }
-        .main-task-content { display: flex; align-items: center; width: 100%; gap: 8px; }
-        .completion-section { display: flex; align-items: center; }
-        .task-checkbox { margin: 0; cursor: pointer; width: 20px; height: 20px; accent-color: var(--user-a-color); }
-        .user-a-active .task-checkbox { accent-color: var(--user-a-color); } .user-b-active .task-checkbox { accent-color: var(--user-b-color); }
-        .delete-checkbox { margin: 0; cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-color-danger); }
-        li .task-checkbox { display: block; } li.delete-mode .task-checkbox { display: none; }
-        li .delete-checkbox { display: none; } li.delete-mode .delete-checkbox { display: block; }
-        .mark-done-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; padding: 0; margin: 0; color: var(--secondary-text-color); line-height: 1; transition: color 0.2s; }
-        .mark-done-btn:hover { color: var(--accent-color-success); }
-        .user-a-active .mark-done-btn.is-complete { color: var(--user-a-color); } .user-b-active .mark-done-btn.is-complete { color: var(--user-b-color); }
-        .task-list li .todo-text { flex-grow: 1; word-break: break-word; font-size: 1em; font-weight: 500; }
-        .task-subject { font-size: 0.85em; color: var(--secondary-text-color); background-color: #f1f3f5; padding: 2px 8px; border-radius: var(--border-radius-small); white-space: nowrap; }
-        .actions-container { display: flex; align-items: center; margin-left: auto; padding-left: 10px; flex-wrap: nowrap; gap: 8px; }
-        .action-button { padding: 7px 15px; font-size: 0.88em; cursor: pointer; border: 1.5px solid; border-radius: var(--border-radius-pill); white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1; }
-        .studying-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: white; } .studying-btn:hover { background-color: #cff4fc; }
-        .stop-studying-btn { color: white; } .user-a-active .stop-studying-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); } .user-b-active .stop-studying-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); } .stop-studying-btn:hover { opacity: 0.85; }
-        .studying-indicator { font-size: 0.88em; font-weight: 500; white-space: nowrap; padding: 6px 12px; border-radius: var(--border-radius-pill); display: inline-block; line-height: 1; margin: 2px; }
-        .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); border: 1px solid var(--user-a-color); } .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); border: 1px solid var(--user-b-color); }
-        .add-subtopic-toggle-btn { background: none; border: none; color: var(--secondary-text-color); cursor: pointer; padding: 5px; line-height: 1; font-size: 1.3em; font-weight: bold; transition: color 0.2s; margin-left: 5px; }
-        .add-subtopic-toggle-btn:hover { color: var(--accent-color-info); }
-        .completed-list li { background-color: #f1f3f5cc; } .completed-list li:hover { background-color: #e9ecef; transform: none; box-shadow: 0 3px 6px rgba(0,0,0,0.06); }
-        .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); }
-        .completed-list .actions-container { display: none; }
-        .completed-list .subtopics-section { display: none; }
+    /* Subtopic Checkbox */
+    .subtopic-completion-checkbox { cursor: pointer; width: 18px; height: 18px; margin: 0; accent-color: var(--user-a-color); flex-shrink: 0; transition: accent-color var(--transition-speed) ease; }
+    .user-a-active .subtopic-completion-checkbox { accent-color: var(--user-a-color); }
+    .user-b-active .subtopic-completion-checkbox { accent-color: var(--user-b-color); }
 
-        /* --- Subtopic Styling --- */
-        .subtopics-section { margin-top: 12px; padding-top: 10px; padding-left: 20px; margin-left: 35px; border-left: 3px solid var(--border-color); padding-bottom: 10px; background-color: #fafafa; border-radius: 0 var(--border-radius-small) var(--border-radius-small) 0; }
-        .subtopics-controls { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
-        .toggle-subtopics-btn { background: none; border: none; cursor: pointer; font-size: 1.1em; color: var(--secondary-text-color); padding: 0; line-height: 1; margin-right: 8px; pointer-events: none; }
-        .subtopics-summary { font-size: 0.85em; color: var(--secondary-text-color); pointer-events: none; }
-        .subtopic-list { list-style: none; padding: 0; margin-top: 5px; }
-        .subtopic-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.95em; padding: 6px 0; border-bottom: 1px dashed #eee; }
-        .subtopic-item:last-of-type { border-bottom: none; }
-        .subtopic-completion { display: flex; align-items: center; margin-right: 10px; }
-        .subtopic-indicator { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border-color); margin: 0 3px; display: inline-block; transition: all 0.2s; background-color: transparent; }
-        .subtopic-indicator.user-a { border-color: var(--user-a-color); } .subtopic-indicator.user-b { border-color: var(--user-b-color); }
-        .subtopic-indicator.user-a.is-complete { background-color: var(--user-a-color); border-color: var(--user-a-color); } .subtopic-indicator.user-b.is-complete { background-color: var(--user-b-color); border-color: var(--user-b-color); }
-        .subtopic-tick-btn { background: none; border: none; font-size: 1.3em; cursor: pointer; padding: 0 4px; color: var(--secondary-text-color); line-height: 1; transition: color 0.2s; margin-left: 5px; }
-        .user-a-active .subtopic-tick-btn.user-a.is-complete { color: var(--user-a-color); } .user-b-active .subtopic-tick-btn.user-b.is-complete { color: var(--user-b-color); }
-        .user-a-active .subtopic-tick-btn.user-b, .user-b-active .subtopic-tick-btn.user-a { display: none; }
-        .subtopic-text { color: var(--base-text-color); word-break: break-word; flex-grow: 1; }
-        .subtopic-item.is-done-a.is-done-b .subtopic-text { text-decoration: line-through; color: var(--secondary-text-color); }
-        .add-subtopic-form { display: flex; margin-top: 15px; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border-color); }
-        .add-subtopic-form.hidden { display: none; }
-        .add-subtopic-form input[type="text"] { flex-grow: 1; padding: 7px 12px; border: 1px solid #ced4da; border-radius: var(--border-radius-small); font-size: 0.9em; }
-        .add-subtopic-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 3px var(--focus-shadow-color); }
-        .add-subtopic-form button { padding: 7px 14px; font-size: 0.9em; background-color: var(--accent-color-info); color: white; border: none; border-radius: var(--border-radius-small); cursor: pointer; transition: background-color 0.2s; flex-shrink: 0; }
-        .add-subtopic-form button:hover { background-color: #0aa1bd; }
+    .subtopic-text { color: var(--base-text-color); word-break: break-word; flex-grow: 1; line-height: 1.5; transition: color var(--transition-speed) ease, text-decoration-color var(--transition-speed) ease;}
+    .subtopic-item.is-done-a.is-done-b .subtopic-text { text-decoration: line-through; color: var(--secondary-text-color); text-decoration-color: var(--secondary-text-color); } /* Ensure line-through color matches */
 
-        /* --- Modals --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.55); display: flex; justify-content: center; align-items: center; z-index: 1050; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
-        .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-        .modal-content { background-color: var(--container-background); padding: 30px 35px; border-radius: var(--border-radius-large); box-shadow: 0 8px 25px rgba(0,0,0,0.15); max-width: 500px; width: 90%; max-height: 85vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95) translateY(-10px); opacity: 0; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; }
-        .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); opacity: 1;}
-        .modal-content h3 { margin-top: 0; margin-bottom: 25px; text-align: center; font-weight: 500; color: var(--base-text-color); font-size: 1.4em; }
-        .modal-close-btn { position: absolute; top: 12px; right: 12px; background: #e9ecef; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.4em; cursor: pointer; color: var(--secondary-text-color); line-height: 1; padding: 0; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s, color 0.2s; z-index: 10; }
-        .modal-close-btn:hover { background-color: #dee2e6; color: var(--base-text-color); }
-        #manage-subjects-list { list-style: none; padding: 0; margin-bottom: 25px; max-height: 45vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); }
-        #manage-subjects-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--light-border-color); }
-        #manage-subjects-list li:last-child { border-bottom: none; }
-        #manage-subjects-list span { flex-grow: 1; margin-right: 15px; color: var(--base-text-color); }
-        #manage-subjects-list button { background-color: transparent; border: 1.5px solid var(--accent-color-danger); color: var(--accent-color-danger); border-radius: var(--border-radius-pill); padding: 4px 12px; font-size: 0.85em; font-weight: 500; cursor: pointer; transition: all 0.2s ease; line-height: 1.2; }
-        #manage-subjects-list button:hover { background-color: var(--accent-color-danger); color: white; }
-        #add-subject-form { display: flex; gap: 10px; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--light-border-color);}
-        #add-subject-form input { flex-grow: 1; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); background-color: #f8f9fa; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-        #add-subject-form input:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); background-color: white; }
-        #add-subject-form button { padding: 12px 20px; background-color: var(--user-a-color); color: white; border: none; border-radius: var(--border-radius-medium); cursor: pointer; transition: background-color 0.2s ease; font-weight: 500; }
-        #add-subject-form button:hover { background-color: #0b5ed7; }
-        #dialog-modal-content { padding-bottom: 25px; }
-        #dialog-message { font-size: 1.1em; color: var(--base-text-color); margin-bottom: 30px; line-height: 1.6; text-align: center; max-height: 60vh; overflow-y: auto; }
-        #dialog-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        #dialog-buttons button { padding: 10px 25px; font-size: 1em; font-weight: 500; border-radius: var(--border-radius-pill); cursor: pointer; border: none; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
-        #dialog-confirm-btn { background-color: var(--user-a-color); color: white; } #dialog-confirm-btn:hover { background-color: #0b5ed7; }
-        #dialog-cancel-btn { background-color: #f8f9fa; color: var(--secondary-text-color); border: 1px solid var(--border-color); } #dialog-cancel-btn:hover { background-color: #e9ecef; }
-        #dialog-ok-btn { background-color: var(--user-a-color); color: white; } #dialog-ok-btn:hover { background-color: #0b5ed7; }
+    /* Subtopic indicators (circles) */
+    .subtopic-indicators-container { display: flex; gap: 4px; align-items: center; /* Removed margin-left */ flex-shrink: 0; }
+    .subtopic-indicator { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--border-color); display: inline-block; transition: all 0.2s; background-color: transparent; }
+    .subtopic-indicator.user-a { border-color: var(--user-a-color); } .subtopic-indicator.user-b { border-color: var(--user-b-color); }
+    .subtopic-indicator.user-a.is-complete { background-color: var(--user-a-color); border-color: var(--user-a-color); } .subtopic-indicator.user-b.is-complete { background-color: var(--user-b-color); border-color: var(--user-b-color); }
 
-        /* --- Utility & Responsive --- */
-        .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 30px; font-style: italic; padding: 15px; }
-        .hidden { display: none !important; }
-        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    /* Subtopic Delete Button */
+    .delete-subtopic-btn { background: none; border: none; color: var(--secondary-text-color); cursor: pointer; font-size: 1.2em; line-height: 1; padding: 0 5px; margin-left: auto; /* Push to the right */ opacity: 0.6; transition: color 0.2s, opacity 0.2s; flex-shrink: 0; }
+    .subtopic-item:hover .delete-subtopic-btn { opacity: 1; }
+    .delete-subtopic-btn:hover { color: var(--accent-color-danger); }
 
-        /* Responsive Adjustments */
-        @media (max-width: 991px) { /* Below large screen grid layout */
-            .main-layout-grid { grid-template-columns: 1fr; grid-template-areas: "pending" "completed-a" "completed-b"; }
-            .task-list-column { margin-bottom: 20px; }
-            .task-list-column:last-child { margin-bottom: 0; }
-            .add-form-container { max-width: 90%; }
-            /* Form layout for medium screens */
-            #add-todo-form { flex-direction: row; flex-wrap: wrap; }
-            #add-todo-form .topic-input-group { flex-basis: 100%; margin-bottom: 10px; }
-            #add-todo-form .form-row { flex-direction: row; flex-basis: 100%; }
-            #add-todo-form .subject-select-group { flex-grow: 1; }
-            #add-todo-form button[type="submit"] { width: auto; }
-        }
-        @media (max-width: 767px) { /* Form fully stacks */
-            body { padding-top: 20px; padding-bottom: 30px; }
-            .container { padding: 30px 20px 40px 20px; border-radius: var(--border-radius-large); margin: 30px auto 50px auto; max-width: 95%; }
-            h1 { font-size: 1.7em; }
-            #user-indicator { top: 15px; right: 20px; }
-            #user-circle { width: 44px; height: 44px; font-size: 1.1em; }
-            #logout-popup { top: 55px; }
-            /* Form fully stacked */
-            #add-todo-form { flex-direction: column; align-items: stretch; gap: 10px;}
-            #add-todo-form .topic-input-group { margin-bottom: 0; flex-basis: auto !important; flex-grow: 0; } /* Reset flex */
-            #add-todo-form .form-row { flex-direction: column; gap: 10px; flex-basis: auto !important; flex-grow: 0; } /* Reset flex */
-            #add-todo-form .form-group { width: 100%; }
-            #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; }
-            .filter-pills-container { padding-bottom: 5px; margin-bottom: 10px; }
-            .add-form-container { max-width: 100%; }
-            .subtopics-section { margin-left: 15px; padding-left: 15px; }
-            .actions-container { flex-wrap: wrap; justify-content: flex-end; }
-        }
-        @media (max-width: 480px) {
-            body { padding-top: 15px; padding-bottom: 20px; }
-            .container { padding: 25px 15px 30px 15px; border-radius: var(--border-radius-medium); margin: 20px auto 40px auto; }
-            h1 { font-size: 1.5em; margin-bottom: 30px; }
-            h2 { font-size: 1.2em; }
-            #pin-entry-dialog { padding: 25px; border-radius: var(--border-radius-medium); max-width: 90%; }
-            #pin-entry-dialog input[type="password"] { font-size: 1.3em; padding: 13px; max-width: 180px; }
-            #pin-submit-btn { padding: 13px; max-width: 180px; }
-            .task-list-column { padding: 15px; border-radius: var(--border-radius-medium); }
-            .task-list li { padding: 14px 16px; border-radius: var(--border-radius-small); }
-            .task-list li .todo-text { font-size: 0.95em; }
-            .task-subject { font-size: 0.8em; margin-left: 5px; padding: 1px 6px;}
-            .action-button, .studying-indicator, .add-subtopic-toggle-btn { font-size: 0.85em; padding: 6px 12px; }
-            .add-subtopic-toggle-btn { font-size: 1.1em; padding: 5px 8px; }
-            .subtopics-section { margin-left: 10px; padding-left: 15px; }
-            .subtopic-indicator { width: 14px; height: 14px; margin: 0 2px;}
-            .subtopic-tick-btn { font-size: 1.2em; }
-            .subtopic-text { font-size: 0.9em;}
-            .add-subtopic-form input { padding: 5px 8px; font-size: 0.85em; }
-            .add-subtopic-form button { padding: 5px 10px; font-size: 0.85em;}
-            .modal-content { padding: 25px 20px; }
-            #dialog-buttons button { padding: 8px 20px; font-size: 0.95em; }
-            #logout-popup { min-width: 160px; } /* Adjust popup width on small screens */
-            #logout-popup span, #logout-popup button { padding: 8px 12px; font-size: 0.95em; }
-        }
+    .add-subtopic-form { display: flex; margin-top: 10px; gap: 8px; padding: 8px 0 0 0px; /* No left padding */ border: none; position: relative; }
+    .add-subtopic-form.hidden { display: none; }
+    .add-subtopic-form input[type="text"] { flex-grow: 1; padding: 8px 12px; /* Slightly more padding */ border: 1px solid var(--border-color); border-radius: var(--border-radius-small); font-size: 0.9em; background-color: var(--input-background-color); color: var(--base-text-color); transition: border-color 0.2s, box-shadow 0.2s, background-color var(--transition-speed) ease, color var(--transition-speed) ease; }
+    .add-subtopic-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 3px var(--focus-shadow-color); background-color: var(--container-background); }
+    .add-subtopic-form button { padding: 8px 14px; font-size: 0.9em; background-color: var(--accent-color-info); color: white; border: none; border-radius: var(--border-radius-small); cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; flex-shrink: 0; font-weight: 500; }
+    .add-subtopic-form button:hover { background-color: color-mix(in srgb, var(--accent-color-info) 85%, black); transform: translateY(-1px); }
+    .add-subtopic-form button:active { transform: scale(0.98); }
 
-    </style>
+    /* --- Modals --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); /* Darker overlay */ display: flex; justify-content: center; align-items: center; z-index: 1050; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+    body.dark-mode .modal-overlay { background-color: rgba(0,0,0,0.75); }
+    .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+    .modal-content { background-color: var(--container-background); padding: 30px 35px; border-radius: var(--border-radius-large); box-shadow: 0 10px 30px var(--shadow-color-medium); max-width: 520px; width: 90%; max-height: 90vh; /* Increased max height */ display: flex; flex-direction: column; position: relative; transform: scale(0.95) translateY(-10px); opacity: 0; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; border: 1px solid var(--border-color); }
+    .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); opacity: 1;}
+    .modal-content h3 { margin-top: 0; margin-bottom: 25px; text-align: center; font-weight: 500; color: var(--base-text-color); font-size: 1.45em; transition: color var(--transition-speed) ease; }
+    .modal-close-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.6em; cursor: pointer; color: var(--secondary-text-color); line-height: 1; padding: 0; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s, color 0.2s; z-index: 10; }
+    .modal-close-btn:hover { background-color: var(--hover-background-light); color: var(--base-text-color); }
+    #manage-subjects-list { list-style: none; padding: 0; margin-bottom: 25px; max-height: 50vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); transition: border-color var(--transition-speed) ease; }
+    #manage-subjects-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--light-border-color); transition: border-color var(--transition-speed) ease; }
+    #manage-subjects-list li:last-child { border-bottom: none; }
+    #manage-subjects-list span { flex-grow: 1; margin-right: 15px; color: var(--base-text-color); transition: color var(--transition-speed) ease; }
+    #manage-subjects-list button { background-color: transparent; border: 1.5px solid var(--accent-color-danger); color: var(--accent-color-danger); border-radius: var(--border-radius-pill); padding: 4px 12px; font-size: 0.85em; font-weight: 500; cursor: pointer; transition: all 0.2s ease; line-height: 1.2; }
+    #manage-subjects-list button:hover { background-color: var(--accent-color-danger); color: white; transform: translateY(-1px); }
+    #add-subject-form { display: flex; gap: 10px; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--light-border-color); transition: border-color var(--transition-speed) ease;}
+    #add-subject-form input { flex-grow: 1; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); background-color: var(--input-background-color); transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; color: var(--base-text-color); }
+    #add-subject-form input:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); background-color: var(--container-background); }
+    #add-subject-form button { padding: 12px 20px; background-color: var(--user-a-color); color: white; border: none; border-radius: var(--border-radius-medium); cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-weight: 500; }
+    #add-subject-form button:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
+    #dialog-modal-content { padding-bottom: 25px; }
+    #dialog-message { font-size: 1.1em; color: var(--base-text-color); margin-bottom: 30px; line-height: 1.6; text-align: center; max-height: 60vh; overflow-y: auto; transition: color var(--transition-speed) ease; }
+    #dialog-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+    #dialog-buttons button { padding: 10px 25px; font-size: 1em; font-weight: 500; border-radius: var(--border-radius-pill); cursor: pointer; border: none; transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; }
+    #dialog-confirm-btn { background-color: var(--user-a-color); color: white; } #dialog-confirm-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
+    #dialog-cancel-btn { background-color: var(--hover-background-light); color: var(--secondary-text-color); border: 1px solid var(--border-color); transition: background-color 0.2s ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform 0.1s ease;} #dialog-cancel-btn:hover { background-color: var(--light-border-color); transform: translateY(-1px); }
+    #dialog-ok-btn { background-color: var(--user-a-color); color: white; } #dialog-ok-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
+
+    /* --- Utility & Responsive --- */
+    .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 30px; font-style: italic; padding: 15px; transition: color var(--transition-speed) ease; }
+    .hidden { display: none !important; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1099px) {
+        /* Stack completed columns below pending */
+        .main-layout-grid { grid-template-columns: 1fr; grid-template-areas: "pending" "completed-area"; }
+        .completed-lists-stack { flex-direction: column; gap: 25px; } /* Ensure vertical stacking */
+        .task-list-column { margin-bottom: 25px; height: auto; }
+        .completed-list-area-a, .completed-list-area-b { margin-bottom: 0; } /* Remove extra margin */
+        .completed-lists-stack .task-list-column:last-child { margin-bottom: 0; } /* Remove margin on last stacked column */
+    }
+    @media (max-width: 991px) { .add-form-container { max-width: 90%; } #add-todo-form { flex-direction: row; flex-wrap: wrap; } #add-todo-form .topic-input-group { flex-basis: 100%; margin-bottom: 10px; } #add-todo-form .form-row { flex-direction: row; flex-basis: 100%; } #add-todo-form .subject-select-group { flex-grow: 1; } #add-todo-form button[type="submit"] { width: auto; } }
+    @media (max-width: 767px) { body { padding-top: 20px; padding-bottom: 30px; } .container { padding: 30px 20px 40px 20px; border-radius: var(--border-radius-large); margin: 30px auto 50px auto; max-width: 95%; } h1 { font-size: 1.9em; } /* Adjust header size */ #user-indicator { top: 15px; right: 20px; } #user-circle { width: 42px; height: 42px; font-size: 1.1em; } #logout-popup { top: 58px; } #add-todo-form { flex-direction: column; align-items: stretch; gap: 10px;} #add-todo-form .topic-input-group { margin-bottom: 0; flex-basis: auto !important; flex-grow: 0; } #add-todo-form .form-row { flex-direction: column; gap: 10px; flex-basis: auto !important; flex-grow: 0; } #add-todo-form .form-group { width: 100%; } #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; padding: 14px; } /* Full width button padding */ .filter-pills-container { padding-bottom: 10px; margin-bottom: 10px; } .add-form-container { max-width: 100%; } .subtopics-section { margin-left: 5px; padding-left: 20px; } .subtopic-item::before, .subtopic-item::after { left: -10px; } .subtopic-item::after { width: 10px;} .subtopics-controls { margin-left: -8px; } .actions-container { flex-wrap: wrap; justify-content: flex-end; gap: 6px; } .action-button { padding: 6px 12px; font-size: 0.85em;} .add-subtopic-toggle-btn { margin-left: 4px;} }
+    @media (max-width: 480px) { body { padding-top: 15px; padding-bottom: 20px; } .container { padding: 25px 15px 30px 15px; border-radius: var(--border-radius-medium); margin: 20px auto 40px auto; } h1 { font-size: 1.7em; margin-bottom: 25px; } h2 { font-size: 1.15em; } #pin-entry-dialog { padding: 25px 20px; border-radius: var(--border-radius-medium); max-width: 90%; } #pin-entry-dialog input[type="password"] { font-size: 1.4em; padding: 13px; max-width: 180px; } #pin-submit-btn { padding: 13px; max-width: 180px; } .task-list-column { padding: 15px; border-radius: var(--border-radius-medium); } .task-list li { padding: 12px 14px; border-radius: var(--border-radius-small); margin-bottom: 10px;} .task-list li .todo-text { font-size: 1em; } .task-subject { font-size: 0.75em; margin-left: 6px; padding: 2px 7px;} .action-button, .studying-indicator, .add-subtopic-toggle-btn { font-size: 0.82em; padding: 5px 10px; } .add-subtopic-toggle-btn { font-size: 1.4em; padding: 4px 6px; } .subtopics-section { padding-left: 18px; margin-left: 2px; } .subtopic-item::before, .subtopic-item::after { left: -8px; } .subtopic-item::after { width: 8px;} .subtopics-controls { margin-left: -5px;} .subtopic-item { gap: 6px; padding: 6px 0;} .delete-subtopic-btn { font-size: 1.1em; padding: 0 4px;} .add-subtopic-form { padding-left: 0; } .subtopic-indicator { width: 12px; height: 12px;} .topic-indicator { width: 14px; height: 14px;} .topic-completion-checkbox { width: 20px; height: 20px;} .subtopic-completion-checkbox { width: 16px; height: 16px; } .subtopic-text { font-size: 0.92em;} .add-subtopic-form input { padding: 6px 10px; font-size: 0.88em; } .add-subtopic-form button { padding: 6px 12px; font-size: 0.88em;} .modal-content { padding: 25px 20px; } #dialog-buttons button { padding: 8px 20px; font-size: 0.95em; } #logout-popup { min-width: 180px; } #logout-popup span, #logout-popup button, .theme-toggle-item span { padding: 9px 14px; font-size: 0.92em; } }
+
+</style>
 </head>
 <body>
 
@@ -345,7 +458,16 @@
             <div id="logout-popup">
                 <span id="popup-user-name">User</span>
                 <button class="manage-subjects-btn" id="manage-subjects-button">Manage Subjects</button>
-                <button id="logout-button">Logout</button>
+                <!-- Dark Mode Toggle START -->
+<div class="theme-toggle-item">
+    <span>Dark Mode</span>
+    <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle-checkbox">
+        <span class="slider"></span>
+    </label>
+</div>
+<!-- Dark Mode Toggle END -->
+<button id="logout-button">Logout</button>
             </div>
         </div>
         <h1>To-Study List</h1>
@@ -389,7 +511,7 @@
                         <p class="status-message empty-list hidden" id="empty-pending">No pending topics!</p>
                     </div>
                 </div>
-
+<div class="completed-lists-stack">
                 <div class="completed-list-area-a">
                     <div class="task-list-column">
                         <div class="column-header"> <h2 id="completed-A-title">Completed by Parth</h2> <button class="delete-mode-toggle hidden" data-list-type="completedA" title="Toggle Delete Mode">🗑️</button> </div>
@@ -406,6 +528,7 @@
                         <ul id="completed-by-B-list" class="task-list completed-list"></ul>
                         <p class="status-message empty-list hidden" id="empty-completed-B">No topics completed by Nitika yet.</p>
                     </div>
+                   </div>
                 </div>
             </div>
             <!-- End Main Layout Grid -->
@@ -440,128 +563,812 @@
 
 
     <script>
-        // --- Configuration ---
-        const USERS = { 'UserA': { name: 'Parth', pin: '2108', color: 'var(--user-a-color)', lightColor: 'var(--user-a-light-color)', indicatorClass: 'indicator-user-a' }, 'UserB': { name: 'Nitika', pin: '0821', color: 'var(--user-b-color)', lightColor: 'var(--user-b-light-color)', indicatorClass: 'indicator-user-b' } };
-        const USER_A_ID = 'UserA'; const USER_B_ID = 'UserB';
-        const SUBJECTS_DOC_PATH = 'management/subjects';
+    // --- Configuration ---
+    const USERS = { 'UserA': { name: 'Parth', pin: '2108', color: 'var(--user-a-color)', lightColor: 'var(--user-a-light-color)', indicatorClass: 'indicator-user-a' }, 'UserB': { name: 'Nitika', pin: '0821', color: 'var(--user-b-color)', lightColor: 'var(--user-b-light-color)', indicatorClass: 'indicator-user-b' } };
+    const USER_A_ID = 'UserA'; const USER_B_ID = 'UserB';
+    const SUBJECTS_DOC_PATH = 'management/subjects';
+    // Theme Constants
+    const THEME_PREFERENCE_KEY = 'studyTrackerThemePreference';
+    const THEME_LIGHT = 'light';
+    const THEME_DARK = 'dark';
+    const THEME_SYSTEM = 'system';
 
-        // --- Firebase Config & Initialization ---
-        const firebaseConfig = { apiKey: "AIzaSyBZ4_nvAE0_ZlDbnYSdD0QvAZnNL0Usb9Q", authDomain: "to-do-pbz.firebaseapp.com", projectId: "to-do-pbz", storageBucket: "to-do-pbz.firebasestorage.app", messagingSenderId: "358081287969", appId: "1:358081287969:web:02b9a125fb403c1e269060" };
-        let db; try { if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); } db = firebase.firestore(); } catch (e) { console.error("FB init failed:", e); showAlertDialog("Database connection error. Please refresh."); }
-        const todosRef = db ? db.collection('todos') : null;
-        const subjectsDocRef = db ? db.doc(SUBJECTS_DOC_PATH) : null;
 
-        // --- DOM Element References --- (Ensure all are present)
-        const pinDialog = document.getElementById('pin-entry-dialog');
-        const mainAppContainer = document.getElementById('main-app-container');
-        const pinInput = document.getElementById('pin-input');
-        const pinSubmitBtn = document.getElementById('pin-submit-btn');
-        const pinError = document.getElementById('pin-error');
-        const userIndicator = document.getElementById('user-indicator');
-        const userCircle = document.getElementById('user-circle');
-        const logoutPopup = document.getElementById('logout-popup');
-        const popupUserName = document.getElementById('popup-user-name');
-        const logoutButton = document.getElementById('logout-button');
-        const addTodoForm = document.getElementById('add-todo-form');
-        const todoInput = document.getElementById('todo-input');
-        const subjectSelect = document.getElementById('subject-select');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const pendingListEl = document.getElementById('pending-list');
-        const completedListAEl = document.getElementById('completed-by-A-list');
-        const completedListBEl = document.getElementById('completed-by-B-list');
-        const emptyPending = document.getElementById('empty-pending');
-        const emptyCompletedA = document.getElementById('empty-completed-A');
-        const emptyCompletedB = document.getElementById('empty-completed-B');
-        const completedATitle = document.getElementById('completed-A-title');
-        const completedBTitle = document.getElementById('completed-B-title');
-        const deleteModeToggles = document.querySelectorAll('.delete-mode-toggle');
-        const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
-        const subjectFilterPillsContainer = document.getElementById('subject-filter-pills-container');
-        const manageSubjectsButton = document.getElementById('manage-subjects-button');
-        const manageSubjectsModalOverlay = document.getElementById('manage-subjects-modal-overlay');
-        const manageSubjectsListUl = document.getElementById('manage-subjects-list');
-        const addSubjectForm = document.getElementById('add-subject-form');
-        const addSubjectInput = document.getElementById('add-subject-input');
-        const manageSubjectsModalCloseButton = document.getElementById('manage-subjects-modal-close-button');
-        const dialogModalOverlay = document.getElementById('dialog-modal-overlay');
-        const dialogTitle = document.getElementById('dialog-title');
-        const dialogMessage = document.getElementById('dialog-message');
-        const dialogConfirmBtn = document.getElementById('dialog-confirm-btn');
-        const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
-        const dialogOkBtn = document.getElementById('dialog-ok-btn');
+    // --- Firebase Config & Initialization ---
+    const firebaseConfig = { apiKey: "AIzaSyBZ4_nvAE0_ZlDbnYSdD0QvAZnNL0Usb9Q", authDomain: "to-do-pbz.firebaseapp.com", projectId: "to-do-pbz", storageBucket: "to-do-pbz.appspot.com", messagingSenderId: "358081287969", appId: "1:358081287969:web:02b9a125fb403c1e269060" };
+    let db; try { if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); } db = firebase.firestore(); } catch (e) { console.error("FB init failed:", e); try { showAlertDialog("Database connection error. Please refresh."); } catch(err) { alert("DB Connection Error"); } }
+    const todosRef = db ? db.collection('todos') : null;
+    const subjectsDocRef = db ? db.doc(SUBJECTS_DOC_PATH) : null;
 
-        // --- State ---
-        let currentUserIdentifier = null; let currentUserData = null; let isAuthenticated = false; let unsubscribeTodos = null; let unsubscribeSubjects = null; let isDataLoading = true; let deleteModes = { pending: false, completedA: false, completedB: false };
-        let activeSubjectFilter = '--all--';
-        let currentTasksData = [];
-        let availableSubjects = [];
-        let dialogPromiseResolve = null;
+    // --- DOM Element References --- (Ensure all are present)
+    const pinDialog = document.getElementById('pin-entry-dialog');
+    const mainAppContainer = document.getElementById('main-app-container');
+    const pinInput = document.getElementById('pin-input');
+    const pinSubmitBtn = document.getElementById('pin-submit-btn');
+    const pinError = document.getElementById('pin-error');
+    const userIndicator = document.getElementById('user-indicator');
+    const userCircle = document.getElementById('user-circle');
+    const logoutPopup = document.getElementById('logout-popup');
+    const popupUserName = document.getElementById('popup-user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const addTodoForm = document.getElementById('add-todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const subjectSelect = document.getElementById('subject-select');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const pendingListEl = document.getElementById('pending-list');
+    const completedListAEl = document.getElementById('completed-by-A-list');
+    const completedListBEl = document.getElementById('completed-by-B-list');
+    const emptyPending = document.getElementById('empty-pending');
+    const emptyCompletedA = document.getElementById('empty-completed-A');
+    const emptyCompletedB = document.getElementById('empty-completed-B');
+    const completedATitle = document.getElementById('completed-A-title');
+    const completedBTitle = document.getElementById('completed-B-title');
+    const deleteModeToggles = document.querySelectorAll('.delete-mode-toggle');
+    const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
+    const subjectFilterPillsContainer = document.getElementById('subject-filter-pills-container');
+    const manageSubjectsButton = document.getElementById('manage-subjects-button');
+    const manageSubjectsModalOverlay = document.getElementById('manage-subjects-modal-overlay');
+    const manageSubjectsListUl = document.getElementById('manage-subjects-list');
+    const addSubjectForm = document.getElementById('add-subject-form');
+    const addSubjectInput = document.getElementById('add-subject-input');
+    const manageSubjectsModalCloseButton = document.getElementById('manage-subjects-modal-close-button');
+    const dialogModalOverlay = document.getElementById('dialog-modal-overlay');
+    const dialogTitle = document.getElementById('dialog-title');
+    const dialogMessage = document.getElementById('dialog-message');
+    const dialogConfirmBtn = document.getElementById('dialog-confirm-btn');
+    const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
+    const dialogOkBtn = document.getElementById('dialog-ok-btn');
+    const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
 
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', initializeApp);
-        function initializeApp() { console.log('initializeApp: Running...'); if (!checkElementsExist()) { return; } if (!todosRef || !subjectsDocRef) { console.error("initializeApp: Firestore refs missing."); if(pinError) pinError.textContent = "DB connection error."; return; } setupEventListeners(); checkStoredUser(); updateColumnTitles(); console.log('initializeApp: Complete.'); }
 
-        // --- Element Check ---
-        function checkElementsExist() { const essentialElements = [ pinDialog, mainAppContainer, pinInput, pinSubmitBtn, userIndicator, userCircle, logoutPopup, popupUserName, logoutButton, addTodoForm, todoInput, subjectSelect, loadingIndicator, pendingListEl, completedListAEl, completedListBEl, emptyPending, emptyCompletedA, emptyCompletedB, completedATitle, completedBTitle, subjectFilterPillsContainer, manageSubjectsButton, manageSubjectsModalOverlay, manageSubjectsListUl, addSubjectForm, addSubjectInput, manageSubjectsModalCloseButton, dialogModalOverlay, dialogTitle, dialogMessage, dialogConfirmBtn, dialogCancelBtn, dialogOkBtn ]; if (essentialElements.some(el => !el)) { console.error("CRITICAL ERROR: Essential UI elements missing."); try { showAlertDialog("Error loading the application interface. Please refresh."); } catch(e) { alert("Error loading UI."); } return false; } if (!deleteModeToggles || deleteModeToggles.length === 0 || !deleteConfirmBtns || deleteConfirmBtns.length === 0) { console.warn("Warning: Delete mode buttons not found."); } return true; }
+    // --- State ---
+    let currentUserIdentifier = null; let currentUserData = null; let isAuthenticated = false; let unsubscribeTodos = null; let unsubscribeSubjects = null; let isDataLoading = true; let deleteModes = { pending: false, completedA: false, completedB: false };
+    let activeSubjectFilter = '--all--';
+    let currentTasksData = [];
+    let availableSubjects = [];
+    let dialogPromiseResolve = null;
+    const collapsedSubtopics = new Set(); // Keep track of collapsed subtopic sections
+    let systemThemeListener = null; // To store the matchMedia listener
 
-        // --- Event Listener Setup ---
-        function setupEventListeners() { console.log('setupEventListeners: Running...'); pinSubmitBtn?.addEventListener('click', handlePinSubmit); pinInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); handlePinSubmit(); } }); userCircle?.addEventListener('click', toggleLogoutPopup); logoutButton?.addEventListener('click', logout); addTodoForm?.addEventListener('submit', handleAddTodo); deleteModeToggles.forEach(btn => btn?.addEventListener('click', toggleDeleteMode)); deleteConfirmBtns.forEach(btn => btn?.addEventListener('click', handleDeleteSelected)); document.addEventListener('click', handleOutsideClicks); manageSubjectsButton?.addEventListener('click', showManageSubjectsModal); manageSubjectsModalCloseButton?.addEventListener('click', hideManageSubjectsModal); manageSubjectsModalOverlay?.addEventListener('click', (e) => { if (e.target === manageSubjectsModalOverlay) hideManageSubjectsModal(); }); addSubjectForm?.addEventListener('submit', handleAddSubject); dialogConfirmBtn?.addEventListener('click', () => handleDialogResponse(true)); dialogCancelBtn?.addEventListener('click', () => handleDialogResponse(false)); dialogOkBtn?.addEventListener('click', () => handleDialogResponse(true)); dialogModalOverlay?.addEventListener('click', (e) => { if (e.target === dialogModalOverlay && !dialogConfirmBtn.classList.contains('hidden') ) {} else if (e.target === dialogModalOverlay && !dialogOkBtn.classList.contains('hidden')) { handleDialogResponse(true); } }); console.log('setupEventListeners: Complete.'); }
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', initializeApp);
+    function initializeApp() {
+        console.log('initializeApp: Running...');
+        if (!checkElementsExist()) { return; }
+        if (!todosRef || !subjectsDocRef) { console.error("initializeApp: Firestore refs missing."); if(pinError) pinError.textContent = "DB connection error."; return; }
+        setupEventListeners();
+        initializeTheme(); // Initialize theme before checking user
+        checkStoredUser();
+        updateColumnTitles();
+        console.log('initializeApp: Complete.');
+    }
 
-        // --- Custom Dialog Functions ---
-        function showDialog(message, type = 'alert', title = 'Alert') { if (!dialogModalOverlay || !dialogTitle || !dialogMessage || !dialogOkBtn || !dialogConfirmBtn || !dialogCancelBtn) { console.error("Dialog elements missing!"); return; } dialogTitle.textContent = title; dialogMessage.innerHTML = message; dialogOkBtn.classList.add('hidden'); dialogConfirmBtn.classList.add('hidden'); dialogCancelBtn.classList.add('hidden'); if (type === 'alert') { dialogOkBtn.classList.remove('hidden'); dialogOkBtn.focus(); } else if (type === 'confirm') { dialogConfirmBtn.classList.remove('hidden'); dialogCancelBtn.classList.remove('hidden'); dialogConfirmBtn.focus(); } dialogModalOverlay.classList.remove('hidden'); dialogModalOverlay.classList.add('visible'); }
-        function showAlertDialog(message, title = 'Alert') { showDialog(message, 'alert', title); }
-        function showConfirmDialog(message, title = 'Confirmation') { showDialog(message, 'confirm', title); return new Promise((resolve) => { dialogPromiseResolve = resolve; }); }
-        function handleDialogResponse(confirmed) { if (!dialogModalOverlay) return; dialogModalOverlay.classList.remove('visible'); setTimeout(() => { dialogModalOverlay.classList.add('hidden'); if (dialogPromiseResolve) { dialogPromiseResolve(confirmed); dialogPromiseResolve = null; } }, 300); }
 
-        // --- UI Updates & Auth Flow ---
-        function updateColumnTitles() { if(completedATitle && USERS[USER_A_ID]) completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`; if(completedBTitle && USERS[USER_B_ID]) completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`; }
-        function handleOutsideClicks(event) { if (userIndicator && logoutPopup && !userIndicator.contains(event.target) && logoutPopup.style.display === 'block') { logoutPopup.style.display = 'none'; } }
-        function checkStoredUser() { console.log("checkStoredUser: Checking..."); const storedUserId = localStorage.getItem('currentUserIdentifier'); if (storedUserId && USERS[storedUserId]) { console.log(`checkStoredUser: Found ${storedUserId}`); authenticateUser(storedUserId); } else { console.log("checkStoredUser: No valid user."); displayLogin(); } }
-        function displayLogin() { console.log("displayLogin: Showing PIN dialog."); if(pinDialog) pinDialog.classList.remove('hidden'); if(mainAppContainer) mainAppContainer.classList.add('hidden'); if(userIndicator) userIndicator.classList.add('hidden'); isAuthenticated = false; if(pinInput) { pinInput.value = ''; pinInput.focus(); } if(pinError) pinError.textContent = '\u00A0'; }
-        function handlePinSubmit() { if (!pinInput || !pinError) { return; } const enteredPin = pinInput.value; pinError.textContent = '\u00A0'; if (!enteredPin) { pinError.textContent = 'Please enter PIN.'; pinInput.focus(); return; } let foundUser = Object.keys(USERS).find(id => USERS[id].pin === enteredPin); if (foundUser) { authenticateUser(foundUser); } else { pinError.textContent = 'Incorrect PIN.'; pinInput.value = ''; pinInput.focus(); if (typeof pinInput.animate === 'function') { pinInput.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' } ], { duration: 350, easing: 'ease-in-out' }); } } }
-        function authenticateUser(userId) { console.log(`authenticateUser: Auth ${userId}`); currentUserIdentifier = userId; currentUserData = USERS[userId]; isAuthenticated = true; isDataLoading = true; localStorage.setItem('currentUserIdentifier', currentUserIdentifier); console.log('authenticateUser: Updating UI...'); if(pinDialog) pinDialog.classList.add('hidden'); if(mainAppContainer) mainAppContainer.classList.remove('hidden'); if(loadingIndicator) loadingIndicator.classList.remove('hidden'); document.body.className = ''; document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active'); if(userCircle && currentUserData) { userCircle.style.backgroundColor = currentUserData.color; userCircle.textContent = currentUserData.name.charAt(0); userCircle.title = `Logged in as ${currentUserData.name}`; } if(popupUserName && currentUserData) popupUserName.textContent = currentUserData.name; if(userIndicator) userIndicator.classList.remove('hidden'); if(logoutPopup) logoutPopup.style.display = 'none'; listenForAvailableSubjects(); const deleteToggleA = document.querySelector('.delete-mode-toggle[data-list-type="completedA"]'); const deleteToggleB = document.querySelector('.delete-mode-toggle[data-list-type="completedB"]'); const deleteTogglePending = document.querySelector('.delete-mode-toggle[data-list-type="pending"]'); if (deleteTogglePending) deleteTogglePending.classList.remove('hidden'); if (deleteToggleA && deleteToggleB) { deleteToggleA.classList.toggle('hidden', currentUserIdentifier !== USER_A_ID); deleteToggleB.classList.toggle('hidden', currentUserIdentifier !== USER_B_ID); } console.log('authenticateUser: UI updates done.'); loadAndRenderTasks(); }
-        function logout() { console.log("logout: Logging out."); if (unsubscribeTodos) unsubscribeTodos(); unsubscribeTodos = null; if (unsubscribeSubjects) unsubscribeSubjects(); unsubscribeSubjects = null; isAuthenticated = false; currentUserIdentifier = null; currentUserData = null; isDataLoading = false; localStorage.removeItem('currentUserIdentifier'); document.body.className = ''; Object.keys(deleteModes).forEach(key => { if (deleteModes[key]) toggleDeleteModeUI(key, false); deleteModes[key] = false; }); clearAllLists(); const allDeleteToggles = document.querySelectorAll('.delete-mode-toggle'); allDeleteToggles.forEach(toggle => toggle.classList.add('hidden')); if(subjectFilterPillsContainer) subjectFilterPillsContainer.innerHTML = ''; activeSubjectFilter = '--all--'; availableSubjects = []; populateSubjectDropdown(); hideManageSubjectsModal(); if(pinInput) pinInput.value = ''; displayLogin(); if(loadingIndicator) loadingIndicator.classList.add('hidden'); console.log("logout: Complete."); }
-        function toggleLogoutPopup() { if (logoutPopup) logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block'; }
-        function toggleDeleteMode(event) { const listType = event.target.dataset.listType; if (!listType || typeof deleteModes[listType] === 'undefined') return; if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) return; if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) return; const newDeleteState = !deleteModes[listType]; deleteModes[listType] = newDeleteState; toggleDeleteModeUI(listType, newDeleteState); }
-        function toggleDeleteModeUI(listType, isActive) { const listElement = getListElementByType(listType); const controlsElement = document.getElementById(`delete-controls-${listType}`); if (!listElement || !controlsElement) { console.warn(`toggleDeleteModeUI: Missing elements for ${listType}`); return; } listElement.classList.toggle('delete-mode-active', isActive); controlsElement.classList.toggle('hidden', !isActive); listElement.querySelectorAll('li').forEach(li => { li.classList.toggle('delete-mode', isActive); if (!isActive) { const delCheckbox = li.querySelector('.delete-checkbox'); if (delCheckbox) delCheckbox.checked = false; } }); const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`); if(toggleButton) { toggleButton.style.color = isActive ? 'var(--accent-color-danger)' : 'var(--secondary-text-color)'; toggleButton.textContent = isActive ? '✕' : '🗑️'; toggleButton.title = isActive ? 'Cancel Delete Mode' : 'Toggle Delete Mode'; } }
+    // --- Element Check ---
+    function checkElementsExist() {
+        const essentialElements = [
+            pinDialog, mainAppContainer, pinInput, pinSubmitBtn, userIndicator, userCircle,
+            logoutPopup, popupUserName, logoutButton, addTodoForm, todoInput, subjectSelect,
+            loadingIndicator, pendingListEl, completedListAEl, completedListBEl, emptyPending,
+            emptyCompletedA, emptyCompletedB, completedATitle, completedBTitle, subjectFilterPillsContainer,
+            manageSubjectsButton, manageSubjectsModalOverlay, manageSubjectsListUl, addSubjectForm,
+            addSubjectInput, manageSubjectsModalCloseButton, dialogModalOverlay, dialogTitle, dialogMessage,
+            dialogConfirmBtn, dialogCancelBtn, dialogOkBtn,
+            themeToggleCheckbox // Added check
+        ];
+         if (essentialElements.some(el => !el)) {
+            const missing = essentialElements.find(el => !el);
+            console.error("CRITICAL ERROR: Essential UI element missing.", missing ? missing.id || missing.toString() : 'Unknown Element');
+            try { showAlertDialog("Error loading the application interface. Please refresh."); } catch(e) { alert("Error loading UI."); }
+            return false;
+        }
+        if (!deleteModeToggles || deleteModeToggles.length === 0 || !deleteConfirmBtns || deleteConfirmBtns.length === 0) { console.warn("Warning: Delete mode buttons not found."); }
+        return true;
+    }
 
-        // --- Subject Management ---
-        function listenForAvailableSubjects() { if (!subjectsDocRef || !isAuthenticated) return; if (unsubscribeSubjects) unsubscribeSubjects(); console.log("Listening for available subjects..."); unsubscribeSubjects = subjectsDocRef.onSnapshot(doc => { if (doc.exists) { const data = doc.data(); availableSubjects = Array.isArray(data?.available) ? data.available : []; console.log("Subjects Updated:", availableSubjects); } else { console.warn("Subjects doc missing! Creating one."); availableSubjects = []; subjectsDocRef.set({ available: [] }).catch(err => console.error("Error creating subjects doc:", err)); } populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); }, error => { console.error("Error listening to subjects:", error); if (error.code === 'permission-denied') { showAlertDialog("Permission denied to access subject list. Check Firestore rules.", "Permission Error"); } availableSubjects = []; populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); }); }
-        function populateSubjectDropdown() { if (!subjectSelect) return; const currentSelection = subjectSelect.value; subjectSelect.innerHTML = '<option value="" disabled>-- Select Subject --</option>'; if (availableSubjects.length === 0) { subjectSelect.value = ""; subjectSelect.options[0].selected = true; return; } const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const option = document.createElement('option'); option.value = subject; option.textContent = subject; subjectSelect.appendChild(option); }); if (availableSubjects.includes(currentSelection)) { subjectSelect.value = currentSelection; } else { subjectSelect.value = ""; subjectSelect.options[0].selected = true; } }
-        function showManageSubjectsModal() { if (!manageSubjectsModalOverlay) return; renderManageSubjectsList(); manageSubjectsModalOverlay.classList.remove('hidden'); manageSubjectsModalOverlay.classList.add('visible'); if (logoutPopup) logoutPopup.style.display = 'none'; }
-        function hideManageSubjectsModal() { if (!manageSubjectsModalOverlay) return; manageSubjectsModalOverlay.classList.remove('visible'); setTimeout(() => { manageSubjectsModalOverlay.classList.add('hidden'); }, 300); }
-        function renderManageSubjectsList() { if (!manageSubjectsListUl) return; manageSubjectsListUl.innerHTML = ''; if (availableSubjects.length === 0) { manageSubjectsListUl.innerHTML = '<li class="status-message">No subjects defined yet.</li>'; return; } const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const li = document.createElement('li'); const span = document.createElement('span'); span.textContent = subject; const deleteBtn = document.createElement('button'); deleteBtn.textContent = 'Delete'; deleteBtn.title = `Delete subject "${subject}"`; deleteBtn.onclick = async (e) => { e.stopPropagation(); const confirmed = await showConfirmDialog(`Delete subject "<b>${subject}</b>"?<br><small>This won't remove it from existing tasks.</small>`, "Confirm Deletion"); if (confirmed) { handleDeleteSubject(subject); } }; li.appendChild(span); li.appendChild(deleteBtn); manageSubjectsListUl.appendChild(li); }); }
-        async function handleAddSubject(e) { e.preventDefault(); if (!addSubjectInput || !subjectsDocRef || !isAuthenticated) return; const newSubject = addSubjectInput.value.trim(); if (!newSubject) { await showAlertDialog("Please enter a subject name."); return; } if (availableSubjects.some(s => s.toLowerCase() === newSubject.toLowerCase())) { await showAlertDialog(`Subject "${newSubject}" already exists.`); addSubjectInput.select(); return; } console.log("Adding subject:", newSubject); subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayUnion(newSubject) }).then(() => { console.log("Subject added."); addSubjectInput.value = ''; }).catch(async error => { console.error("Error adding subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to add subject.", "Permission Error"); } else { await showAlertDialog("Failed to add subject. Please try again.", "Error"); } }); }
-        function handleDeleteSubject(subjectToDelete) { if (!subjectsDocRef || !subjectToDelete || !isAuthenticated) return; console.log("Deleting subject:", subjectToDelete); subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayRemove(subjectToDelete) }).then(() => { console.log("Subject deleted."); if (activeSubjectFilter === subjectToDelete) { activeSubjectFilter = '--all--'; filterAndRenderLists(); } }).catch(async error => { console.error("Error deleting subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to delete subject.", "Permission Error"); } else { await showAlertDialog("Failed to delete subject. Please try again.", "Error"); } }); }
+    // --- Event Listener Setup ---
+    function setupEventListeners() {
+        console.log('setupEventListeners: Running...');
+        pinSubmitBtn?.addEventListener('click', handlePinSubmit);
+        pinInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); handlePinSubmit(); } });
+        userCircle?.addEventListener('click', toggleLogoutPopup);
+        logoutButton?.addEventListener('click', logout);
+        addTodoForm?.addEventListener('submit', handleAddTodo);
+        deleteModeToggles.forEach(btn => btn?.addEventListener('click', toggleDeleteMode));
+        deleteConfirmBtns.forEach(btn => btn?.addEventListener('click', handleDeleteSelected));
+        document.addEventListener('click', handleOutsideClicks);
+        manageSubjectsButton?.addEventListener('click', showManageSubjectsModal);
+        manageSubjectsModalCloseButton?.addEventListener('click', hideManageSubjectsModal);
+        manageSubjectsModalOverlay?.addEventListener('click', (e) => { if (e.target === manageSubjectsModalOverlay) hideManageSubjectsModal(); });
+        addSubjectForm?.addEventListener('submit', handleAddSubject);
+        dialogConfirmBtn?.addEventListener('click', () => handleDialogResponse(true));
+        dialogCancelBtn?.addEventListener('click', () => handleDialogResponse(false));
+        dialogOkBtn?.addEventListener('click', () => handleDialogResponse(true));
+        dialogModalOverlay?.addEventListener('click', (e) => { if (e.target === dialogModalOverlay && !dialogConfirmBtn.classList.contains('hidden') ) {} else if (e.target === dialogModalOverlay && !dialogOkBtn.classList.contains('hidden')) { handleDialogResponse(true); } });
+        themeToggleCheckbox?.addEventListener('change', handleThemeToggle); // Added theme toggle listener
+        console.log('setupEventListeners: Complete.');
+    }
 
-        // --- Firestore Operations ---
-        function loadAndRenderTasks() { if (!isAuthenticated || !todosRef) { console.warn("loadAndRenderTasks: Not authenticated or todosRef missing."); clearAllLists(); return; } if (unsubscribeTodos) { console.log("loadAndRenderTasks: Detaching previous listener."); unsubscribeTodos(); } console.log("loadAndRenderTasks: Starting listener..."); if(isDataLoading && loadingIndicator) loadingIndicator.classList.remove('hidden'); unsubscribeTodos = todosRef.orderBy('createdAt', 'asc') .onSnapshot(snapshot => { console.log(`loadAndRenderTasks: Snapshot received (${snapshot.size} docs).`); let allTasksRawData = []; snapshot.forEach(doc => { const data = doc.data(); const id = doc.id; if (!data || typeof data.text !== 'string' || data.text.trim() === '') { console.warn("Skipping invalid doc:", id, data); return; } const isCompletedA = data.completedByA === true; const isCompletedB = data.completedByB === true; const studyingMap = (data.studying && typeof data.studying === 'object') ? { [USER_A_ID]: data.studying[USER_A_ID] === true, [USER_B_ID]: data.studying[USER_B_ID] === true } : { [USER_A_ID]: false, [USER_B_ID]: false }; const subject = data.subject || null; const subtopics = Array.isArray(data.subtopics) ? data.subtopics.filter(st => st && typeof st.id === 'string' && typeof st.text === 'string') : []; allTasksRawData.push({ id, text: data.text, subject, completedByA: isCompletedA, completedByB: isCompletedB, studying: studyingMap, subtopics, addedBy: data.addedBy, createdAt: data.createdAt }); }); currentTasksData = allTasksRawData; console.log("Current Tasks loaded:", currentTasksData.length); populateSubjectDropdown(); renderSubjectFilterPills(); filterAndRenderLists(); if (isDataLoading) { if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; } }, error => { console.error("Error fetching todos:", error); if (error.code === 'permission-denied') { showAlertDialog("Permission denied reading topics. Check Firestore rules.", "Permission Error"); } else { showAlertDialog("Error loading tasks. Please refresh.", "Error"); } if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists(); if (pendingListEl) pendingListEl.innerHTML = '<li class="status-message error">Error loading tasks.</li>'; }); }
-        function renderSubjectFilterPills() { if (!subjectFilterPillsContainer) return; subjectFilterPillsContainer.innerHTML = ''; const uniqueSubjectsInTasks = new Set(); currentTasksData.forEach(task => { if (task.subject) uniqueSubjectsInTasks.add(task.subject); }); const allPill = document.createElement('button'); allPill.className = 'filter-pill'; allPill.textContent = 'All Subjects'; allPill.dataset.subject = '--all--'; allPill.classList.toggle('active', activeSubjectFilter === '--all--'); allPill.addEventListener('click', () => { activeSubjectFilter = '--all--'; renderSubjectFilterPills(); filterAndRenderLists(); }); subjectFilterPillsContainer.appendChild(allPill); const sortedSubjects = Array.from(uniqueSubjectsInTasks).sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const pill = document.createElement('button'); pill.className = 'filter-pill'; pill.textContent = subject; pill.dataset.subject = subject; pill.classList.toggle('active', activeSubjectFilter === subject); pill.addEventListener('click', () => { activeSubjectFilter = subject; renderSubjectFilterPills(); filterAndRenderLists(); }); subjectFilterPillsContainer.appendChild(pill); }); subjectFilterPillsContainer.classList.toggle('hidden', uniqueSubjectsInTasks.size === 0); }
-        function filterAndRenderLists() { console.log("Filtering by subject:", activeSubjectFilter); let pendingTasksData = []; let completedAData = []; let completedBData = []; currentTasksData.forEach(taskData => { if (!taskData.completedByA || !taskData.completedByB) { pendingTasksData.push(taskData); } if (taskData.completedByA) { completedAData.push(taskData); } if (taskData.completedByB) { completedBData.push(taskData); } }); let filteredPending = pendingTasksData; if (activeSubjectFilter !== '--all--') { filteredPending = pendingTasksData.filter(task => task.subject === activeSubjectFilter); console.log(`Pending tasks after filter "${activeSubjectFilter}": ${filteredPending.length}`); } filteredPending.sort((a, b) => { const aIsStudying = (a.studying[USER_A_ID] || a.studying[USER_B_ID]); const bIsStudying = (b.studying[USER_A_ID] || b.studying[USER_B_ID]); if (aIsStudying && !bIsStudying) return -1; if (!aIsStudying && bIsStudying) return 1; const tsA = a.createdAt?.toMillis() ?? 0; const tsB = b.createdAt?.toMillis() ?? 0; return tsA - tsB; }); completedAData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0)); completedBData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0)); clearAllLists(); filteredPending.forEach(task => renderTask(task, pendingListEl)); completedAData.forEach(task => renderTask(task, completedListAEl)); completedBData.forEach(task => renderTask(task, completedListBEl)); updateEmptyMessages({ pending: filteredPending.length, completedA: completedAData.length, completedB: completedBData.length }); Object.keys(deleteModes).forEach(listType => { if (deleteModes[listType]) { toggleDeleteModeUI(listType, true); } }); }
+    // --- Dark Mode / Theme Functions ---
+    function getThemePreference() {
+        return localStorage.getItem(THEME_PREFERENCE_KEY) || THEME_SYSTEM;
+    }
 
-        // --- List Management ---
-        function clearAllLists() { if (pendingListEl) pendingListEl.innerHTML = ''; if (completedListAEl) completedListAEl.innerHTML = ''; if (completedListBEl) completedListBEl.innerHTML = ''; hideStatusMessages(); }
-        function hideStatusMessages() { if (emptyPending) emptyPending.classList.add('hidden'); if (emptyCompletedA) emptyCompletedA.classList.add('hidden'); if (emptyCompletedB) emptyCompletedB.classList.add('hidden'); }
-        function updateEmptyMessages(counts) { if (emptyPending) { const isFiltered = activeSubjectFilter !== '--all--'; emptyPending.classList.toggle('hidden', counts.pending > 0); if (counts.pending === 0) { emptyPending.textContent = isFiltered ? 'No pending topics match selected subject.' : 'No pending topics!'; } } if (emptyCompletedA) { emptyCompletedA.classList.toggle('hidden', counts.completedA > 0); emptyCompletedA.textContent = `No topics completed by ${USERS[USER_A_ID].name} yet.`; } if (emptyCompletedB) { emptyCompletedB.classList.toggle('hidden', counts.completedB > 0); emptyCompletedB.textContent = `No topics completed by ${USERS[USER_B_ID].name} yet.`; } }
+    function setThemePreference(theme) {
+        if ([THEME_LIGHT, THEME_DARK, THEME_SYSTEM].includes(theme)) {
+            localStorage.setItem(THEME_PREFERENCE_KEY, theme);
+        } else {
+            localStorage.setItem(THEME_PREFERENCE_KEY, THEME_SYSTEM);
+        }
+    }
 
-        // --- Task Rendering ---
-        function renderTask(taskData, targetListElement) { if (!targetListElement || !currentUserData ) { console.error("renderTask: Missing elements/data."); return; } const { id, text, subject, completedByA, completedByB, studying, subtopics = [] } = taskData; const li = document.createElement('li'); li.setAttribute('data-id', id); const listType = getListTypeFromElement(targetListElement); if (!listType) return; li.classList.toggle('delete-mode', deleteModes[listType]); li.classList.toggle('pending-list-item', listType === 'pending'); if (listType !== 'pending') li.classList.add('completed-task-item'); const mainTaskContent = document.createElement('div'); mainTaskContent.className = 'main-task-content'; const deleteCheckbox = document.createElement('input'); deleteCheckbox.type = 'checkbox'; deleteCheckbox.className = 'delete-checkbox'; deleteCheckbox.title = "Mark for deletion"; mainTaskContent.appendChild(deleteCheckbox); const completionSection = document.createElement('div'); completionSection.className = 'completion-section'; if (listType === 'pending') { const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB); const markDoneBtn = document.createElement('button'); markDoneBtn.className = 'mark-done-btn'; markDoneBtn.innerHTML = '✔'; markDoneBtn.title = `Mark MAIN topic as ${isCompletedByCurrentUser ? 'Pending' : 'Done'}`; markDoneBtn.classList.toggle('is-complete', isCompletedByCurrentUser); markDoneBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleComplete(id, isCompletedByCurrentUser); }); completionSection.appendChild(markDoneBtn); } else { const taskCheckbox = document.createElement('input'); taskCheckbox.type = 'checkbox'; taskCheckbox.className = 'task-checkbox'; taskCheckbox.checked = true; const isCurrentUserList = (currentUserIdentifier === USER_A_ID && listType === 'completedA') || (currentUserIdentifier === USER_B_ID && listType === 'completedB'); if (isCurrentUserList) { taskCheckbox.title = `Mark MAIN topic as Pending`; taskCheckbox.addEventListener('change', (e) => { e.stopPropagation(); toggleComplete(id, true); }); } else { taskCheckbox.disabled = true; const otherUserName = listType === 'completedA' ? USERS[USER_A_ID].name : USERS[USER_B_ID].name; taskCheckbox.title = `Completed by ${otherUserName}`; } completionSection.appendChild(taskCheckbox); } mainTaskContent.appendChild(completionSection); const textSpan = document.createElement('span'); textSpan.className = 'todo-text'; textSpan.textContent = text; mainTaskContent.appendChild(textSpan); if (subject) { const subjectBadge = document.createElement('span'); subjectBadge.className = 'task-subject'; subjectBadge.textContent = subject; mainTaskContent.appendChild(subjectBadge); } if (listType === 'pending') { const actionsContainer = document.createElement('div'); actionsContainer.className = 'actions-container'; const userAStudying = studying[USER_A_ID] ?? false; const userBStudying = studying[USER_B_ID] ?? false; if (userAStudying) { const i = document.createElement('span'); i.className = `studying-indicator ${USERS.UserA.indicatorClass}`; i.textContent = USERS.UserA.name; i.title = `${USERS.UserA.name} is studying this`; actionsContainer.appendChild(i);} if (userBStudying) { const i = document.createElement('span'); i.className = `studying-indicator ${USERS.UserB.indicatorClass}`; i.textContent = USERS.UserB.name; i.title = `${USERS.UserB.name} is studying this`; actionsContainer.appendChild(i);} const currentUserStudying = studying[currentUserIdentifier] ?? false; const actionBtn = document.createElement('button'); actionBtn.className = 'action-button'; if (currentUserStudying) { actionBtn.classList.add('stop-studying-btn'); actionBtn.textContent = `Stop`; actionBtn.title = `Stop studying this topic`; } else { actionBtn.classList.add('studying-btn'); actionBtn.textContent = 'Study'; actionBtn.title = 'Start studying this topic'; } actionBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleStudying(id); }); actionsContainer.appendChild(actionBtn); const addSubtopicToggle = document.createElement('button'); addSubtopicToggle.className = 'add-subtopic-toggle-btn'; addSubtopicToggle.innerHTML = '+'; addSubtopicToggle.title = 'Add Subtopic'; addSubtopicToggle.addEventListener('click', (e) => { e.stopPropagation(); const subtopicsSection = li.querySelector('.subtopics-section'); const addForm = subtopicsSection?.querySelector('.add-subtopic-form'); const subtopicList = subtopicsSection?.querySelector('.subtopic-list'); const collapseToggleBtn = subtopicsSection?.querySelector('.toggle-subtopics-btn'); if (subtopicsSection && addForm && subtopicList && collapseToggleBtn) { subtopicsSection.classList.remove('hidden'); if (subtopicList.classList.contains('hidden')) { subtopicList.classList.remove('hidden'); collapseToggleBtn.innerHTML = '▼'; } const isFormHidden = addForm.classList.toggle('hidden'); if (!isFormHidden) { addForm.querySelector('input[type="text"]')?.focus(); } addSubtopicToggle.innerHTML = isFormHidden ? '+' : '−'; addSubtopicToggle.title = isFormHidden ? 'Add Subtopic' : 'Hide Add Subtopic Form'; } }); actionsContainer.appendChild(addSubtopicToggle); mainTaskContent.appendChild(actionsContainer); } li.appendChild(mainTaskContent); if (listType === 'pending') { const subtopicsSection = document.createElement('div'); subtopicsSection.className = 'subtopics-section'; subtopicsSection.classList.toggle('hidden', subtopics.length === 0); const subtopicsControls = document.createElement('div'); subtopicsControls.className = 'subtopics-controls'; subtopicsControls.title = 'Show/Hide Subtopics'; const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-subtopics-btn'; toggleBtn.innerHTML = '▶'; const subtopicsSummary = document.createElement('span'); subtopicsSummary.className = 'subtopics-summary'; subtopicsSummary.textContent = `(${subtopics.length} subtopic${subtopics.length === 1 ? '' : 's'})`; subtopicsControls.appendChild(toggleBtn); subtopicsControls.appendChild(subtopicsSummary); const subtopicList = document.createElement('ul'); subtopicList.className = 'subtopic-list hidden'; subtopicsControls.addEventListener('click', (e) => { const addForm = subtopicsSection.querySelector('.add-subtopic-form'); if (subtopics.length > 0 || (addForm && !addForm.classList.contains('hidden'))) { const isHidden = subtopicList.classList.toggle('hidden'); toggleBtn.innerHTML = isHidden ? '▶' : '▼'; if (isHidden && addForm && !addForm.classList.contains('hidden')) { addForm.classList.add('hidden'); const addToggleBtn = li.querySelector('.add-subtopic-toggle-btn'); if(addToggleBtn) { addToggleBtn.innerHTML = '+'; addToggleBtn.title = 'Add Subtopic'; } } } }); subtopicsSection.appendChild(subtopicsControls); subtopics.forEach((subtopic) => { if (!subtopic || typeof subtopic.id !== 'string' || typeof subtopic.text !== 'string') return; const subtaskLi = document.createElement('li'); subtaskLi.className = 'subtopic-item'; const isDoneA = subtopic.completedByA === true; const isDoneB = subtopic.completedByB === true; subtaskLi.classList.toggle('is-done-a', isDoneA); subtaskLi.classList.toggle('is-done-b', isDoneB); const subCompletion = document.createElement('div'); subCompletion.className = 'subtopic-completion'; const indicatorA = document.createElement('span'); indicatorA.className = 'subtopic-indicator user-a'; indicatorA.classList.toggle('is-complete', isDoneA); indicatorA.title = `${USERS.UserA.name}: ${isDoneA ? 'Done' : 'Pending'}`; const indicatorB = document.createElement('span'); indicatorB.className = 'subtopic-indicator user-b'; indicatorB.classList.toggle('is-complete', isDoneB); indicatorB.title = `${USERS.UserB.name}: ${isDoneB ? 'Done' : 'Pending'}`; subCompletion.appendChild(indicatorA); subCompletion.appendChild(indicatorB); const tickBtn = document.createElement('button'); tickBtn.className = `subtopic-tick-btn ${currentUserIdentifier === USER_A_ID ? 'user-a' : 'user-b'}`; tickBtn.innerHTML = '✔'; const isSubtaskDoneByUser = (currentUserIdentifier === USER_A_ID && isDoneA) || (currentUserIdentifier === USER_B_ID && isDoneB); tickBtn.classList.toggle('is-complete', isSubtaskDoneByUser); tickBtn.title = `Mark Subtopic ${isSubtaskDoneByUser ? 'Pending' : 'Done'}`; tickBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSubtopicCompletion(id, subtopic.id, !isSubtaskDoneByUser); }); subCompletion.appendChild(tickBtn); subtaskLi.appendChild(subCompletion); const subtaskText = document.createElement('span'); subtaskText.className = 'subtopic-text'; subtaskText.textContent = subtopic.text; subtaskLi.appendChild(subtaskText); subtopicList.appendChild(subtaskLi); }); subtopicsSection.appendChild(subtopicList); const addSubtopicForm = document.createElement('form'); addSubtopicForm.className = 'add-subtopic-form hidden'; const addSubtopicInput = document.createElement('input'); addSubtopicInput.type = 'text'; addSubtopicInput.placeholder = 'Add new subtopic...'; addSubtopicInput.required = true; addSubtopicInput.setAttribute("autocomplete", "off"); const addSubtopicBtn = document.createElement('button'); addSubtopicBtn.type = 'submit'; addSubtopicBtn.textContent = '+ Add'; addSubtopicBtn.title="Add Subtopic"; addSubtopicForm.appendChild(addSubtopicInput); addSubtopicForm.appendChild(addSubtopicBtn); addSubtopicForm.addEventListener('submit', (e) => { e.preventDefault(); const newText = addSubtopicInput.value.trim(); if (newText) { addSubtopic(id, newText); addSubtopicInput.value = ''; addSubtopicInput.focus(); subtopicsSummary.textContent = `(${subtopics.length + 1} subtopic${subtopics.length === 0 ? '' : 's'})`; subtopicsSection.classList.remove('hidden'); } }); subtopicsSection.appendChild(addSubtopicForm); li.appendChild(subtopicsSection); } targetListElement.appendChild(li); }
+    function applyTheme(theme) {
+        if (!themeToggleCheckbox) return;
+        const body = document.body;
+        let isDarkMode;
 
-        // --- Task Actions ---
-        async function handleAddTodo(e) { e.preventDefault(); if (!isAuthenticated || !todosRef || !todoInput || !subjectSelect || !currentUserIdentifier) { return; } const text = todoInput.value.trim(); const subject = subjectSelect.value; if (!text) { await showAlertDialog("Please enter a topic name."); todoInput.focus(); return; } if (!subject) { await showAlertDialog("Please select a subject."); subjectSelect.focus(); return; } const newTask = { text: text, subject: subject, completedByA: false, completedByB: false, studying: { [USER_A_ID]: false, [USER_B_ID]: false }, subtopics: [], addedBy: currentUserIdentifier, createdAt: firebase.firestore.FieldValue.serverTimestamp() }; todoInput.disabled = true; subjectSelect.disabled = true; const submitButton = addTodoForm.querySelector('button[type="submit"]'); if(submitButton) submitButton.disabled = true; todosRef.add(newTask).then((docRef) => { console.log("Todo added:", docRef.id); todoInput.value = ''; subjectSelect.value = ''; subjectSelect.options[0].selected = true; }).catch(async error => { console.error("Error adding todo:", error); await showAlertDialog("Error adding topic. Please try again.", "Error"); }).finally(() => { todoInput.disabled = false; subjectSelect.disabled = false; if(submitButton) submitButton.disabled = false; todoInput.blur(); subjectSelect.blur(); }); }
-        function toggleComplete(id, wasChecked) { if (!isAuthenticated || !todosRef || !currentUserIdentifier) { return; } const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; const isCompleting = !wasChecked; let updateData = { [updateField]: isCompleting }; if (isCompleting) { updateData[`studying.${currentUserIdentifier}`] = false; } console.log(`Updating task ${id}: setting ${updateField} to ${isCompleting}`); todosRef.doc(id).update(updateData).then(() => { console.log(`Main topic ${id} completion status updated.`); }).catch(async error => { console.error(`Error updating ${updateField} for task ${id}:`, error); await showAlertDialog(`Error updating topic status. Please try again.`, "Error"); }); }
-        function toggleStudying(id) { if (!isAuthenticated || !db || !todosRef || !currentUserIdentifier) { return; } const docRef = todosRef.doc(id); const fieldToUpdate = `studying.${currentUserIdentifier}`; db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) { throw new Error("Document does not exist!"); } const data = doc.data(); const currentStudyingState = (data.studying && data.studying[currentUserIdentifier] === true); const newStudyingState = !currentStudyingState; console.log(`Toggling studying for ${currentUserIdentifier} on task ${id} to ${newStudyingState}`); transaction.update(docRef, { [fieldToUpdate]: newStudyingState }); }); }).then(() => { console.log(`Studying status updated successfully for ${id}.`); }).catch(async error => { console.error(`Error toggling studying status for task ${id}:`, error); await showAlertDialog("Could not update studying status. Please try again.", "Error"); }); }
-        async function handleDeleteSelected(event) { if (!isAuthenticated || !db || !todosRef) { return; } const listType = event.target.dataset.listType; const listElement = getListElementByType(listType); if (!listElement || !listType) { console.error("handleDeleteSelected: Missing list/type."); return; } if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) { await showAlertDialog(`Only ${USERS[USER_A_ID].name} can delete tasks from their completed list.`); return; } if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) { await showAlertDialog(`Only ${USERS[USER_B_ID].name} can delete tasks from their completed list.`); return; } const selectedCheckboxes = listElement.querySelectorAll('li.delete-mode > .main-task-content > .delete-checkbox:checked'); const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('li')?.dataset.id).filter(id => !!id); if (idsToDelete.length === 0) { await showAlertDialog("Please select one or more tasks to delete."); return; } const confirmed = await showConfirmDialog(`Are you sure you want to permanently delete ${idsToDelete.length} selected task(s)?<br>This cannot be undone.`, "Confirm Deletion"); if (!confirmed) { return; } const batch = db.batch(); idsToDelete.forEach(id => { batch.delete(todosRef.doc(id)); }); batch.commit().then(() => { console.log(`${idsToDelete.length} task(s) successfully deleted.`); toggleDeleteModeUI(listType, false); deleteModes[listType] = false; }).catch(async error => { console.error("Error deleting tasks in batch:", error); await showAlertDialog("Failed to delete the selected tasks. Please try again.", "Error"); }); }
+        if (theme === THEME_DARK) {
+            isDarkMode = true;
+        } else if (theme === THEME_LIGHT) {
+            isDarkMode = false;
+        } else { // System preference
+            isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
 
-        // --- Subtopic Functions ---
-        function toggleSubtopicCompletion(mainTaskId, subtopicId, newCheckedState) { if (!isAuthenticated || !db || !todosRef || !subtopicId || !currentUserIdentifier) { return; } const docRef = todosRef.doc(mainTaskId); const userField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; console.log(`Attempting to update subtopic ${subtopicId} in task ${mainTaskId}. Setting ${userField} to ${newCheckedState}`); db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) { throw new Error("Main task document does not exist!"); } const data = doc.data(); const currentSubtopics = Array.isArray(data.subtopics) ? data.subtopics : []; let found = false; const updatedSubtopics = currentSubtopics.map(st => { if (st && st.id === subtopicId) { found = true; return { ...st, [userField]: newCheckedState }; } return st; }); if (!found) { throw new Error(`Subtopic ID ${subtopicId} not found in task ${mainTaskId}!`); } transaction.update(docRef, { subtopics: updatedSubtopics }); }); }).then(() => { console.log(`Subtopic ${subtopicId} in task ${mainTaskId} updated successfully for ${currentUserIdentifier}.`); }).catch(async error => { console.error("Subtopic update transaction failed: ", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to update subtopic.", "Permission Error"); } else { await showAlertDialog("Error updating subtopic status. Please try again.", "Error"); } }); }
-        function addSubtopic(mainTaskId, subtaskText) { if (!isAuthenticated || !todosRef || !subtaskText || !currentUserIdentifier) { return; } const docRef = todosRef.doc(mainTaskId); const subtopicId = Date.now().toString(36) + Math.random().toString(36).substring(2, 7); const newSubtopic = { id: subtopicId, text: subtaskText, completedByA: false, completedByB: false }; console.log(`Adding new subtopic to task ${mainTaskId}:`, newSubtopic); docRef.update({ subtopics: firebase.firestore.FieldValue.arrayUnion(newSubtopic) }) .then(() => { console.log(`Subtopic successfully added to task ${mainTaskId}`); }) .catch(async error => { console.error("Error adding subtopic: ", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to add subtopic.", "Permission Error"); } else { await showAlertDialog("Error adding subtopic. Please try again.", "Error"); } }); }
+        body.classList.toggle('dark-mode', isDarkMode);
+        themeToggleCheckbox.checked = isDarkMode; // Update toggle state visually
 
-        // --- Helper functions ---
-        function getListElementByType(listType) { switch (listType) { case 'pending': return pendingListEl; case 'completedA': return completedListAEl; case 'completedB': return completedListBEl; default: console.warn(`getListElementByType: Unknown type "${listType}"`); return null; } }
-        function getListTypeFromElement(element) { if (element === pendingListEl) return 'pending'; if (element === completedListAEl) return 'completedA'; if (element === completedListBEl) return 'completedB'; return null; }
+        // If theme is system, listen for changes, otherwise remove listener
+        listenToSystemThemeChanges(theme === THEME_SYSTEM);
+    }
 
-    </script>
+    function initializeTheme() {
+        const preferredTheme = getThemePreference();
+        console.log("Initializing theme preference:", preferredTheme);
+        applyTheme(preferredTheme);
+    }
+
+    function handleThemeToggle(event) {
+        const isChecked = event.target.checked;
+        const newTheme = isChecked ? THEME_DARK : THEME_LIGHT;
+        console.log("Theme toggled to:", newTheme);
+        setThemePreference(newTheme); // Store explicit preference
+        applyTheme(newTheme); // Apply immediately
+    }
+
+    function systemThemeChangeHandler(event) {
+        // Only apply if preference is 'system'
+        if (getThemePreference() === THEME_SYSTEM) {
+            console.log("System theme changed, applying:", event.matches ? THEME_DARK : THEME_LIGHT);
+            applyTheme(THEME_SYSTEM); // Re-apply based on new system state
+        } else {
+             console.log("System theme changed, but user preference is set. Ignoring.");
+        }
+    }
+
+    function listenToSystemThemeChanges(shouldListen) {
+         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+         // Remove existing listener if it exists
+         if (systemThemeListener) {
+             try {
+                mediaQuery.removeEventListener('change', systemThemeListener);
+             } catch (e) { // Fallback for older browsers
+                 mediaQuery.removeListener(systemThemeListener);
+             }
+            systemThemeListener = null;
+            console.log("Removed system theme listener.");
+         }
+
+         // Add listener if needed
+         if (shouldListen) {
+             systemThemeListener = systemThemeChangeHandler;
+             try {
+                mediaQuery.addEventListener('change', systemThemeListener);
+             } catch (e) { // Fallback for older browsers
+                mediaQuery.addListener(systemThemeListener);
+             }
+            console.log("Added system theme listener.");
+         }
+    }
+
+
+    // --- Custom Dialog Functions ---
+    function showDialog(message, type = 'alert', title = 'Alert') { if (!dialogModalOverlay || !dialogTitle || !dialogMessage || !dialogOkBtn || !dialogConfirmBtn || !dialogCancelBtn) { console.error("Dialog elements missing!"); return; } dialogTitle.textContent = title; dialogMessage.innerHTML = message; dialogOkBtn.classList.add('hidden'); dialogConfirmBtn.classList.add('hidden'); dialogCancelBtn.classList.add('hidden'); if (type === 'alert') { dialogOkBtn.classList.remove('hidden'); dialogOkBtn.focus(); } else if (type === 'confirm') { dialogConfirmBtn.classList.remove('hidden'); dialogCancelBtn.classList.remove('hidden'); dialogConfirmBtn.focus(); } dialogModalOverlay.classList.remove('hidden'); dialogModalOverlay.classList.add('visible'); }
+    function showAlertDialog(message, title = 'Alert') { showDialog(message, 'alert', title); }
+    function showConfirmDialog(message, title = 'Confirmation') { showDialog(message, 'confirm', title); return new Promise((resolve) => { dialogPromiseResolve = resolve; }); }
+    function handleDialogResponse(confirmed) { if (!dialogModalOverlay) return; dialogModalOverlay.classList.remove('visible'); setTimeout(() => { dialogModalOverlay.classList.add('hidden'); if (dialogPromiseResolve) { dialogPromiseResolve(confirmed); dialogPromiseResolve = null; } }, 300); }
+
+
+    // --- UI Updates & Auth Flow ---
+    function updateColumnTitles() { if(completedATitle && USERS[USER_A_ID]) completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`; if(completedBTitle && USERS[USER_B_ID]) completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`; }
+    function handleOutsideClicks(event) { if (userIndicator && logoutPopup && !userIndicator.contains(event.target) && logoutPopup.style.display === 'block') { logoutPopup.style.display = 'none'; } }
+    function checkStoredUser() { console.log("checkStoredUser: Checking..."); const storedUserId = localStorage.getItem('currentUserIdentifier'); if (storedUserId && USERS[storedUserId]) { console.log(`checkStoredUser: Found ${storedUserId}`); authenticateUser(storedUserId); } else { console.log("checkStoredUser: No valid user."); displayLogin(); } }
+    function displayLogin() { console.log("displayLogin: Showing PIN dialog."); if(pinDialog) pinDialog.classList.remove('hidden'); if(mainAppContainer) mainAppContainer.classList.add('hidden'); if(userIndicator) userIndicator.classList.add('hidden'); isAuthenticated = false; if(pinInput) { pinInput.value = ''; pinInput.focus(); } if(pinError) pinError.textContent = '\u00A0'; }
+    function handlePinSubmit() { if (!pinInput || !pinError) { return; } const enteredPin = pinInput.value; pinError.textContent = '\u00A0'; if (!enteredPin) { pinError.textContent = 'Please enter PIN.'; pinInput.focus(); return; } let foundUser = Object.keys(USERS).find(id => USERS[id].pin === enteredPin); if (foundUser) { authenticateUser(foundUser); } else { pinError.textContent = 'Incorrect PIN.'; pinInput.value = ''; pinInput.focus(); if (typeof pinInput.animate === 'function') { pinInput.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' } ], { duration: 350, easing: 'ease-in-out' }); } } }
+    function authenticateUser(userId) {
+         console.log(`authenticateUser: Auth ${userId}`);
+         currentUserIdentifier = userId;
+         currentUserData = USERS[userId];
+         isAuthenticated = true;
+         isDataLoading = true;
+         localStorage.setItem('currentUserIdentifier', currentUserIdentifier);
+         console.log('authenticateUser: Updating UI...');
+         if(pinDialog) pinDialog.classList.add('hidden');
+         if(mainAppContainer) mainAppContainer.classList.remove('hidden');
+         if(loadingIndicator) loadingIndicator.classList.remove('hidden');
+         // Apply user-specific class *after* potential dark-mode class
+         document.body.classList.remove('user-a-active', 'user-b-active');
+         document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active');
+         if(userCircle && currentUserData) {
+             // Use CSS variables for dynamic color based on theme
+             userCircle.style.backgroundColor = currentUserData.color;
+             userCircle.textContent = currentUserData.name.charAt(0);
+             userCircle.title = `Logged in as ${currentUserData.name}`;
+         }
+         if(popupUserName && currentUserData) popupUserName.textContent = currentUserData.name;
+         if(userIndicator) userIndicator.classList.remove('hidden');
+         if(logoutPopup) logoutPopup.style.display = 'none';
+         listenForAvailableSubjects();
+         const deleteToggleA = document.querySelector('.delete-mode-toggle[data-list-type="completedA"]');
+         const deleteToggleB = document.querySelector('.delete-mode-toggle[data-list-type="completedB"]');
+         const deleteTogglePending = document.querySelector('.delete-mode-toggle[data-list-type="pending"]');
+         if (deleteTogglePending) deleteTogglePending.classList.remove('hidden');
+         if (deleteToggleA && deleteToggleB) {
+             deleteToggleA.classList.toggle('hidden', currentUserIdentifier !== USER_A_ID);
+             deleteToggleB.classList.toggle('hidden', currentUserIdentifier !== USER_B_ID);
+         }
+         console.log('authenticateUser: UI updates done.');
+         loadAndRenderTasks();
+    }
+
+    function logout() {
+        console.log("logout: Logging out.");
+        if (unsubscribeTodos) unsubscribeTodos(); unsubscribeTodos = null;
+        if (unsubscribeSubjects) unsubscribeSubjects(); unsubscribeSubjects = null;
+        isAuthenticated = false;
+        currentUserIdentifier = null;
+        currentUserData = null;
+        isDataLoading = false;
+        localStorage.removeItem('currentUserIdentifier');
+        // Don't remove theme preference on logout
+        document.body.classList.remove('user-a-active', 'user-b-active'); // Remove only user classes
+        Object.keys(deleteModes).forEach(key => { if (deleteModes[key]) toggleDeleteModeUI(key, false); deleteModes[key] = false; });
+        clearAllLists();
+        collapsedSubtopics.clear();
+        const allDeleteToggles = document.querySelectorAll('.delete-mode-toggle');
+        allDeleteToggles.forEach(toggle => toggle.classList.add('hidden'));
+        if(subjectFilterPillsContainer) subjectFilterPillsContainer.innerHTML = '';
+        activeSubjectFilter = '--all--';
+        availableSubjects = [];
+        populateSubjectDropdown();
+        hideManageSubjectsModal();
+        if(pinInput) pinInput.value = '';
+        displayLogin();
+        if(loadingIndicator) loadingIndicator.classList.add('hidden');
+        console.log("logout: Complete.");
+    }
+    function toggleLogoutPopup() { if (logoutPopup) logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block'; }
+    function toggleDeleteMode(event) { const listType = event.target.dataset.listType; if (!listType || typeof deleteModes[listType] === 'undefined') return; if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) return; if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) return; const newDeleteState = !deleteModes[listType]; deleteModes[listType] = newDeleteState; toggleDeleteModeUI(listType, newDeleteState); }
+    function toggleDeleteModeUI(listType, isActive) { const listElement = getListElementByType(listType); const controlsElement = document.getElementById(`delete-controls-${listType}`); if (!listElement || !controlsElement) { console.warn(`toggleDeleteModeUI: Missing elements for ${listType}`); return; } listElement.classList.toggle('delete-mode-active', isActive); controlsElement.classList.toggle('hidden', !isActive); listElement.querySelectorAll('li').forEach(li => { li.classList.toggle('delete-mode', isActive); if (!isActive) { const delCheckbox = li.querySelector('.delete-checkbox'); if (delCheckbox) delCheckbox.checked = false; } }); const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`); if(toggleButton) { toggleButton.style.color = isActive ? 'var(--accent-color-danger)' : 'var(--secondary-text-color)'; toggleButton.textContent = isActive ? '✕' : '🗑️'; toggleButton.title = isActive ? 'Cancel Delete Mode' : 'Toggle Delete Mode'; } filterAndRenderLists(); /* Re-render needed to adjust visibility */ }
+
+
+    // --- Subject Management ---
+    function listenForAvailableSubjects() { if (!subjectsDocRef || !isAuthenticated) return; if (unsubscribeSubjects) unsubscribeSubjects(); console.log("Listening for available subjects..."); unsubscribeSubjects = subjectsDocRef.onSnapshot(doc => { if (doc.exists) { const data = doc.data(); availableSubjects = Array.isArray(data?.available) ? data.available : []; console.log("Subjects Updated:", availableSubjects); } else { console.warn("Subjects doc missing! Creating one."); availableSubjects = []; subjectsDocRef.set({ available: [] }).catch(err => console.error("Error creating subjects doc:", err)); } populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); }, error => { console.error("Error listening to subjects:", error); if (error.code === 'permission-denied') { showAlertDialog("Permission denied to access subject list. Check Firestore rules.", "Permission Error"); } availableSubjects = []; populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); }); }
+    function populateSubjectDropdown() { if (!subjectSelect) return; const currentSelection = subjectSelect.value; subjectSelect.innerHTML = '<option value="" disabled>-- Select Subject --</option>'; if (availableSubjects.length === 0) { subjectSelect.value = ""; subjectSelect.options[0].selected = true; return; } const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const option = document.createElement('option'); option.value = subject; option.textContent = subject; subjectSelect.appendChild(option); }); if (availableSubjects.includes(currentSelection)) { subjectSelect.value = currentSelection; } else { subjectSelect.value = ""; subjectSelect.options[0].selected = true; } }
+    function showManageSubjectsModal() { if (!manageSubjectsModalOverlay) return; renderManageSubjectsList(); manageSubjectsModalOverlay.classList.remove('hidden'); manageSubjectsModalOverlay.classList.add('visible'); if (logoutPopup) logoutPopup.style.display = 'none'; }
+    function hideManageSubjectsModal() { if (!manageSubjectsModalOverlay) return; manageSubjectsModalOverlay.classList.remove('visible'); setTimeout(() => { manageSubjectsModalOverlay.classList.add('hidden'); }, 300); }
+    function renderManageSubjectsList() { if (!manageSubjectsListUl) return; manageSubjectsListUl.innerHTML = ''; if (availableSubjects.length === 0) { manageSubjectsListUl.innerHTML = '<li class="status-message">No subjects defined yet.</li>'; return; } const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const li = document.createElement('li'); const span = document.createElement('span'); span.textContent = subject; const deleteBtn = document.createElement('button'); deleteBtn.textContent = 'Delete'; deleteBtn.title = `Delete subject "${subject}"`; deleteBtn.onclick = async (e) => { e.stopPropagation(); const confirmed = await showConfirmDialog(`Delete subject "<b>${subject}</b>"?<br><small>This won't remove it from existing tasks.</small>`, "Confirm Deletion"); if (confirmed) { handleDeleteSubject(subject); } }; li.appendChild(span); li.appendChild(deleteBtn); manageSubjectsListUl.appendChild(li); }); }
+    async function handleAddSubject(e) { e.preventDefault(); if (!addSubjectInput || !subjectsDocRef || !isAuthenticated) return; const newSubject = addSubjectInput.value.trim(); if (!newSubject) { await showAlertDialog("Please enter a subject name."); addSubjectInput.focus(); return; } if (availableSubjects.some(s => s.toLowerCase() === newSubject.toLowerCase())) { await showAlertDialog(`Subject "${newSubject}" already exists.`); addSubjectInput.select(); return; } console.log("Adding subject:", newSubject); subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayUnion(newSubject) }).then(() => { console.log("Subject added."); addSubjectInput.value = ''; }).catch(async error => { console.error("Error adding subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to add subject.", "Permission Error"); } else { await showAlertDialog("Failed to add subject. Please try again.", "Error"); } }); }
+    function handleDeleteSubject(subjectToDelete) { if (!subjectsDocRef || !subjectToDelete || !isAuthenticated) return; console.log("Deleting subject:", subjectToDelete); subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayRemove(subjectToDelete) }).then(() => { console.log("Subject deleted."); if (activeSubjectFilter === subjectToDelete) { activeSubjectFilter = '--all--'; filterAndRenderLists(); } }).catch(async error => { console.error("Error deleting subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to delete subject.", "Permission Error"); } else { await showAlertDialog("Failed to delete subject. Please try again.", "Error"); } }); }
+
+
+    // --- Firestore Operations ---
+    function loadAndRenderTasks() { if (!isAuthenticated || !todosRef) { console.warn("loadAndRenderTasks: Not authenticated or todosRef missing."); clearAllLists(); return; } if (unsubscribeTodos) { console.log("loadAndRenderTasks: Detaching previous listener."); unsubscribeTodos(); } console.log("loadAndRenderTasks: Starting listener..."); if(isDataLoading && loadingIndicator) loadingIndicator.classList.remove('hidden'); unsubscribeTodos = todosRef.orderBy('createdAt', 'asc') .onSnapshot(snapshot => { console.log(`loadAndRenderTasks: Snapshot received (${snapshot.size} docs).`); let allTasksRawData = []; snapshot.forEach(doc => { const data = doc.data(); const id = doc.id; if (!data || typeof data.text !== 'string' || data.text.trim() === '') { console.warn("Skipping invalid doc:", id, data); return; } const isCompletedA = data.completedByA === true; const isCompletedB = data.completedByB === true; const studyingMap = (data.studying && typeof data.studying === 'object') ? { [USER_A_ID]: data.studying[USER_A_ID] === true, [USER_B_ID]: data.studying[USER_B_ID] === true } : { [USER_A_ID]: false, [USER_B_ID]: false }; const subject = data.subject || null; const subtopics = Array.isArray(data.subtopics) ? data.subtopics.filter(st => st && typeof st.id === 'string' && typeof st.text === 'string') : []; allTasksRawData.push({ id, text: data.text, subject, completedByA: isCompletedA, completedByB: isCompletedB, studying: studyingMap, subtopics, addedBy: data.addedBy, createdAt: data.createdAt }); }); currentTasksData = allTasksRawData; console.log("Current Tasks loaded:", currentTasksData.length); populateSubjectDropdown(); renderSubjectFilterPills(); filterAndRenderLists(); if (isDataLoading) { if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; } }, error => { console.error("Error fetching todos:", error); if (error.code === 'permission-denied') { showAlertDialog("Permission denied reading topics. Check Firestore rules.", "Permission Error"); } else { showAlertDialog("Error loading tasks. Please refresh.", "Error"); } if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists(); if (pendingListEl) pendingListEl.innerHTML = '<li class="status-message error">Error loading tasks.</li>'; }); }
+    function renderSubjectFilterPills() { if (!subjectFilterPillsContainer) return; subjectFilterPillsContainer.innerHTML = ''; const uniqueSubjectsInTasks = new Set(); currentTasksData.forEach(task => { if (task.subject) uniqueSubjectsInTasks.add(task.subject); }); const allPill = document.createElement('button'); allPill.className = 'filter-pill'; allPill.textContent = 'All Subjects'; allPill.dataset.subject = '--all--'; allPill.classList.toggle('active', activeSubjectFilter === '--all--'); allPill.addEventListener('click', () => { activeSubjectFilter = '--all--'; renderSubjectFilterPills(); filterAndRenderLists(); }); subjectFilterPillsContainer.appendChild(allPill); const sortedSubjects = Array.from(uniqueSubjectsInTasks).sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const pill = document.createElement('button'); pill.className = 'filter-pill'; pill.textContent = subject; pill.dataset.subject = subject; pill.classList.toggle('active', activeSubjectFilter === subject); pill.addEventListener('click', () => { activeSubjectFilter = subject; renderSubjectFilterPills(); filterAndRenderLists(); }); subjectFilterPillsContainer.appendChild(pill); }); subjectFilterPillsContainer.classList.toggle('hidden', uniqueSubjectsInTasks.size === 0); }
+    function filterAndRenderLists() {
+        console.log("Filtering by subject:", activeSubjectFilter);
+        let pendingTasksData = [];
+        let completedAData = [];
+        let completedBData = [];
+        // Populate the data arrays
+        currentTasksData.forEach(taskData => {
+            if (!taskData.completedByA || !taskData.completedByB) {
+                pendingTasksData.push(taskData);
+            }
+            if (taskData.completedByA) {
+                completedAData.push(taskData);
+            }
+            if (taskData.completedByB) {
+                completedBData.push(taskData);
+            }
+        });
+
+        // Filter pending tasks if a subject filter is active
+        let filteredPending = pendingTasksData;
+        if (activeSubjectFilter !== '--all--') {
+            filteredPending = pendingTasksData.filter(task => task.subject === activeSubjectFilter);
+            console.log(`Pending tasks after filter "${activeSubjectFilter}": ${filteredPending.length}`);
+        }
+
+        // Sort the lists
+        filteredPending.sort((a, b) => {
+            const aIsStudying = (a.studying[USER_A_ID] || a.studying[USER_B_ID]);
+            const bIsStudying = (b.studying[USER_A_ID] || b.studying[USER_B_ID]);
+            if (aIsStudying && !bIsStudying) return -1;
+            if (!aIsStudying && bIsStudying) return 1;
+            const tsA = a.createdAt?.toMillis() ?? 0;
+            const tsB = b.createdAt?.toMillis() ?? 0;
+            return tsA - tsB; // Oldest first
+        });
+        completedAData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0)); // Oldest first
+        completedBData.sort((a, b) => (a.createdAt?.toMillis() ?? 0) - (b.createdAt?.toMillis() ?? 0)); // Oldest first
+
+        clearAllLists();
+
+        // *** NEW: Order Completed Columns Dynamically ***
+        const completedStack = document.querySelector('.completed-lists-stack');
+        const completedAreaA = document.querySelector('.completed-list-area-a');
+        const completedAreaB = document.querySelector('.completed-list-area-b');
+
+        // Check if the stacking container exists (it only does on large screens due to CSS media query)
+        // getComputedStyle check is more robust than just checking for element existence
+        if (completedStack && getComputedStyle(completedStack).display === 'flex' && completedAreaA && completedAreaB) {
+            // Ensure both list areas are direct children before attempting removal/re-append
+            // This prevents errors if the structure changes unexpectedly
+            const children = Array.from(completedStack.children);
+
+            // Compare lengths and re-append in the desired order
+            if (completedAData.length >= completedBData.length) {
+                // Check if A is not already first
+                if (children.indexOf(completedAreaA) > children.indexOf(completedAreaB)) {
+                    completedStack.appendChild(completedAreaA); // Move A after B
+                    console.log("Reordering completed lists: A >= B");
+                } else if (!children.includes(completedAreaA)) { // Append if missing
+                     completedStack.appendChild(completedAreaA);
+                     if (!children.includes(completedAreaB)) completedStack.appendChild(completedAreaB);
+                } else if (!children.includes(completedAreaB)) { // Append B if missing
+                     completedStack.appendChild(completedAreaB);
+                }
+
+            } else { // B has more items
+                 // Check if B is not already first
+                 if (children.indexOf(completedAreaB) > children.indexOf(completedAreaA)) {
+                    completedStack.appendChild(completedAreaB); // Move B after A
+                    console.log("Reordering completed lists: B > A");
+                 } else if (!children.includes(completedAreaB)) { // Append if missing
+                     completedStack.appendChild(completedAreaB);
+                     if (!children.includes(completedAreaA)) completedStack.appendChild(completedAreaA);
+                 } else if (!children.includes(completedAreaA)) { // Append A if missing
+                     completedStack.appendChild(completedAreaA);
+                 }
+            }
+        }
+        // *** END NEW ORDERING LOGIC ***
+
+        // Render tasks into the lists (now potentially reordered in the DOM for large screens)
+        filteredPending.forEach(task => renderTask(task, pendingListEl));
+        completedAData.forEach(task => renderTask(task, completedListAEl));
+        completedBData.forEach(task => renderTask(task, completedListBEl));
+
+        updateEmptyMessages({ pending: filteredPending.length, completedA: completedAData.length, completedB: completedBData.length });
+    }
+
+
+    // --- List Management ---
+    function clearAllLists() { if (pendingListEl) pendingListEl.innerHTML = ''; if (completedListAEl) completedListAEl.innerHTML = ''; if (completedListBEl) completedListBEl.innerHTML = ''; hideStatusMessages(); }
+    function hideStatusMessages() { if (emptyPending) emptyPending.classList.add('hidden'); if (emptyCompletedA) emptyCompletedA.classList.add('hidden'); if (emptyCompletedB) emptyCompletedB.classList.add('hidden'); }
+    function updateEmptyMessages(counts) { if (emptyPending) { const isFiltered = activeSubjectFilter !== '--all--'; emptyPending.classList.toggle('hidden', counts.pending > 0); if (counts.pending === 0) { emptyPending.textContent = isFiltered ? 'No pending topics match selected subject.' : 'No pending topics!'; } } if (emptyCompletedA) { emptyCompletedA.classList.toggle('hidden', counts.completedA > 0); emptyCompletedA.textContent = `No topics completed by ${USERS[USER_A_ID].name} yet.`; } if (emptyCompletedB) { emptyCompletedB.classList.toggle('hidden', counts.completedB > 0); emptyCompletedB.textContent = `No topics completed by ${USERS[USER_B_ID].name} yet.`; } }
+
+
+    // --- Task Rendering ---
+    function renderTask(taskData, targetListElement) {
+         if (!targetListElement || !currentUserData ) { console.error("renderTask: Missing elements/data."); return; }
+         const { id, text, subject, completedByA, completedByB, studying, subtopics = [] } = taskData;
+         const li = document.createElement('li'); li.setAttribute('data-id', id);
+         const listType = getListTypeFromElement(targetListElement); if (!listType) return;
+         li.classList.toggle('delete-mode', deleteModes[listType]);
+         li.classList.toggle('pending-list-item', listType === 'pending');
+         if (listType !== 'pending') li.classList.add('completed-task-item');
+
+         const mainTaskContent = document.createElement('div'); mainTaskContent.className = 'main-task-content';
+
+         // Completion Checkbox
+         const completionSection = document.createElement('div'); completionSection.className = 'completion-section';
+         const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB);
+         const topicCheckbox = document.createElement('input');
+         topicCheckbox.type = 'checkbox';
+         topicCheckbox.className = 'topic-completion-checkbox';
+         topicCheckbox.checked = isCompletedByCurrentUser;
+         topicCheckbox.title = `Mark MAIN topic as ${isCompletedByCurrentUser ? 'Pending' : 'Done'}`;
+         if ((listType === 'completedA' && currentUserIdentifier !== USER_A_ID) || (listType === 'completedB' && currentUserIdentifier !== USER_B_ID)) {
+             topicCheckbox.disabled = true;
+             const owner = listType === 'completedA' ? USERS.UserA.name : USERS.UserB.name;
+             topicCheckbox.title = `Completed by ${owner}`;
+         } else {
+             topicCheckbox.addEventListener('change', (e) => {
+                 e.stopPropagation();
+                 toggleComplete(id, e.target.checked); // Pass the NEW state
+             });
+         }
+         completionSection.appendChild(topicCheckbox);
+         mainTaskContent.appendChild(completionSection);
+
+         // Delete Checkbox
+         const deleteCheckbox = document.createElement('input'); deleteCheckbox.type = 'checkbox'; deleteCheckbox.className = 'delete-checkbox'; deleteCheckbox.title = "Mark for deletion";
+         mainTaskContent.appendChild(deleteCheckbox);
+
+         // Task Text & Subject
+         const textSpan = document.createElement('span'); textSpan.className = 'todo-text'; textSpan.textContent = text;
+         mainTaskContent.appendChild(textSpan);
+         if (subject) { const subjectBadge = document.createElement('span'); subjectBadge.className = 'task-subject'; subjectBadge.textContent = subject; mainTaskContent.appendChild(subjectBadge); }
+
+         // Topic Indicators
+         const indicatorsContainer = document.createElement('div');
+         indicatorsContainer.className = 'topic-indicators-container';
+         const indicatorA = document.createElement('span');
+         indicatorA.className = 'topic-indicator user-a'; indicatorA.classList.toggle('is-complete', completedByA); indicatorA.title = `${USERS.UserA.name}: ${completedByA ? 'Done' : 'Pending'}`;
+         indicatorsContainer.appendChild(indicatorA);
+         const indicatorB = document.createElement('span');
+         indicatorB.className = 'topic-indicator user-b'; indicatorB.classList.toggle('is-complete', completedByB); indicatorB.title = `${USERS.UserB.name}: ${completedByB ? 'Done' : 'Pending'}`;
+         indicatorsContainer.appendChild(indicatorB);
+         mainTaskContent.appendChild(indicatorsContainer);
+
+         // Actions Container
+         if (listType === 'pending') {
+             const actionsContainer = document.createElement('div'); actionsContainer.className = 'actions-container';
+             const userAStudying = studying[USER_A_ID] ?? false; const userBStudying = studying[USER_B_ID] ?? false;
+             if (userAStudying) { const i = document.createElement('span'); i.className = `studying-indicator ${USERS.UserA.indicatorClass}`; i.textContent = USERS.UserA.name; i.title = `${USERS.UserA.name} is studying this`; actionsContainer.appendChild(i);}
+             if (userBStudying) { const i = document.createElement('span'); i.className = `studying-indicator ${USERS.UserB.indicatorClass}`; i.textContent = USERS.UserB.name; i.title = `${USERS.UserB.name} is studying this`; actionsContainer.appendChild(i);}
+             const currentUserStudying = studying[currentUserIdentifier] ?? false; const actionBtn = document.createElement('button'); actionBtn.className = 'action-button';
+             if (currentUserStudying) { actionBtn.classList.add('stop-studying-btn'); actionBtn.textContent = `Stop`; actionBtn.title = `Stop studying this topic`; }
+             else { actionBtn.classList.add('studying-btn'); actionBtn.textContent = 'Study'; actionBtn.title = 'Start studying this topic'; }
+             actionBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleStudying(id); });
+             actionsContainer.appendChild(actionBtn);
+             const addSubtopicToggle = document.createElement('button'); addSubtopicToggle.className = 'add-subtopic-toggle-btn'; addSubtopicToggle.innerHTML = '+'; addSubtopicToggle.title = 'Add Subtopic';
+             addSubtopicToggle.addEventListener('click', (e) => {
+                 e.stopPropagation();
+                 const subtopicsSection = li.querySelector('.subtopics-section');
+                 const addForm = subtopicsSection?.querySelector('.add-subtopic-form');
+                 const subtopicList = subtopicsSection?.querySelector('.subtopic-list');
+                 const collapseToggleBtn = subtopicsSection?.querySelector('.toggle-subtopics-btn');
+                 const subtopicControls = subtopicsSection?.querySelector('.subtopics-controls'); // Get controls
+
+                 if (subtopicsSection && addForm && subtopicList && collapseToggleBtn && subtopicControls) {
+                     subtopicsSection.classList.remove('hidden'); // Ensure section is visible
+                     subtopicControls.classList.remove('hidden'); // Ensure controls are visible
+                     if (subtopicList.classList.contains('hidden')) {
+                         subtopicList.classList.remove('hidden');
+                         collapseToggleBtn.innerHTML = '▼';
+                         collapseToggleBtn.setAttribute('aria-expanded', 'true');
+                         collapsedSubtopics.delete(id); // Remove from collapsed set when opened via '+'
+                     }
+                     const isFormHidden = addForm.classList.toggle('hidden');
+                     if (!isFormHidden) { addForm.querySelector('input[type="text"]')?.focus(); }
+                     addSubtopicToggle.innerHTML = isFormHidden ? '+' : '−';
+                     addSubtopicToggle.title = isFormHidden ? 'Add Subtopic' : 'Hide Add Subtopic Form';
+                 }
+             });
+             actionsContainer.appendChild(addSubtopicToggle);
+             mainTaskContent.appendChild(actionsContainer);
+         }
+         li.appendChild(mainTaskContent);
+
+         // --- Subtopics Section ---
+         if (listType === 'pending') {
+             const subtopicsSection = document.createElement('div'); subtopicsSection.className = 'subtopics-section';
+             // Show section immediately if there are subtopics OR if the add form might be shown later
+             const addSubtopicFormInitiallyHidden = true; // Assume hidden unless we find reason later
+             subtopicsSection.classList.toggle('hidden', subtopics.length === 0 && addSubtopicFormInitiallyHidden); // Adjust initial visibility
+
+             const subtopicsControls = document.createElement('div'); subtopicsControls.className = 'subtopics-controls'; subtopicsControls.title = 'Show/Hide Subtopics';
+             const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-subtopics-btn';
+             toggleBtn.innerHTML = '▼'; // Default to expanded arrow visually
+             toggleBtn.setAttribute('aria-expanded', 'true'); // Default state
+             const subtopicsSummary = document.createElement('span'); subtopicsSummary.className = 'subtopics-summary';
+             subtopicsSummary.textContent = `(${subtopics.length} subtopic${subtopics.length === 1 ? '' : 's'})`;
+             subtopicsControls.appendChild(toggleBtn); subtopicsControls.appendChild(subtopicsSummary);
+
+             const subtopicList = document.createElement('ul');
+             subtopicList.className = 'subtopic-list';
+
+             // Apply collapsed state *after* creating elements
+             const isCurrentlyCollapsed = collapsedSubtopics.has(id);
+             if (isCurrentlyCollapsed) {
+                 toggleBtn.innerHTML = '▶'; // Update visual arrow
+                 toggleBtn.setAttribute('aria-expanded', 'false');
+                 subtopicList.classList.add('hidden');
+             }
+             subtopicsControls.classList.toggle('hidden', subtopics.length === 0); // Hide controls if no subtopics yet
+
+             subtopicsControls.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent li click
+                const isNowHidden = subtopicList.classList.toggle('hidden');
+                const isExpanded = !isNowHidden;
+                toggleBtn.innerHTML = isExpanded ? '▼' : '▶';
+                toggleBtn.setAttribute('aria-expanded', String(isExpanded));
+                if (isNowHidden) { collapsedSubtopics.add(id); } else { collapsedSubtopics.delete(id); }
+             });
+             subtopicsSection.appendChild(subtopicsControls);
+
+             subtopics.forEach((subtopic) => {
+                 if (!subtopic || typeof subtopic.id !== 'string' || typeof subtopic.text !== 'string') return;
+                 const subtaskLi = document.createElement('li'); subtaskLi.className = 'subtopic-item';
+                 const isDoneA = subtopic.completedByA === true; const isDoneB = subtopic.completedByB === true;
+                 subtaskLi.classList.toggle('is-done-a', isDoneA); subtaskLi.classList.toggle('is-done-b', isDoneB);
+                 subtaskLi.setAttribute('data-subtopic-id', subtopic.id); // Add subtopic id attribute
+
+                 // Subtopic Checkbox
+                 const subtopicCheckbox = document.createElement('input');
+                 subtopicCheckbox.type = 'checkbox';
+                 subtopicCheckbox.className = 'subtopic-completion-checkbox';
+                 const isSubtaskDoneByUser = (currentUserIdentifier === USER_A_ID && isDoneA) || (currentUserIdentifier === USER_B_ID && isDoneB);
+                 subtopicCheckbox.checked = isSubtaskDoneByUser;
+                 subtopicCheckbox.title = `Mark Subtopic ${isSubtaskDoneByUser ? 'Pending' : 'Done'}`;
+                 subtopicCheckbox.addEventListener('change', (e) => {
+                     e.stopPropagation();
+                     toggleSubtopicCompletion(id, subtopic.id, e.target.checked);
+                 });
+                 subtaskLi.appendChild(subtopicCheckbox); // Checkbox first
+
+                 // Subtopic Indicators
+                 const subIndicatorsContainer = document.createElement('div');
+                 subIndicatorsContainer.className = 'subtopic-indicators-container';
+                 const indicatorA_sub = document.createElement('span'); indicatorA_sub.className = 'subtopic-indicator user-a'; indicatorA_sub.classList.toggle('is-complete', isDoneA); indicatorA_sub.title = `${USERS.UserA.name}: ${isDoneA ? 'Done' : 'Pending'}`;
+                 const indicatorB_sub = document.createElement('span'); indicatorB_sub.className = 'subtopic-indicator user-b'; indicatorB_sub.classList.toggle('is-complete', isDoneB); indicatorB_sub.title = `${USERS.UserB.name}: ${isDoneB ? 'Done' : 'Pending'}`;
+                 subIndicatorsContainer.appendChild(indicatorA_sub);
+                 subIndicatorsContainer.appendChild(indicatorB_sub);
+                 subtaskLi.appendChild(subIndicatorsContainer); // Indicators second
+
+                 // Subtopic Text
+                 const subtaskText = document.createElement('span'); subtaskText.className = 'subtopic-text'; subtaskText.textContent = subtopic.text;
+                 subtaskLi.appendChild(subtaskText); // Text third
+
+                 // *** NEW: Subtopic Delete Button ***
+                 const deleteSubtopicBtn = document.createElement('button');
+                 deleteSubtopicBtn.className = 'delete-subtopic-btn';
+                 deleteSubtopicBtn.innerHTML = '×'; // '×' symbol
+                 deleteSubtopicBtn.title = `Delete subtopic: "${subtopic.text}"`;
+                 deleteSubtopicBtn.setAttribute('aria-label', `Delete subtopic: "${subtopic.text}"`);
+                 deleteSubtopicBtn.addEventListener('click', (e) => {
+                     e.stopPropagation(); // Prevent li click
+                     handleDeleteSubtopic(id, subtopic.id, subtopic.text); // Pass text for confirmation message
+                 });
+                 subtaskLi.appendChild(deleteSubtopicBtn); // Add button to the end
+
+                 subtopicList.appendChild(subtaskLi);
+             });
+             subtopicsSection.appendChild(subtopicList);
+
+             // Add Subtopic Form
+             const addSubtopicForm = document.createElement('form'); addSubtopicForm.className = 'add-subtopic-form hidden'; // Start hidden
+             const addSubtopicInput = document.createElement('input'); addSubtopicInput.type = 'text'; addSubtopicInput.placeholder = 'Add new subtopic...'; addSubtopicInput.required = true; addSubtopicInput.setAttribute("autocomplete", "off");
+             const addSubtopicBtn = document.createElement('button'); addSubtopicBtn.type = 'submit'; addSubtopicBtn.textContent = '+ Add'; addSubtopicBtn.title="Add Subtopic";
+             addSubtopicForm.appendChild(addSubtopicInput); addSubtopicForm.appendChild(addSubtopicBtn);
+             addSubtopicForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newText = addSubtopicInput.value.trim();
+                if (newText) {
+                    addSubtopic(id, newText);
+                    addSubtopicInput.value = '';
+                    addSubtopicInput.focus();
+
+                    // Update summary and ensure section/list is visible after adding first subtopic
+                    const currentTaskData = currentTasksData.find(task => task.id === id);
+                    // Predict next count based on current data + 1
+                    const newSubtopicCount = (currentTaskData?.subtopics?.length || 0) + 1;
+                    subtopicsSummary.textContent = `(${newSubtopicCount} subtopic${newSubtopicCount === 1 ? '' : 's'})`;
+                    subtopicsControls.classList.remove('hidden');
+                    subtopicsSection.classList.remove('hidden');
+                    // Ensure list is expanded when adding a subtopic
+                    if (subtopicList.classList.contains('hidden')) {
+                       subtopicList.classList.remove('hidden');
+                       toggleBtn.innerHTML = '▼';
+                       toggleBtn.setAttribute('aria-expanded', 'true');
+                       collapsedSubtopics.delete(id);
+                    }
+                }
+            });
+             subtopicsSection.appendChild(addSubtopicForm);
+             li.appendChild(subtopicsSection);
+         }
+         targetListElement.appendChild(li);
+    }
+
+
+    // --- Task Actions ---
+    async function handleAddTodo(e) { e.preventDefault(); if (!isAuthenticated || !todosRef || !todoInput || !subjectSelect || !currentUserIdentifier) { return; } const text = todoInput.value.trim(); const subject = subjectSelect.value; if (!text) { await showAlertDialog("Please enter a topic name."); todoInput.focus(); return; } if (!subject) { await showAlertDialog("Please select a subject."); subjectSelect.focus(); return; } const newTask = { text: text, subject: subject, completedByA: false, completedByB: false, studying: { [USER_A_ID]: false, [USER_B_ID]: false }, subtopics: [], addedBy: currentUserIdentifier, createdAt: firebase.firestore.FieldValue.serverTimestamp() }; todoInput.disabled = true; subjectSelect.disabled = true; const submitButton = addTodoForm.querySelector('button[type="submit"]'); if(submitButton) submitButton.disabled = true; todosRef.add(newTask).then((docRef) => { console.log("Todo added:", docRef.id); todoInput.value = ''; subjectSelect.value = ''; subjectSelect.options[0].selected = true; }).catch(async error => { console.error("Error adding todo:", error); await showAlertDialog("Error adding topic. Please try again.", "Error"); }).finally(() => { todoInput.disabled = false; subjectSelect.disabled = false; if(submitButton) submitButton.disabled = false; todoInput.blur(); subjectSelect.blur(); }); }
+    function toggleComplete(id, isCompleting) { if (!isAuthenticated || !todosRef || !currentUserIdentifier) { return; } const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; let updateData = { [updateField]: isCompleting }; if (isCompleting) { updateData[`studying.${currentUserIdentifier}`] = false; } console.log(`Updating task ${id}: setting ${updateField} to ${isCompleting}`); todosRef.doc(id).update(updateData).then(() => { console.log(`Main topic ${id} completion status updated.`); }).catch(async error => { console.error(`Error updating ${updateField} for task ${id}:`, error); await showAlertDialog(`Error updating topic status. Please try again.`, "Error"); }); }
+    function toggleStudying(id) { if (!isAuthenticated || !db || !todosRef || !currentUserIdentifier) { return; } const docRef = todosRef.doc(id); const fieldToUpdate = `studying.${currentUserIdentifier}`; db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) { throw new Error("Document does not exist!"); } const data = doc.data(); const currentStudyingState = (data.studying && data.studying[currentUserIdentifier] === true); const newStudyingState = !currentStudyingState; console.log(`Toggling studying for ${currentUserIdentifier} on task ${id} to ${newStudyingState}`); transaction.update(docRef, { [fieldToUpdate]: newStudyingState }); }); }).then(() => { console.log(`Studying status updated successfully for ${id}.`); }).catch(async error => { console.error(`Error toggling studying status for task ${id}:`, error); await showAlertDialog("Could not update studying status. Please try again.", "Error"); }); }
+    async function handleDeleteSelected(event) {
+        if (!isAuthenticated || !db || !todosRef) { return; }
+        const listType = event.target.dataset.listType;
+        const listElement = getListElementByType(listType);
+        if (!listElement || !listType) { console.error("handleDeleteSelected: Missing list/type."); return; }
+        if (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) { await showAlertDialog(`Only ${USERS[USER_A_ID].name} can delete tasks from their completed list.`); return; }
+        if (listType === 'completedB' && currentUserIdentifier !== USER_B_ID) { await showAlertDialog(`Only ${USERS[USER_B_ID].name} can delete tasks from their completed list.`); return; }
+        const selectedCheckboxes = listElement.querySelectorAll('li.delete-mode .delete-checkbox:checked'); // Use specific class
+        const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('li')?.dataset.id).filter(id => !!id);
+        if (idsToDelete.length === 0) { await showAlertDialog("Please select one or more tasks to delete."); return; }
+        const confirmed = await showConfirmDialog(`Are you sure you want to permanently delete ${idsToDelete.length} selected task(s)?<br>This cannot be undone.`, "Confirm Deletion");
+        if (!confirmed) { return; }
+        const batch = db.batch();
+        idsToDelete.forEach(id => {
+            batch.delete(todosRef.doc(id));
+            collapsedSubtopics.delete(id); // *** Remove from collapsed state if deleted ***
+        });
+        batch.commit().then(() => {
+            console.log(`${idsToDelete.length} task(s) successfully deleted.`);
+            // Exit delete mode *without* triggering manual re-render
+            deleteModes[listType] = false;
+            const controlsElement = document.getElementById(`delete-controls-${listType}`);
+            const listEl = getListElementByType(listType);
+            const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`);
+            if (controlsElement) controlsElement.classList.add('hidden');
+            if (listEl) listEl.classList.remove('delete-mode-active');
+            listEl?.querySelectorAll('li').forEach(li => li.classList.remove('delete-mode'));
+            if(toggleButton) { toggleButton.style.color = 'var(--secondary-text-color)'; toggleButton.textContent = '🗑️'; toggleButton.title = 'Toggle Delete Mode'; }
+            // Let the snapshot listener handle the UI update from deletion
+        }).catch(async error => {
+            console.error("Error deleting tasks in batch:", error);
+            await showAlertDialog("Failed to delete the selected tasks. Please try again.", "Error");
+        });
+    }
+
+
+    // --- Subtopic Functions ---
+    function toggleSubtopicCompletion(mainTaskId, subtopicId, newCheckedState) {
+         if (!isAuthenticated || !db || !todosRef || !subtopicId || !currentUserIdentifier) { return; }
+         const docRef = todosRef.doc(mainTaskId);
+         const userField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB';
+         console.log(`Attempting to update subtopic ${subtopicId} in task ${mainTaskId}. Setting ${userField} to ${newCheckedState}`);
+         db.runTransaction(transaction => {
+             return transaction.get(docRef).then(doc => {
+                 if (!doc.exists) { throw new Error("Main task document does not exist!"); }
+                 const data = doc.data();
+                 const currentSubtopics = Array.isArray(data.subtopics) ? data.subtopics : [];
+                 let subtopicFound = false;
+                 const updatedSubtopics = currentSubtopics.map(st => {
+                     if (st && st.id === subtopicId) {
+                        subtopicFound = true;
+                        return { ...st, [userField]: newCheckedState };
+                     }
+                     return st;
+                 });
+                 // *** Improved Error Handling ***
+                 if (!subtopicFound) {
+                     console.error(`Subtopic ID ${subtopicId} not found in task ${mainTaskId} during update attempt. Current subtopics:`, currentSubtopics);
+                     throw new Error(`Subtopic not found. It might have been deleted concurrently.`);
+                 }
+                 transaction.update(docRef, { subtopics: updatedSubtopics });
+             });
+         }).then(() => {
+             console.log(`Subtopic ${subtopicId} in task ${mainTaskId} updated successfully for ${currentUserIdentifier}.`);
+         }).catch(async error => {
+             console.error("Subtopic update transaction failed: ", error);
+             if (error.message.includes("Subtopic not found")) {
+                await showAlertDialog("Could not update subtopic: It may have been deleted by another user.", "Update Error");
+             } else if (error.code === 'permission-denied') {
+                 await showAlertDialog("Permission denied to update subtopic.", "Permission Error");
+             } else {
+                 await showAlertDialog("Error updating subtopic status. Please try again.", "Error");
+             }
+         });
+    }
+
+    function addSubtopic(mainTaskId, subtaskText) {
+        if (!isAuthenticated || !todosRef || !subtaskText || !currentUserIdentifier) { return; }
+        const docRef = todosRef.doc(mainTaskId);
+        const subtopicId = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
+        const newSubtopic = { id: subtopicId, text: subtaskText, completedByA: false, completedByB: false };
+        console.log(`Adding new subtopic to task ${mainTaskId}:`, newSubtopic);
+        docRef.update({ subtopics: firebase.firestore.FieldValue.arrayUnion(newSubtopic) })
+         .then(() => {
+             console.log(`Subtopic successfully added to task ${mainTaskId}`);
+             // Ensure list is expanded when adding a subtopic
+             collapsedSubtopics.delete(mainTaskId);
+             // Force re-render might not be needed due to snapshot, but ensure UI state is correct
+             const subtopicListEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopic-list`);
+             const subtopicControlsEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-controls`);
+             const subtopicSectionEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-section`);
+             const toggleBtn = subtopicControlsEl?.querySelector('.toggle-subtopics-btn');
+
+             if (subtopicSectionEl) subtopicSectionEl.classList.remove('hidden');
+             if (subtopicControlsEl) subtopicControlsEl.classList.remove('hidden');
+             if (subtopicListEl && subtopicListEl.classList.contains('hidden')) {
+                subtopicListEl.classList.remove('hidden');
+                if (toggleBtn) {
+                    toggleBtn.innerHTML = '▼';
+                    toggleBtn.setAttribute('aria-expanded', 'true');
+                }
+             }
+         })
+         .catch(async error => {
+             console.error("Error adding subtopic: ", error);
+             if (error.code === 'permission-denied') {
+                 await showAlertDialog("Permission denied to add subtopic.", "Permission Error");
+             } else {
+                 await showAlertDialog("Error adding subtopic. Please try again.", "Error");
+             }
+         });
+    }
+
+    // *** Function to handle subtopic deletion ***
+    async function handleDeleteSubtopic(mainTaskId, subtopicId, subtopicText) {
+        if (!isAuthenticated || !db || !todosRef || !subtopicId) { return; }
+
+        const truncatedText = subtopicText.length > 50 ? subtopicText.substring(0, 47) + '...' : subtopicText;
+        const confirmed = await showConfirmDialog(`Permanently delete subtopic: "<b>${truncatedText}</b>"?`, "Confirm Subtopic Deletion");
+        if (!confirmed) return;
+
+        const docRef = todosRef.doc(mainTaskId);
+        console.log(`Attempting to delete subtopic ${subtopicId} from task ${mainTaskId}`);
+
+        db.runTransaction(transaction => {
+            return transaction.get(docRef).then(doc => {
+                if (!doc.exists) { throw new Error("Main task document does not exist!"); }
+                const data = doc.data();
+                const currentSubtopics = Array.isArray(data.subtopics) ? data.subtopics : [];
+                let subtopicFound = false;
+
+                const updatedSubtopics = currentSubtopics.filter(st => {
+                     if (st && st.id === subtopicId) {
+                         subtopicFound = true;
+                         return false; // Exclude this subtopic
+                     }
+                     return true; // Keep others
+                });
+
+                if (!subtopicFound) {
+                     console.warn(`Subtopic ID ${subtopicId} not found in task ${mainTaskId} during delete attempt. It might have already been deleted.`);
+                     // Proceed even if not found locally, Firestore handles atomicity.
+                }
+
+                // Update the document with the filtered array
+                transaction.update(docRef, { subtopics: updatedSubtopics });
+            });
+        }).then(() => {
+            console.log(`Subtopic ${subtopicId} deleted successfully from task ${mainTaskId}.`);
+            // Update summary text immediately for better UX, snapshot listener will confirm
+            const summaryEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-summary`);
+            const controlsEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-controls`);
+            const subtopicSectionEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-section`); // Get section
+
+            if (summaryEl) {
+                // Find the task data again *after* the potential change (or predict)
+                 const currentTaskData = currentTasksData.find(task => task.id === mainTaskId);
+                 // Filter locally to predict count *after* this deletion
+                 const newCount = currentTaskData?.subtopics?.filter(st => st.id !== subtopicId).length || 0;
+
+                 summaryEl.textContent = `(${newCount} subtopic${newCount === 1 ? '' : 's'})`;
+                 // Hide controls if last subtopic was deleted
+                 if (newCount === 0 && controlsEl) {
+                     controlsEl.classList.add('hidden');
+                     // Optionally hide the whole section if the add form isn't visible
+                     const addForm = document.querySelector(`li[data-id="${mainTaskId}"] .add-subtopic-form`);
+                     if (addForm && addForm.classList.contains('hidden') && subtopicSectionEl) {
+                        subtopicSectionEl.classList.add('hidden');
+                     }
+                 }
+            }
+        }).catch(async error => {
+            console.error("Subtopic delete transaction failed: ", error);
+            if (error.code === 'permission-denied') {
+                await showAlertDialog("Permission denied to delete subtopic.", "Permission Error");
+            } else {
+                await showAlertDialog("Error deleting subtopic. Please try again.", "Error");
+            }
+        });
+    }
+
+
+    // --- Helper functions ---
+    function getListElementByType(listType) { switch (listType) { case 'pending': return pendingListEl; case 'completedA': return completedListAEl; case 'completedB': return completedListBEl; default: console.warn(`getListElementByType: Unknown type "${listType}"`); return null; } }
+    function getListTypeFromElement(element) { if (element === pendingListEl) return 'pending'; if (element === completedListAEl) return 'completedA'; if (element === completedListBEl) return 'completedB'; return null; }
+
+    console.log("Script loaded and parsed.");
+
+</script>
 
 </body>
 </html>
