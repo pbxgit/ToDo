@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forensic Medicine Checklist</title>
     
-    <!-- === NEW: Favicon Links === -->
+    <!-- === Favicon Links === -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="favicon.png">
 
@@ -25,7 +25,7 @@
             box-sizing: border-box; 
             margin: 0; 
             padding: 0;
-            /* === NEW: Disable tap highlight on mobile === */
+            /* === Disable tap highlight on mobile === */
             -webkit-tap-highlight-color: transparent;
         }
         body { 
@@ -39,7 +39,7 @@
             align-items: center;
             min-height: 100vh;
         }
-        /* === NEW: Loading Spinner Styling === */
+        /* === Loading Spinner Styling === */
         #loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid var(--accent-color);
@@ -53,7 +53,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* === NEW: Hide content by default for smooth loading === */
+        /* === Hide content by default for smooth loading === */
         #main-content {
             display: none;
             width: 100%;
@@ -66,7 +66,7 @@
             box-shadow: 0 8px 25px var(--shadow-color); 
             padding: 40px; 
         }
-        /* === NEW: Improved Back Link Styling === */
+        /* === Improved Back Link Styling === */
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -192,7 +192,6 @@
                 <span id="progressText">0% Complete</span>
             </div>
 
-            <!-- All existing HTML checklist content remains the same -->
             <div class="unit">
                 <h2>Forensic Traumatology</h2>
                 <ul class="unit-tasks">
@@ -212,7 +211,101 @@
                 <h3>Electrical Injuries, Explosion Injuries and Torture Methods</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c10-lec"><label for="c10-lec">Lecture</label></li></ul>
                 <h3>Transportation Injuries</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c11-lec"><label for="c11-lec">Lecture</label></li></ul>
             </div>
-            <!-- ... other sections ... -->
+    
+            <div class="unit">
+                <h2>Medical Jurisprudence</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u2-mod"><label for="u2-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u2-anki"><label for="u2-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u2-pyq"><label for="u2-pyq">PYQs</label></li>
+                </ul>
+                <h3>Indian Legal System</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c12-lec"><label for="c12-lec">Lecture</label></li></ul>
+                <h3>Medical Ethics</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c13-lec"><label for="c13-lec">Lecture</label></li></ul>
+                <h3>Medical Negligence</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c14-lec"><label for="c14-lec">Lecture</label></li></ul>
+                <h3>Consent in Medical Practice</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c15-lec"><label for="c15-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>Forensic Pathology</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u3-mod"><label for="u3-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u3-anki"><label for="u3-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u3-pyq"><label for="u3-pyq">PYQs</label></li>
+                </ul>
+                <h3>Autopsy Procedures</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c16-lec"><label for="c16-lec">Lecture</label></li></ul>
+                <h3>Early Postmortem Changes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c17-lec"><label for="c17-lec">Lecture</label></li></ul>
+                <h3>Late Postmortem Changes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c18-lec"><label for="c18-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>Human Identification</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u4-mod"><label for="u4-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u4-anki"><label for="u4-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u4-pyq"><label for="u4-pyq">PYQs</label></li>
+                </ul>
+                <h3>Human Identification : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c19-lec"><label for="c19-lec">Lecture</label></li></ul>
+                <h3>Human Identification : Part 2</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c20-lec"><label for="c20-lec">Lecture</label></li></ul>
+                <h3>Human Identification : Part 3</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c21-lec"><label for="c21-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Asphyxial Deaths</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u5-mod"><label for="u5-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u5-anki"><label for="u5-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u5-pyq"><label for="u5-pyq">PYQs</label></li>
+                </ul>
+                <h3>Hanging</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c22-lec"><label for="c22-lec">Lecture</label></li></ul>
+                <h3>Strangulation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c23-lec"><label for="c23-lec">Lecture</label></li></ul>
+                <h3>Suffocation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c24-lec"><label for="c24-lec">Lecture</label></li></ul>
+                <h3>Drowning</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c25-lec"><label for="c25-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Sexual Jurisprudence</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u6-mod"><label for="u6-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u6-anki"><label for="u6-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u6-pyq"><label for="u6-pyq">PYQs</label></li>
+                </ul>
+                <h3>Impotence, Virginity and Delivery</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c26-lec"><label for="c26-lec">Lecture</label></li></ul>
+                <h3>Abortion</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c27-lec"><label for="c27-lec">Lecture</label></li></ul>
+                <h3>Infant Deaths and Child Abuse</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c28-lec"><label for="c28-lec">Lecture</label></li></ul>
+                <h3>Sexual Offences</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c29-lec"><label for="c29-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Toxicology</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u7-mod"><label for="u7-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u7-anki"><label for="u7-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u7-pyq"><label for="u7-pyq">PYQs</label></li>
+                </ul>
+                <h3>General Toxicology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c30-lec"><label for="c30-lec">Lecture</label></li></ul>
+                <h3>Duties of a Doctor in a Case of Poisoning</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c31-lec"><label for="c31-lec">Lecture</label></li></ul>
+                <h3>Corrosive Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c32-lec"><label for="c32-lec">Lecture</label></li></ul>
+                <h3>Metallic Irritants</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c33-lec"><label for="c33-lec">Lecture</label></li></ul>
+                <h3>Non-Metallic Irritants</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c34-lec"><label for="c34-lec">Lecture</label></li></ul>
+                <h3>Organic Irritants</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c35-lec"><label for="c35-lec">Lecture</label></li></ul>
+                <h3>Neurotoxic Poisons: Deliriants</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c36-lec"><label for="c36-lec">Lecture</label></li></ul>
+                <h3>Neurotoxic Poisons: Inebriants</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c37-lec"><label for="c37-lec">Lecture</label></li></ul>
+                <h3>Neurotoxic Poisons: Somniferous and Spinal Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c38-lec"><label for="c38-lec">Lecture</label></li></ul>
+                <h3>Asphyxiants and Cardiac Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c39-lec"><label for="c39-lec">Lecture</label></li></ul>
+                <h3>Agricultural Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c40-lec"><label for="c40-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>Forensic Psychiatry and Miscellaneous</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="u8-mod"><label for="u8-mod">Modules</label></li>
+                    <li><input type="checkbox" id="u8-anki"><label for="u8-anki">Anki</label></li>
+                    <li><input type="checkbox" id="u8-pyq"><label for="u8-pyq">PYQs</label></li>
+                </ul>
+                <h3>Forensic Psychiatry</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c41-lec"><label for="c41-lec">Lecture</label></li></ul>
+                <h3>Trace Evidence</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c42-lec"><label for="c42-lec">Lecture</label></li></ul>
+                <h3>Acts and Legal Sections of Importance</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c43-lec"><label for="c43-lec">Lecture</label></li></ul>
+            </div>
         </div>
     </div>
 
