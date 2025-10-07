@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forensic Medicine Checklist</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+        :root {
+            --background-color: #f4f7f6; --container-bg: #ffffff; --primary-text: #2d3748; --secondary-text: #718096; --accent-color: #4a90e2; --border-color: #e2e8f0; --shadow-color: rgba(0, 0, 0, 0.08); --progress-bg: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: var(--background-color); color: var(--primary-text); line-height: 1.6; padding: 20px; }
+        .container { max-width: 800px; margin: 20px auto; background-color: var(--container-bg); border-radius: 12px; box-shadow: 0 8px 25px var(--shadow-color); padding: 40px; }
+        h1 { text-align: center; color: var(--accent-color); margin-bottom: 20px; font-size: 2.5rem; }
+        h2 { font-size: 1.8rem; color: var(--primary-text); margin-top: 40px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+        h3 { font-size: 1.3rem; font-weight: 400; color: var(--primary-text); margin-top: 25px; padding-left: 20px; }
+        .progress-section { margin-bottom: 40px; }
+        .progress-container { width: 100%; background-color: var(--progress-bg); border-radius: 20px; height: 20px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background-color: var(--accent-color); border-radius: 20px; transition: width 0.4s ease-in-out; }
+        #progressText { display: block; text-align: center; margin-top: 8px; font-weight: bold; color: var(--secondary-text); }
+        ul { list-style: none; margin-top: 15px; }
+        .unit-tasks { display: flex; gap: 20px; flex-wrap: wrap; }
+        li { display: flex; align-items: center; padding: 8px; border-radius: 6px; transition: background-color 0.2s ease-in-out; }
+        li:hover { background-color: var(--background-color); }
+        .chapter-tasks { padding-left: 20px; }
+        input[type="checkbox"] { display: none; }
+        label { cursor: pointer; display: flex; align-items: center; color: var(--secondary-text); }
+        label::before { content: ''; width: 20px; height: 20px; border: 2px solid var(--border-color); border-radius: 5px; margin-right: 12px; transition: all 0.2s ease-in-out; }
+        input[type="checkbox"]:checked + label::before { background-color: var(--accent-color); border-color: var(--accent-color); content: '✔'; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        input[type="checkbox"]:checked + label { color: var(--primary-text); text-decoration: line-through; }
+        @media (max-width: 600px) { body { padding: 10px; } .container { padding: 20px; } h1 { font-size: 2rem; } h2 { font-size: 1.5rem; } h3 { font-size: 1.1rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Forensic Medicine Checklist</h1>
+        <div class="progress-section">
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+            <span id="progressText">0% Complete</span>
+        </div>
+        <div class="unit">
+            <h2>Forensic Traumatology</h2>
+            <ul class="unit-tasks"><li><input type="checkbox" id="u1-mod"><label for="u1-mod">Modules</label></li><li><input type="checkbox" id="u1-anki"><label for="u1-anki">Anki</label></li><li><input type="checkbox" id="u1-pyq"><label for="u1-pyq">PYQs</label></li></ul>
+            <h3>Definitions in Forensic Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c1-lec"><label for="c1-lec">Lecture</label></li></ul>
+            <h3>Blunt Trauma Injuries</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c2-lec"><label for="c2-lec">Lecture</label></li></ul>
+            </div>
+        </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            // Unique key for this checklist
+            const storageKey = 'forensicChecklistProgress';
+            function updateProgress() {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const totalCount = checkboxes.length;
+                const percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = Math.round(percentage) + '% Complete';
+            }
+            function saveProgress() {
+                const progress = {};
+                checkboxes.forEach(box => { progress[box.id] = box.checked; });
+                localStorage.setItem(storageKey, JSON.stringify(progress));
+            }
+            function loadProgress() {
+                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
+                if (savedProgress) {
+                    checkboxes.forEach(box => {
+                        if (savedProgress[box.id] !== undefined) { box.checked = savedProgress[box.id]; }
+                    });
+                }
+            }
+            checkboxes.forEach(box => {
+                box.addEventListener('change', () => { saveProgress(); updateProgress(); });
+            });
+            loadProgress();
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
