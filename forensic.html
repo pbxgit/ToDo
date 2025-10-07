@@ -32,6 +32,18 @@
             box-shadow: 0 8px 25px var(--shadow-color); 
             padding: 40px; 
         }
+        /* New Style for Back Link */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
         h1 { 
             text-align: center; 
             color: var(--accent-color); 
@@ -126,6 +138,7 @@
 </head>
 <body>
     <div class="container">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
         <h1>Forensic Medicine Checklist</h1>
         <div class="progress-section">
             <div class="progress-container">
@@ -134,6 +147,7 @@
             <span id="progressText">0% Complete</span>
         </div>
 
+        <!-- All existing HTML checklist content remains the same -->
         <div class="unit">
             <h2>Forensic Traumatology</h2>
             <ul class="unit-tasks">
@@ -153,7 +167,6 @@
             <h3>Electrical Injuries, Explosion Injuries and Torture Methods</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c10-lec"><label for="c10-lec">Lecture</label></li></ul>
             <h3>Transportation Injuries</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c11-lec"><label for="c11-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Medical Jurisprudence</h2>
             <ul class="unit-tasks">
@@ -166,7 +179,6 @@
             <h3>Medical Negligence</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c14-lec"><label for="c14-lec">Lecture</label></li></ul>
             <h3>Consent in Medical Practice</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c15-lec"><label for="c15-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>Forensic Pathology</h2>
             <ul class="unit-tasks">
@@ -178,7 +190,6 @@
             <h3>Early Postmortem Changes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c17-lec"><label for="c17-lec">Lecture</label></li></ul>
             <h3>Late Postmortem Changes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c18-lec"><label for="c18-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>Human Identification</h2>
             <ul class="unit-tasks">
@@ -190,7 +201,6 @@
             <h3>Human Identification : Part 2</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c20-lec"><label for="c20-lec">Lecture</label></li></ul>
             <h3>Human Identification : Part 3</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c21-lec"><label for="c21-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Asphyxial Deaths</h2>
             <ul class="unit-tasks">
@@ -203,7 +213,6 @@
             <h3>Suffocation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c24-lec"><label for="c24-lec">Lecture</label></li></ul>
             <h3>Drowning</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c25-lec"><label for="c25-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Sexual Jurisprudence</h2>
             <ul class="unit-tasks">
@@ -216,7 +225,6 @@
             <h3>Infant Deaths and Child Abuse</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c28-lec"><label for="c28-lec">Lecture</label></li></ul>
             <h3>Sexual Offences</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c29-lec"><label for="c29-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Toxicology</h2>
             <ul class="unit-tasks">
@@ -236,7 +244,6 @@
             <h3>Asphyxiants and Cardiac Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c39-lec"><label for="c39-lec">Lecture</label></li></ul>
             <h3>Agricultural Poisons</h3><ul class="chapter-tasks"><li><input type="checkbox" id="c40-lec"><label for="c40-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>Forensic Psychiatry and Miscellaneous</h2>
             <ul class="unit-tasks">
@@ -250,14 +257,38 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const progressBar = document.getElementById('progressBar');
             const progressText = document.getElementById('progressText');
-            const storageKey = 'forensicChecklistProgress';
+            
+            // --- Firebase Configuration ---
+            const firebaseConfig = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_AUTH_DOMAIN",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_STORAGE_BUCKET",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
+            
+            // --- Initialize Firebase ---
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-            function updateProgress() {
+            let currentUser = null;
+            const subject = 'forensic'; // Unique identifier for this checklist
+
+            function updateProgressUI() {
                 const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
                 const totalCount = checkboxes.length;
                 const percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
@@ -265,27 +296,73 @@
                 progressText.textContent = Math.round(percentage) + '% Complete';
             }
 
-            function saveProgress() {
-                const progress = {};
-                checkboxes.forEach(box => { progress[box.id] = box.checked; });
-                localStorage.setItem(storageKey, JSON.stringify(progress));
+            // --- Load Progress from Firestore ---
+            function loadProgressFromFirestore() {
+                if (!currentUser) return;
+
+                const docRef = db.collection('progress').doc(currentUser.uid);
+
+                docRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const savedProgress = doc.data()[subject]; // Get data specifically for 'forensic'
+                        if (savedProgress) {
+                            checkboxes.forEach(box => {
+                                // Set checkbox state; default to false if not found
+                                box.checked = savedProgress[box.id] === true;
+                            });
+                        }
+                    }
+                    updateProgressUI(); // Update UI after loading is complete
+                }).catch((error) => {
+                    console.error("Error loading progress: ", error);
+                });
             }
 
-            function loadProgress() {
-                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
-                if (savedProgress) {
+            // --- Save Progress to Firestore (debounced for efficiency) ---
+            let saveTimeout;
+            function saveProgressToFirestore() {
+                if (!currentUser) return;
+
+                // Clear the previous timeout to avoid unnecessary writes
+                clearTimeout(saveTimeout);
+
+                // Set a new timeout to save after a short delay (e.g., 1 second)
+                saveTimeout = setTimeout(() => {
+                    const progress = {};
                     checkboxes.forEach(box => {
-                        if (savedProgress[box.id] !== undefined) { box.checked = savedProgress[box.id]; }
+                        progress[box.id] = box.checked;
                     });
-                }
-            }
 
+                    const docRef = db.collection('progress').doc(currentUser.uid);
+                    
+                    docRef.set({
+                        [subject]: progress 
+                    }, { merge: true }).catch((error) => {
+                        console.error("Error saving progress: ", error);
+                    });
+                }, 1000); // 1-second delay
+            }
+            
+            // --- Attach Event Listeners ---
             checkboxes.forEach(box => {
-                box.addEventListener('change', () => { saveProgress(); updateProgress(); });
+                box.addEventListener('change', () => {
+                    updateProgressUI();      // Update the UI instantly for good UX
+                    saveProgressToFirestore(); // Save to Firestore after a small delay
+                });
             });
 
-            loadProgress();
-            updateProgress();
+            // --- Auth State Change Listener ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in.
+                    currentUser = user;
+                    loadProgressFromFirestore(); // Load their saved data
+                } else {
+                    // User is signed out. Redirect to login page.
+                    // This prevents unauthorized access to the checklist.
+                    window.location.href = 'index.html';
+                }
+            });
         });
     </script>
 </body>
