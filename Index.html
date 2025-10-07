@@ -3,1132 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Tracker (v8.3 Charting)</title> <!-- Updated Title -->
-
-    <!-- Add Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png">
-
-    <!-- Link the Manifest (For PWA) -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0d6efd"> <!-- Theme color for PWA -->
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-    <!-- Chart.js Library (Added) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-
+    <title>Master Checklist Dashboard</title>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap');
-
-    /* --- Configuration & Colors --- */
-    :root {
-        /* Light Mode Colors */
-        --user-a-color: #0d6efd;
-        --user-a-light-color: #cfe2ff;
-        --user-b-color: #d63384;
-        --user-b-light-color: #f7d6e6;
-        --base-text-color: #212529;
-        --secondary-text-color: #6c757d;
-        --background-color: #f8f9fa; /* Slightly off-white */
-        --container-background: #ffffff;
-        --border-color: #dee2e6;
-        --light-border-color: #e9ecef;
-        --input-background-color: #f1f3f5; /* Slightly grey input bg */
-        --hover-background-light: #f1f3f5;
-        --accent-color-success: #198754;
-        --accent-color-danger: #dc3545;
-        --accent-color-info: #0dcaf0;
-        --accent-color-warning: #ffc107;
-        --focus-shadow-color: rgba(13, 110, 253, 0.25);
-        --shadow-color-soft: rgba(0, 0, 0, 0.06);
-        --shadow-color-medium: rgba(0, 0, 0, 0.1);
-        --connector-color: #ced4da; /* Lighter connector */
-        --connector-width: 1.5px;
-
-        /* Chart Colors (Light Mode) */
-        --chart-user-a-bg: rgba(13, 110, 253, 0.6);
-        --chart-user-a-border: rgb(13, 110, 253);
-        --chart-user-b-bg: rgba(214, 51, 132, 0.6);
-        --chart-user-b-border: rgb(214, 51, 132);
-        --chart-both-bg: rgba(25, 135, 84, 0.6); /* Example */
-        --chart-both-border: rgb(25, 135, 84); /* Example */
-        --chart-grid-color: var(--light-border-color);
-        --chart-tick-color: var(--secondary-text-color);
-        --chart-title-color: var(--base-text-color);
-        --chart-legend-color: var(--secondary-text-color);
-
-
-        /* Dark Mode Colors - Defined but applied via body.dark-mode */
-        --user-a-color-dark: #4dabf7; /* Lighter blue */
-        --user-a-light-color-dark: #1e3a5a;
-        --user-b-color-dark: #f06595; /* Lighter pink */
-        --user-b-light-color-dark: #5a1e3a;
-        --base-text-color-dark: #e9ecef; /* Light grey text */
-        --secondary-text-color-dark: #adb5bd; /* Medium grey text */
-        --background-color-dark: #121212; /* Very dark grey */
-        --container-background-dark: #1e1e1e; /* Slightly lighter dark */
-        --border-color-dark: #495057;
-        --light-border-color-dark: #343a40;
-        --input-background-color-dark: #2c2c2c; /* Dark input bg */
-        --hover-background-light-dark: #343a40;
-        --accent-color-success-dark: #20c997; /* Tealish green */
-        --accent-color-danger-dark: #f06595; /* Pinkish red */
-        --accent-color-info-dark: #3bc9db; /* Lighter cyan */
-        --accent-color-warning-dark: #ffd43b; /* Lighter yellow */
-        --focus-shadow-color-dark: rgba(77, 171, 247, 0.3);
-        --shadow-color-soft-dark: rgba(255, 255, 255, 0.05);
-        --shadow-color-medium-dark: rgba(255, 255, 255, 0.08);
-        --connector-color-dark: #555;
-
-         /* Chart Colors (Dark Mode) */
-        --chart-user-a-bg-dark: rgba(77, 171, 247, 0.6); /* Lighter blue */
-        --chart-user-a-border-dark: rgb(77, 171, 247);
-        --chart-user-b-bg-dark: rgba(240, 101, 149, 0.6); /* Lighter pink */
-        --chart-user-b-border-dark: rgb(240, 101, 149);
-        --chart-both-bg-dark: rgba(32, 201, 151, 0.6); /* Tealish green */
-        --chart-both-border-dark: rgb(32, 201, 151);
-        --chart-grid-color-dark: var(--border-color-dark);
-        --chart-tick-color-dark: var(--secondary-text-color-dark);
-        --chart-title-color-dark: var(--base-text-color-dark);
-        --chart-legend-color-dark: var(--secondary-text-color-dark);
-
-        /* Shared Dimensions */
-        --border-radius-container: 28px;
-        --border-radius-large: 20px;
-        --border-radius-medium: 10px;
-        --border-radius-small: 6px;
-        --border-radius-pill: 50px;
-        --transition-speed: 0.25s;
-    }
-
-    /* Dark Mode Rule Application */
-    body.dark-mode {
-        --user-a-color: var(--user-a-color-dark);
-        --user-a-light-color: var(--user-a-light-color-dark);
-        --user-b-color: var(--user-b-color-dark);
-        --user-b-light-color: var(--user-b-light-color-dark);
-        --base-text-color: var(--base-text-color-dark);
-        --secondary-text-color: var(--secondary-text-color-dark);
-        --background-color: var(--background-color-dark);
-        --container-background: var(--container-background-dark);
-        --border-color: var(--border-color-dark);
-        --light-border-color: var(--light-border-color-dark);
-        --input-background-color: var(--input-background-color-dark);
-        --hover-background-light: var(--hover-background-light-dark);
-        --accent-color-success: var(--accent-color-success-dark);
-        --accent-color-danger: var(--accent-color-danger-dark);
-        --accent-color-info: var(--accent-color-info-dark);
-        --accent-color-warning: var(--accent-color-warning-dark);
-        --focus-shadow-color: var(--focus-shadow-color-dark);
-        --shadow-color-soft: var(--shadow-color-soft-dark);
-        --shadow-color-medium: var(--shadow-color-medium-dark);
-        --connector-color: var(--connector-color-dark);
-
-        /* Chart Colors */
-        --chart-user-a-bg: var(--chart-user-a-bg-dark);
-        --chart-user-a-border: var(--chart-user-a-border-dark);
-        --chart-user-b-bg: var(--chart-user-b-bg-dark);
-        --chart-user-b-border: var(--chart-user-b-border-dark);
-        --chart-both-bg: var(--chart-both-bg-dark);
-        --chart-both-border: var(--chart-both-border-dark);
-        --chart-grid-color: var(--chart-grid-color-dark);
-        --chart-tick-color: var(--chart-tick-color-dark);
-        --chart-title-color: var(--chart-title-color-dark);
-        --chart-legend-color: var(--chart-legend-color-dark);
-    }
-
-    /* --- Basic Reset & Body --- */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-        font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.6;
-        background-color: var(--background-color);
-        color: var(--base-text-color);
-        padding: 0;
-        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-        min-height: 100vh;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-    }
-
-    /* --- Focus Styles --- */
-    button:focus, input[type="button"]:focus, input[type="submit"]:focus, input[type="reset"]:focus, select:focus, textarea:focus, input[type="text"]:focus, input[type="password"]:focus, .filter-pill:focus, .action-button:focus, .delete-mode-toggle:focus, .delete-confirm-btn:focus, .add-subtopic-toggle-btn:focus, .delete-subtopic-btn:focus, #pin-submit-btn:focus, #logout-popup button:focus, #manage-subjects-list button:focus, #add-subject-form button:focus, .dashboard-back-button:focus, .dashboard-controls button:focus, #dialog-buttons button:focus, .modal-close-btn:focus, #user-circle:focus, #clear-log-btn:focus, #load-more-logs-btn:focus, .theme-switch input:focus + .slider { outline: none; box-shadow: 0 0 0 3px var(--focus-shadow-color); }
-    #pin-entry-dialog input[type="password"]:focus, #add-todo-form input[type="text"]:focus, #add-todo-form select:focus, #add-subject-form input:focus, .add-subtopic-form input[type="text"]:focus { outline: none; border-color: var(--user-a-color); box-shadow: 0 0 0 4px var(--focus-shadow-color); background-color: var(--container-background); }
-    .topic-completion-checkbox:focus, .subtopic-completion-checkbox:focus, .delete-checkbox:focus { outline: none; }
-    button:focus:not(:focus-visible), .filter-pill:focus:not(:focus-visible) { box-shadow: none; }
-
-    /* --- Main Container --- */
-    .container { width: 95%; max-width: 1400px; background-color: var(--container-background); padding: 40px 45px 55px 45px; border-radius: var(--border-radius-container); box-shadow: 0 8px 25px var(--shadow-color-medium); transition: opacity 0.5s ease-in-out, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; margin: 40px auto 60px auto; position: relative; border: 1px solid var(--light-border-color); }
-
-    /* --- Headlines --- */
-    h1 { font-family: 'Playfair Display', serif; color: var(--base-text-color); margin-bottom: 40px; text-align: center; font-weight: 600; font-size: 2.1em; transition: color var(--transition-speed) ease; }
-    .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; transition: border-color var(--transition-speed) ease; }
-    h2 { font-size: 1.3em; font-weight: 500; color: var(--secondary-text-color); border-bottom: none; padding-bottom: 0; margin: 0; transition: color var(--transition-speed) ease;}
-    h3 { font-size: 1.15em; font-weight: 500; margin-bottom: 15px; color: var(--secondary-text-color); transition: color var(--transition-speed) ease; }
-
-    /* --- Delete Controls --- */
-    .delete-mode-toggle { background: none; border: none; font-size: 1.4em; cursor: pointer; color: var(--secondary-text-color); transition: color 0.2s; padding: 5px; line-height: 1; }
-    .delete-mode-toggle:hover { color: var(--accent-color-danger); }
-    .delete-mode-toggle.hidden { display: none; }
-    .delete-controls { margin-top: 15px; margin-bottom: 15px; text-align: right; }
-    .delete-confirm-btn { background-color: var(--accent-color-danger); color: white; border: none; padding: 9px 18px; border-radius: var(--border-radius-pill); font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; }
-    .delete-confirm-btn:hover { background-color: color-mix(in srgb, var(--accent-color-danger) 85%, black); transform: translateY(-1px); }
-    .delete-confirm-btn:active { transform: scale(0.98); }
-
-    /* --- PIN Entry Dialog --- */
-    #pin-entry-dialog { text-align: center; padding: 40px 35px; border: 1px solid var(--border-color); border-radius: var(--border-radius-large); background-color: var(--container-background); max-width: 400px; margin: 8vh auto; box-shadow: 0 6px 20px var(--shadow-color-soft); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    #pin-entry-dialog h1 { margin-bottom: 25px; font-size: 1.6em; transition: color var(--transition-speed) ease; }
-    #pin-entry-dialog label { display: block; margin-bottom: 15px; font-weight: 500; color: var(--secondary-text-color); font-size: 1.1em; transition: color var(--transition-speed) ease; }
-    #pin-entry-dialog input[type="password"] { padding: 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); font-size: 1.6em; text-align: center; width: 100%; max-width: 200px; margin: 0 auto 25px auto; display: block; transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; background-color: var(--background-color); color: var(--base-text-color); -moz-appearance: textfield; letter-spacing: 0.2em; }
-    #pin-entry-dialog input[type="password"]::-webkit-outer-spin-button, #pin-entry-dialog input[type="password"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    #pin-submit-btn { padding: 14px 30px; font-size: 1.05em; font-weight: 500; cursor: pointer; border: none; border-radius: var(--border-radius-pill); background-color: var(--user-a-color); color: white; transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; display: block; width: 100%; max-width: 200px; margin: 0 auto; }
-    #pin-submit-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
-    #pin-submit-btn:active { transform: scale(0.97); }
-    #pin-error { color: var(--accent-color-danger); margin-top: 20px; font-weight: 500; min-height: 1.2em; font-size: 0.95em; }
-
-    /* --- User Indicator & Logout Popup --- */
-    #user-indicator { position: fixed; top: 20px; right: 25px; z-index: 1001; }
-    #user-circle { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; background-color: var(--secondary-text-color); box-shadow: 0 4px 12px var(--shadow-color-medium); display: flex; justify-content: center; align-items: center; color: white; font-weight: 500; font-size: 1.15em; transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color var(--transition-speed) ease; border: 2px solid var(--container-background); }
-    #user-circle:hover { transform: scale(1.05); box-shadow: 0 6px 16px var(--shadow-color-medium); }
-    #logout-popup { position: absolute; top: 60px; right: 0; background-color: var(--container-background); border-radius: var(--border-radius-medium); box-shadow: 0 8px 25px var(--shadow-color-medium); padding: 8px 0; display: none; min-width: 200px; z-index: 10; overflow: hidden; border: 1px solid var(--light-border-color); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    #logout-popup span#popup-user-name { display: block; padding: 10px 16px; font-weight: 500; border-bottom: 1px solid var(--light-border-color); margin-bottom: 6px; color: var(--base-text-color); font-size: 1.0em; transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    #logout-popup button { background: none; border: none; cursor: pointer; padding: 10px 16px; font-size: 0.95em; display: block; width: 100%; text-align: left; border-radius: 0; transition: background-color 0.2s ease, color var(--transition-speed) ease; font-weight: 400; color: var(--base-text-color); }
-    #logout-popup button:hover { background-color: var(--hover-background-light); }
-    #logout-popup .dashboard-btn, #logout-popup .manage-subjects-btn { color: var(--user-a-color); padding-top: 6px; transition: color var(--transition-speed) ease; }
-    #logout-popup button#logout-button { color: var(--accent-color-danger); font-weight: 500; border-top: 1px solid var(--light-border-color); margin-top: 6px; }
-    .theme-toggle-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; cursor: default; border-top: 1px solid var(--light-border-color); margin-top: 6px; transition: border-color var(--transition-speed) ease; }
-    .theme-toggle-item span { font-size: 0.95em; color: var(--base-text-color); transition: color var(--transition-speed) ease; }
-    .theme-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-    .theme-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--user-a-color); }
-    input:checked + .slider:before { transform: translateX(20px); }
-    body.dark-mode .slider { background-color: #555; }
-
-    /* --- Add Topic Form Styling --- */
-    .add-form-container { max-width: 720px; margin: 0 auto 40px auto; }
-    #add-todo-form { display: flex; flex-direction: column; gap: 12px; }
-    #add-todo-form .form-group { width: 100%; }
-    #add-todo-form .form-row { display: flex; flex-direction: column; gap: 12px; }
-    #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; }
-    #add-todo-form label { font-size: 0.85em; color: var(--secondary-text-color); margin-bottom: 4px; padding-left: 8px; font-weight: 500; transition: color var(--transition-speed) ease; }
-    #add-todo-form input[type="text"], #add-todo-form select { width: 100%; border-radius: var(--border-radius-medium); background-color: var(--input-background-color); padding: 13px 16px; font-size: 1em; border: 1px solid var(--border-color); transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; line-height: 1.4; color: var(--base-text-color); box-sizing: border-box; }
-    #add-todo-form select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 3.2rem; cursor: pointer; }
-    body.dark-mode #add-todo-form select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); }
-    #add-todo-form select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--base-text-color); }
-    #add-todo-form select:hover, #add-todo-form input[type="text"]:hover { background-color: var(--hover-background-light); border-color: var(--secondary-text-color); }
-    #add-todo-form select option { padding: 8px 12px; color: var(--base-text-color); background-color: var(--container-background); }
-    body:not(.dark-mode) #add-todo-form select option { color: #212529; background-color: #ffffff; }
-    body.dark-mode #add-todo-form select option { color: #e9ecef; background-color: #2c2c2c; }
-    #add-todo-form select:disabled { background-color: var(--hover-background-light); cursor: not-allowed; opacity: 0.6; border-color: var(--border-color); box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); }
-    #add-todo-form button[type="submit"] { padding: 13px 25px; border-radius: var(--border-radius-medium); height: fit-content; border: none; background-color: var(--accent-color-success); color: white; cursor: pointer; font-size: 1em; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease; }
-    #add-todo-form button:hover { background-color: color-mix(in srgb, var(--accent-color-success) 85%, black); transform: translateY(-1px); } #add-todo-form button:active { transform: scale(0.98); } #add-todo-form button:disabled { background-color: var(--secondary-text-color); cursor: not-allowed; opacity: 0.6;}
-    @media (min-width: 768px) { #add-todo-form { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 15px; } #add-todo-form .topic-input-group { flex: 2 1 300px; margin-bottom: 0; } #add-todo-form .form-row { flex-direction: row; flex: 1 1 300px; gap: 15px; align-items: flex-end; width: auto; } #add-todo-form .subject-select-group { flex-grow: 1; flex-basis: 180px; width: auto; } #add-todo-form button[type="submit"] { width: auto; flex-shrink: 0; margin-top: 0; } }
-
-    /* --- Layout Grid --- */
-    .main-layout-grid { display: grid; grid-template-columns: 1fr; gap: 35px; margin-top: 25px; }
-    @media (min-width: 1100px) { .main-layout-grid { grid-template-columns: 1.6fr 1fr; grid-template-areas: "pending completed-area"; gap: 35px; align-items: start; } .pending-list-area { grid-area: pending; margin-bottom: 0; } .completed-lists-stack { grid-area: completed-area; display: flex; flex-direction: column; gap: 35px; height: 100%; } .completed-list-area-a { margin-bottom: 0; } .completed-list-area-b { margin-bottom: 0; } }
-
-    /* --- Task List Column Styling --- */
-    .task-list-column { padding: 20px 25px; border: 1px solid var(--border-color); border-radius: var(--border-radius-large); background-color: color-mix(in srgb, var(--background-color) 95%, black); margin-bottom: 0; min-width: 0; display: flex; flex-direction: column; height: 100%; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    .pending-list-area .task-list-column { background-color: color-mix(in srgb, var(--user-a-light-color) 15%, var(--background-color)); }
-    body.dark-mode .pending-list-area .task-list-column { background-color: color-mix(in srgb, var(--user-a-light-color-dark) 10%, var(--background-color-dark));}
-    .spinner { border: 4px solid var(--border-color); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--user-a-color); animation: spin 1s ease infinite; margin: 20px auto; transition: border-color var(--transition-speed) ease, border-left-color var(--transition-speed) ease; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    /* --- Subject Filter Pills --- */
-    .filter-pills-container { margin-top: 5px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 8px; transition: border-color var(--transition-speed) ease; }
-    .filter-pill { background-color: var(--input-background-color); border: 1px solid var(--border-color); color: var(--secondary-text-color); padding: 5px 14px; border-radius: var(--border-radius-pill); font-size: 0.88em; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .filter-pill:hover { background-color: var(--hover-background-light); border-color: var(--secondary-text-color); color: var(--base-text-color); }
-    .filter-pill.active { background-color: var(--user-a-color); color: white !important; border-color: var(--user-a-color); }
-    .filter-pill[data-subject="--all--"].active { background-color: var(--user-a-color); color: white !important; border-color: var(--user-a-color); }
-
-    /* --- Task List Styling --- */
-    .task-list { list-style: none; padding: 0; margin-top: 15px; flex-grow: 1; min-height: 50px; }
-    .task-list li { display: flex; flex-direction: column; align-items: stretch; padding: 12px 18px; border: 1px solid var(--light-border-color); background-color: var(--container-background); margin-bottom: 12px; border-radius: var(--border-radius-medium); box-shadow: 0 2px 5px var(--shadow-color-soft); transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color var(--transition-speed) ease; position: relative; }
-    .task-list li:last-child { margin-bottom: 0; }
-    .pending-list-item:hover { background-color: var(--hover-background-light); box-shadow: 0 4px 8px var(--shadow-color-soft); border-color: var(--border-color); }
-
-    /* --- Main Task Content & Indicators --- */
-    .main-task-content { display: flex; align-items: center; width: 100%; gap: 12px; }
-    .completion-section { display: flex; align-items: center; flex-shrink: 0; margin-right: 0; }
-    .topic-completion-checkbox { cursor: pointer; width: 22px; height: 22px; margin: 0; accent-color: var(--user-a-color); transition: accent-color var(--transition-speed) ease; flex-shrink: 0; }
-    .user-a-active .topic-completion-checkbox { accent-color: var(--user-a-color); } .user-b-active .topic-completion-checkbox { accent-color: var(--user-b-color); }
-    .completed-list li .topic-completion-checkbox { width: 20px; height: 20px; }
-    .delete-checkbox { margin: 0 0 0 8px; cursor: pointer; width: 20px; height: 20px; accent-color: var(--accent-color-danger); flex-shrink: 0; }
-    li .delete-checkbox { display: none; } li.delete-mode .delete-checkbox { display: block; }
-    li.delete-mode .completion-section, li.delete-mode .topic-indicators-container, li.delete-mode .actions-container, li.delete-mode .subtopics-section { display: none !important; }
-    .task-list li .todo-text { flex-grow: 1; word-break: break-word; font-size: 1.05em; font-weight: 500; line-height: 1.45; color: var(--base-text-color); transition: color var(--transition-speed) ease; min-width: 0; margin-right: 8px; }
-    .task-subject { font-size: 0.8em; color: var(--secondary-text-color); background-color: var(--input-background-color); padding: 3px 9px; border-radius: var(--border-radius-small); white-space: nowrap; margin-left: auto; flex-shrink: 0; border: 1px solid var(--light-border-color); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, color var(--transition-speed) ease; }
-    .topic-indicators-container { display: flex; gap: 5px; align-items: center; margin-left: 10px; flex-shrink: 0; }
-    .topic-indicator { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--border-color); display: inline-block; transition: all 0.2s; background-color: transparent; }
-    .topic-indicator.user-a { border-color: var(--user-a-color); } .topic-indicator.user-b { border-color: var(--user-b-color); }
-    .topic-indicator.user-a.is-complete { background-color: var(--user-a-color); border-color: var(--user-a-color); } .topic-indicator.user-b.is-complete { background-color: var(--user-b-color); border-color: var(--user-b-color); }
-    .actions-container { display: flex; align-items: center; margin-left: auto; padding-left: 12px; flex-wrap: nowrap; gap: 8px; flex-shrink: 0; }
-    .action-button { padding: 7px 15px; font-size: 0.88em; cursor: pointer; border: 1.5px solid; border-radius: var(--border-radius-pill); white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1; }
-    .studying-btn { border-color: var(--accent-color-info); color: var(--accent-color-info); background-color: transparent; } .studying-btn:hover { background-color: color-mix(in srgb, var(--accent-color-info) 15%, transparent); }
-    .stop-studying-btn { color: white; }
-    .user-a-active .stop-studying-btn { background-color: var(--user-a-color); border-color: var(--user-a-color); } .user-b-active .stop-studying-btn { background-color: var(--user-b-color); border-color: var(--user-b-color); }
-    .stop-studying-btn:hover { opacity: 0.9; }
-    .studying-indicator { font-size: 0.85em; font-weight: 500; white-space: nowrap; padding: 5px 10px; border-radius: var(--border-radius-pill); display: inline-block; line-height: 1; margin: 2px; font-style: italic; }
-    .indicator-user-a { background-color: var(--user-a-light-color); color: var(--user-a-color); border: 1px solid var(--user-a-color); transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    .indicator-user-b { background-color: var(--user-b-light-color); color: var(--user-b-color); border: 1px solid var(--user-b-color); transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-    .add-subtopic-toggle-btn { background: none; border: none; color: var(--secondary-text-color); cursor: pointer; padding: 5px; line-height: 1; font-size: 1.6em; font-weight: 300; transition: color 0.2s, transform 0.2s; margin-left: 8px; flex-shrink: 0; }
-    .add-subtopic-toggle-btn:hover { color: var(--accent-color-info); transform: scale(1.1); }
-    .completed-list li { background-color: color-mix(in srgb, var(--secondary-text-color) 5%, var(--container-background)); opacity: 0.85; }
-    .completed-list li:hover { background-color: color-mix(in srgb, var(--secondary-text-color) 8%, var(--container-background)); opacity: 0.9; transform: none; box-shadow: 0 3px 6px var(--shadow-color-soft); }
-    .completed-list li .todo-text { text-decoration: line-through; color: var(--secondary-text-color); }
-    .completed-list .actions-container, .completed-list .subtopics-section { display: none; }
-
-    /* --- Subtopic Styling --- */
-    .subtopics-section { margin-top: 12px; padding: 10px 0 8px 25px; margin-left: 18px; position: relative; background-color: transparent; border-radius: 0; transition: border-color var(--transition-speed) ease; }
-    .subtopics-section::before { content: none; }
-    .subtopics-controls { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 1; padding-left: 0; margin-left: -18px; }
-    .toggle-subtopics-btn { background: none; border: none; cursor: pointer; font-size: 0.9em; color: var(--secondary-text-color); padding: 0; line-height: 1; margin-right: 6px; transition: color var(--transition-speed) ease, transform 0.2s; }
-    .subtopics-controls:hover .toggle-subtopics-btn { color: var(--base-text-color); }
-    .toggle-subtopics-btn[aria-expanded="false"] { transform: rotate(-90deg); } .toggle-subtopics-btn[aria-expanded="true"] { transform: rotate(0deg); }
-    .subtopics-summary { font-size: 0.85em; color: var(--secondary-text-color); pointer-events: none; background-color: transparent; padding: 0 3px; transition: color var(--transition-speed) ease; font-style: italic; }
-    .subtopic-list { list-style: none; padding: 0; margin-top: 5px; position: relative; z-index: 1; }
-    .subtopic-item { display: flex; align-items: center; margin: 0; font-size: 0.95em; padding: 6px 0; border: none; position: relative; gap: 8px; }
-    .subtopic-item::before { content: ''; position: absolute; left: -15px; top: 0; width: var(--connector-width); height: 100%; background-color: var(--connector-color); transition: background-color var(--transition-speed) ease; z-index: 0; }
-    .subtopic-item::after { content: ''; position: absolute; left: -15px; top: 50%; transform: translateY(-50%); width: 15px; height: var(--connector-width); background-color: var(--connector-color); transition: background-color var(--transition-speed) ease; z-index: 0; }
-    .subtopic-list > .subtopic-item:last-of-type::before { height: 50%; }
-    .add-subtopic-form::before, .add-subtopic-form::after { display: none !important; }
-    .subtopic-list.hidden + .add-subtopic-form::before, .subtopic-list.hidden + .add-subtopic-form::after { display: none !important; }
-    .subtopic-list.hidden .subtopic-item::before, .subtopic-list.hidden .subtopic-item::after { display: none; }
-    .subtopic-completion-checkbox { cursor: pointer; width: 18px; height: 18px; margin: 0; accent-color: var(--user-a-color); flex-shrink: 0; transition: accent-color var(--transition-speed) ease; }
-    .user-a-active .subtopic-completion-checkbox { accent-color: var(--user-a-color); } .user-b-active .subtopic-completion-checkbox { accent-color: var(--user-b-color); }
-    .subtopic-text { color: var(--base-text-color); word-break: break-word; flex-grow: 1; line-height: 1.5; transition: color var(--transition-speed) ease, text-decoration-color var(--transition-speed) ease;}
-    .subtopic-item.is-done-a.is-done-b .subtopic-text { text-decoration: line-through; color: var(--secondary-text-color); text-decoration-color: var(--secondary-text-color); }
-    .subtopic-indicators-container { display: flex; gap: 4px; align-items: center; flex-shrink: 0; margin-left: auto; padding-left: 8px; }
-    .subtopic-indicator { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--border-color); display: inline-block; transition: all 0.2s; background-color: transparent; }
-    .subtopic-indicator.user-a { border-color: var(--user-a-color); } .subtopic-indicator.user-b { border-color: var(--user-b-color); }
-    .subtopic-indicator.user-a.is-complete { background-color: var(--user-a-color); border-color: var(--user-a-color); } .subtopic-indicator.user-b.is-complete { background-color: var(--user-b-color); border-color: var(--user-b-color); }
-    .delete-subtopic-btn { background: none; border: none; color: var(--secondary-text-color); cursor: pointer; font-size: 1.2em; line-height: 1; padding: 0 5px; opacity: 0.6; transition: color 0.2s, opacity 0.2s; flex-shrink: 0; }
-    .subtopic-item:hover .delete-subtopic-btn { opacity: 1; } .delete-subtopic-btn:hover { color: var(--accent-color-danger); }
-    .add-subtopic-form { display: flex; margin-top: 10px; gap: 8px; padding: 8px 0 0 0px; border: none; position: relative; }
-    .add-subtopic-form.hidden { display: none; }
-    .add-subtopic-form input[type="text"] { flex-grow: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius-small); font-size: 0.9em; background-color: var(--input-background-color); color: var(--base-text-color); transition: border-color 0.2s, box-shadow 0.2s, background-color var(--transition-speed) ease, color var(--transition-speed) ease; }
-    .add-subtopic-form button { padding: 8px 14px; font-size: 0.9em; background-color: var(--accent-color-info); color: white; border: none; border-radius: var(--border-radius-small); cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; flex-shrink: 0; font-weight: 500; }
-    .add-subtopic-form button:hover { background-color: color-mix(in srgb, var(--accent-color-info) 85%, black); transform: translateY(-1px); } .add-subtopic-form button:active { transform: scale(0.98); }
-
-    /* --- Dashboard Area --- */
-    #dashboard-area { width: 95%; max-width: 1400px; background-color: var(--container-background); padding: 40px 45px 55px 45px; border-radius: var(--border-radius-container); box-shadow: 0 8px 25px var(--shadow-color-medium); transition: opacity 0.5s ease-in-out, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; margin: 40px auto 60px auto; position: relative; border: 1px solid var(--light-border-color); }
-    #dashboard-area h1 { margin-bottom: 30px; }
-    .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
-    .dashboard-back-button { padding: 9px 15px 9px 20px; font-size: 0.95em; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); border-radius: var(--border-radius-pill); background-color: var(--hover-background-light); color: var(--secondary-text-color); transition: all 0.2s ease; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-    .dashboard-back-button svg { width: 1.1em; height: 1.1em; fill: currentColor; vertical-align: middle; }
-    .dashboard-back-button:hover { background-color: var(--light-border-color); color: var(--base-text-color); border-color: var(--secondary-text-color); transform: translateY(-1px); }
-    .dashboard-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
-    .dashboard-controls span { font-size: 0.9em; color: var(--secondary-text-color); align-self: center; margin-right: 5px; white-space: nowrap; }
-    .dashboard-controls button { background-color: var(--input-background-color); border: 1px solid var(--border-color); color: var(--secondary-text-color); padding: 6px 15px; border-radius: var(--border-radius-pill); font-size: 0.9em; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .dashboard-controls button:hover { background-color: var(--hover-background-light); border-color: var(--secondary-text-color); color: var(--base-text-color); }
-    .dashboard-controls button.active { background-color: var(--user-a-color); color: white !important; border-color: var(--user-a-color); }
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-    .dashboard-section { padding: 20px 25px; border: 1px solid var(--border-color); border-radius: var(--border-radius-large); background-color: color-mix(in srgb, var(--background-color) 95%, black); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; display: flex; flex-direction: column; }
-    .dashboard-section h3 { margin-top: 0; border-bottom: 1px solid var(--light-border-color); padding-bottom: 10px; margin-bottom: 20px; flex-shrink: 0; }
-    .stat-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 1.05em; padding: 5px 0; }
-    .stat-item span:first-child { color: var(--secondary-text-color); margin-right: 15px; }
-    .stat-item span:last-child { font-weight: 500; color: var(--base-text-color); font-size: 1.1em; }
-    .scoreboard-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 10px 20px; align-items: center; }
-    .scoreboard-header { font-weight: 500; color: var(--secondary-text-color); padding-bottom: 8px; border-bottom: 1px solid var(--light-border-color); text-align: right; font-size: 0.95em; }
-    .scoreboard-header:first-child { text-align: left; }
-    .scoreboard-metric { font-size: 1em; color: var(--base-text-color); }
-    .scoreboard-score { font-size: 1.15em; font-weight: 600; text-align: right; color: var(--base-text-color); }
-    .scoreboard-score.user-a { color: var(--user-a-color); } .scoreboard-score.user-b { color: var(--user-b-color); }
-
-    /* --- Activity Log Specific Styles --- */
-    #activity-log-list { list-style: none; padding: 0; font-size: 0.9em; flex-grow: 1; overflow-y: auto; max-height: 350px; min-height: 150px; margin: 0; border: 1px solid var(--light-border-color); border-radius: var(--border-radius-medium); padding: 5px; background-color: var(--input-background-color); transition: border-color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
-    #activity-log-list li { padding: 8px 10px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; transition: border-color var(--transition-speed) ease; color: var(--secondary-text-color); }
-    #activity-log-list li:last-child { border-bottom: none; }
-    #activity-log-list .log-time { font-size: 0.9em; white-space: nowrap; color: var(--secondary-text-color); flex-shrink: 0; }
-    #activity-log-list .log-message { flex-grow: 1; color: var(--base-text-color); margin-right: 10px; }
-    #activity-log-list .log-message strong { font-weight: 500; }
-    #activity-log-list .log-message .user-a { color: var(--user-a-color); } #activity-log-list .log-message .user-b { color: var(--user-b-color); }
-    #activity-log-list .log-message i { font-style: normal; color: color-mix(in srgb, var(--base-text-color) 85%, var(--background-color)); }
-    #activity-log-list .status-message { text-align: center; color: var(--secondary-text-color); padding: 20px; font-style: italic; border-bottom: none; }
-    #activity-log-list .error-message { color: var(--accent-color-danger); font-weight: 500; }
-    #load-more-logs-btn { display: block; width: calc(100% - 10px); margin: 15px auto 5px auto; padding: 10px 15px; font-size: 0.9em; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); border-radius: var(--border-radius-pill); background-color: var(--hover-background-light); color: var(--secondary-text-color); transition: all 0.2s ease; }
-    #load-more-logs-btn:hover { background-color: var(--light-border-color); color: var(--base-text-color); border-color: var(--secondary-text-color); }
-    #load-more-logs-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .activity-log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--light-border-color); }
-    .activity-log-header h3 { margin: 0; border: none; padding: 0; }
-    #clear-log-btn { padding: 5px 12px; font-size: 0.85em; font-weight: 500; border-radius: var(--border-radius-pill); cursor: pointer; border: 1px solid var(--accent-color-danger); background-color: transparent; color: var(--accent-color-danger); transition: all 0.2s ease; flex-shrink: 0; }
-    #clear-log-btn:hover { background-color: var(--accent-color-danger); color: white; transform: translateY(-1px); }
-    #clear-log-btn:disabled { opacity: 0.6; cursor: not-allowed; background-color: transparent; color: var(--accent-color-danger); transform: none; }
-
-    /* --- Modals --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1050; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
-    body.dark-mode .modal-overlay { background-color: rgba(0,0,0,0.75); }
-    .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-    .modal-content { background-color: var(--container-background); padding: 30px 35px; border-radius: var(--border-radius-large); box-shadow: 0 10px 30px var(--shadow-color-medium); max-width: 520px; width: 90%; max-height: 90vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95) translateY(-10px); opacity: 0; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; border: 1px solid var(--border-color); }
-    .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); opacity: 1;}
-    .modal-content h3 { margin-top: 0; margin-bottom: 25px; text-align: center; font-weight: 500; color: var(--base-text-color); font-size: 1.45em; transition: color var(--transition-speed) ease; }
-    .modal-close-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.6em; cursor: pointer; color: var(--secondary-text-color); line-height: 1; padding: 0; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s, color 0.2s; z-index: 10; }
-    .modal-close-btn:hover { background-color: var(--hover-background-light); color: var(--base-text-color); }
-    #manage-subjects-list { list-style: none; padding: 0; margin-bottom: 25px; max-height: 50vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); transition: border-color var(--transition-speed) ease; }
-    #manage-subjects-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--light-border-color); transition: border-color var(--transition-speed) ease; }
-    #manage-subjects-list li:last-child { border-bottom: none; }
-    #manage-subjects-list span { flex-grow: 1; margin-right: 15px; color: var(--base-text-color); transition: color var(--transition-speed) ease; }
-    #manage-subjects-list button { background-color: transparent; border: 1.5px solid var(--accent-color-danger); color: var(--accent-color-danger); border-radius: var(--border-radius-pill); padding: 4px 12px; font-size: 0.85em; font-weight: 500; cursor: pointer; transition: all 0.2s ease; line-height: 1.2; }
-    #manage-subjects-list button:hover { background-color: var(--accent-color-danger); color: white; transform: translateY(-1px); }
-    #add-subject-form { display: flex; gap: 10px; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--light-border-color); transition: border-color var(--transition-speed) ease;}
-    #add-subject-form input { flex-grow: 1; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius-medium); background-color: var(--input-background-color); transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; color: var(--base-text-color); }
-    #add-subject-form button { padding: 12px 20px; background-color: var(--user-a-color); color: white; border: none; border-radius: var(--border-radius-medium); cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-weight: 500; }
-    #add-subject-form button:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
-    #dialog-modal-content { padding-bottom: 25px; }
-    #dialog-message { font-size: 1.1em; color: var(--base-text-color); margin-bottom: 30px; line-height: 1.6; text-align: center; max-height: 60vh; overflow-y: auto; transition: color var(--transition-speed) ease; word-wrap: break-word; }
-    #dialog-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-    #dialog-buttons button { padding: 10px 25px; font-size: 1em; font-weight: 500; border-radius: var(--border-radius-pill); cursor: pointer; border: none; transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; }
-    #dialog-confirm-btn { background-color: var(--user-a-color); color: white; } #dialog-confirm-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
-    #dialog-cancel-btn { background-color: var(--hover-background-light); color: var(--secondary-text-color); border: 1px solid var(--border-color); transition: background-color 0.2s ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform 0.1s ease;} #dialog-cancel-btn:hover { background-color: var(--light-border-color); transform: translateY(-1px); }
-    #dialog-ok-btn { background-color: var(--user-a-color); color: white; } #dialog-ok-btn:hover { background-color: color-mix(in srgb, var(--user-a-color) 85%, black); transform: translateY(-1px); }
-
-    /* --- Utility & Responsive --- */
-    .status-message { text-align: center; color: var(--secondary-text-color); margin-top: 30px; font-style: italic; padding: 15px; transition: color var(--transition-speed) ease; }
-    .error { color: var(--accent-color-danger); font-weight: 500; }
-    .hidden { display: none !important; }
-    .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
-
-    /* --- Responsive Adjustments --- */
-    @media (max-width: 1099px) { .main-layout-grid { grid-template-columns: 1fr; grid-template-areas: "pending" "completed-area"; } .completed-lists-stack { flex-direction: column; gap: 25px; } .task-list-column { margin-bottom: 25px; height: auto; } .completed-list-area-a, .completed-list-area-b { margin-bottom: 0; } .completed-lists-stack .task-list-column:last-child { margin-bottom: 0; } }
-    @media (max-width: 991px) { .add-form-container { max-width: 90%; } #add-todo-form { flex-direction: row; flex-wrap: wrap; } #add-todo-form .topic-input-group { flex-basis: 100%; margin-bottom: 10px; } #add-todo-form .form-row { flex-direction: row; flex-basis: 100%; } #add-todo-form .subject-select-group { flex-grow: 1; } #add-todo-form button[type="submit"] { width: auto; } }
-    @media (max-width: 767px) { body { padding-top: 20px; padding-bottom: 30px; } .container, #dashboard-area { padding: 30px 20px 40px 20px; border-radius: var(--border-radius-large); margin: 30px auto 50px auto; max-width: 95%; } h1 { font-size: 1.9em; } #user-indicator { top: 15px; right: 20px; } #user-circle { width: 42px; height: 42px; font-size: 1.1em; } #logout-popup { top: 58px; } #add-todo-form { flex-direction: column; align-items: stretch; gap: 10px;} #add-todo-form .topic-input-group { margin-bottom: 0; flex-basis: auto !important; flex-grow: 0; } #add-todo-form .form-row { flex-direction: column; gap: 10px; flex-basis: auto !important; flex-grow: 0; } #add-todo-form .form-group { width: 100%; } #add-todo-form button[type="submit"] { width: 100%; margin-top: 5px; padding: 14px; } .filter-pills-container { padding-bottom: 10px; margin-bottom: 10px; } .add-form-container { max-width: 100%; } .subtopics-section { margin-left: 5px; padding-left: 20px; } .subtopic-item::before, .subtopic-item::after { left: -10px; } .subtopic-item::after { width: 10px;} .subtopics-controls { margin-left: -8px; } .main-task-content { flex-wrap: wrap; } .task-subject { margin-left: 8px; margin-right: 8px; } .actions-container { margin-left: 0; padding-left: 0; flex-basis: 100%; justify-content: flex-end; margin-top: 8px; } .action-button { padding: 6px 12px; font-size: 0.85em;} .add-subtopic-toggle-btn { margin-left: 4px;} .dashboard-header { justify-content: center; } .dashboard-controls { margin-left: 0; justify-content: center; } #activity-log-list { font-size: 0.85em; } }
-    @media (max-width: 480px) { body { padding-top: 15px; padding-bottom: 20px; } .container, #dashboard-area { padding: 25px 15px 30px 15px; border-radius: var(--border-radius-medium); margin: 20px auto 40px auto; } h1 { font-size: 1.7em; margin-bottom: 25px; } h2 { font-size: 1.15em; } #pin-entry-dialog { padding: 25px 20px; border-radius: var(--border-radius-medium); max-width: 90%; } #pin-entry-dialog input[type="password"] { font-size: 1.4em; padding: 13px; max-width: 180px; } #pin-submit-btn { padding: 13px; max-width: 180px; } .task-list-column { padding: 15px; border-radius: var(--border-radius-medium); } .task-list li { padding: 12px 14px; border-radius: var(--border-radius-small); margin-bottom: 10px;} .task-list li .todo-text { font-size: 1em; } .task-subject { font-size: 0.75em; margin-left: 6px; padding: 2px 7px;} .action-button, .studying-indicator, .add-subtopic-toggle-btn { font-size: 0.82em; padding: 5px 10px; } .add-subtopic-toggle-btn { font-size: 1.4em; padding: 4px 6px; } .subtopics-section { padding-left: 18px; margin-left: 2px; } .subtopic-item::before, .subtopic-item::after { left: -8px; } .subtopic-item::after { width: 8px;} .subtopics-controls { margin-left: -5px;} .subtopic-item { gap: 6px; padding: 6px 0;} .delete-subtopic-btn { font-size: 1.1em; padding: 0 4px;} .add-subtopic-form { padding-left: 0; } .subtopic-indicator { width: 12px; height: 12px;} .topic-indicator { width: 14px; height: 14px;} .topic-completion-checkbox { width: 20px; height: 20px;} .subtopic-completion-checkbox { width: 16px; height: 16px; } .subtopic-text { font-size: 0.92em;} .add-subtopic-form input { padding: 6px 10px; font-size: 0.88em; } .add-subtopic-form button { padding: 6px 12px; font-size: 0.88em;} .modal-content { padding: 25px 20px; } #dialog-buttons button { padding: 8px 20px; font-size: 0.95em; } #logout-popup { min-width: 180px; } #logout-popup span, #logout-popup button, .theme-toggle-item span { padding: 9px 14px; font-size: 0.92em; } .dashboard-section { padding: 15px; } .stat-item { font-size: 1em; } .stat-item span:last-child { font-size: 1em; } .scoreboard-grid { gap: 8px 15px; } .scoreboard-score { font-size: 1.1em; } .dashboard-controls button { padding: 5px 12px; font-size: 0.85em; } #activity-log-list { font-size: 0.82em; } }
-
-</style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+        :root {
+            --background-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary-text: #2d3748;
+            --secondary-text: #718096;
+            --accent-color-1: #4a90e2; /* Forensic Blue */
+            --accent-color-2: #50e3c2; /* Community Green */
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--background-color);
+            color: var(--primary-text);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--primary-text);
+        }
+        .dashboard-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .checklist-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            padding: 30px;
+            width: 300px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--primary-text);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .checklist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+        .checklist-card h2 {
+            font-size: 1.8rem;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            margin: 0 auto;
+        }
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 12;
+        }
+        .circle-bg {
+            stroke: #e2e8f0;
+        }
+        .circle-progress {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease-out;
+        }
+        .percentage-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- PIN Entry Dialog -->
-    <div id="pin-entry-dialog">
-        <h1>Study Tracker Access</h1>
-        <label for="pin-input">Enter Your PIN:</label>
-        <input type="password" id="pin-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
-        <button id="pin-submit-btn">Enter</button>
-        <p id="pin-error"> </p>
+    <h1>My Study Checklists</h1>
+
+    <div class="dashboard-container">
+        <a href="forensic.html" class="checklist-card" id="forensic-card">
+            <div class="progress-circle">
+                <svg>
+                    <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                    <circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-1);"></circle>
+                </svg>
+                <div class="percentage-text">0%</div>
+            </div>
+            <h2>Forensic Medicine</h2>
+        </a>
+
+        <a href="community.html" class="checklist-card" id="community-card">
+            <div class="progress-circle">
+                <svg>
+                    <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                    <circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-2);"></circle>
+                </svg>
+                <div class="percentage-text">0%</div>
+            </div>
+            <h2>Community Medicine</h2>
+        </a>
     </div>
 
-    <!-- Main App Container -->
-    <div class="container hidden" id="main-app-container">
-        <div id="user-indicator" class="hidden">
-            <div id="user-circle" title="Click for options" tabindex="0">?</div>
-            <div id="logout-popup">
-                <span id="popup-user-name">User</span>
-                <button class="dashboard-btn" id="dashboard-button">Dashboard</button>
-                <button class="manage-subjects-btn" id="manage-subjects-button">Manage Subjects</button>
-                <div class="theme-toggle-item">
-                    <span>Dark Mode</span>
-                    <label class="theme-switch">
-                        <input type="checkbox" id="theme-toggle-checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <button id="logout-button">Logout</button>
-            </div>
-        </div>
-        <h1>To-Study List</h1>
-        <div id="app-content">
-            <div class="add-form-container">
-                <form id="add-todo-form">
-                    <div class="form-group topic-input-group">
-                        <label for="todo-input">New Topic</label>
-                        <input type="text" id="todo-input" placeholder="Topic name..." required autocomplete="off" name="new-topic-ignore-autocomplete">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group subject-select-group">
-                             <label for="subject-select">Subject</label>
-                            <select id="subject-select" required name="subject-ignore-autocomplete">
-                                <option value="" disabled selected>-- Select Subject --</option>
-                                <!-- Options populated by JS -->
-                            </select>
-                        </div>
-                         <button type="submit">Add Topic</button>
-                    </div>
-                </form>
-            </div>
-            <div id="loading-indicator" class="hidden">
-                <div class="spinner"></div>
-                <p class="status-message">Loading tasks...</p>
-            </div>
-
-            <!-- Main Layout Grid -->
-            <div class="main-layout-grid">
-                <div class="pending-list-area">
-                    <div class="task-list-column">
-                        <div class="column-header">
-                            <h2>Pending Topics</h2>
-                            <button class="delete-mode-toggle hidden" data-list-type="pending" title="Toggle Delete Mode">🗑️</button>
-                        </div>
-                        <div id="subject-filter-pills-container" class="filter-pills-container hidden"></div>
-                        <div class="delete-controls hidden" id="delete-controls-pending">
-                            <button class="delete-confirm-btn" data-list-type="pending">Delete Selected</button>
-                        </div>
-                        <ul id="pending-list" class="task-list"></ul>
-                        <p class="status-message empty-list hidden" id="empty-pending">No pending topics!</p>
-                    </div>
-                </div>
-                <div class="completed-lists-stack">
-                    <div class="completed-list-area-a">
-                        <div class="task-list-column">
-                            <div class="column-header"> <h2 id="completed-A-title">Completed by Parth</h2> <button class="delete-mode-toggle hidden" data-list-type="completedA" title="Toggle Delete Mode">🗑️</button> </div>
-                            <div class="delete-controls hidden" id="delete-controls-completedA"> <button class="delete-confirm-btn" data-list-type="completedA">Delete Selected</button> </div>
-                            <ul id="completed-by-A-list" class="task-list completed-list"></ul>
-                            <p class="status-message empty-list hidden" id="empty-completed-A">No topics completed by Parth yet.</p>
-                        </div>
-                    </div>
-                    <div class="completed-list-area-b">
-                        <div class="task-list-column">
-                            <div class="column-header"> <h2 id="completed-B-title">Completed by Nitika</h2> <button class="delete-mode-toggle hidden" data-list-type="completedB" title="Toggle Delete Mode">🗑️</button> </div>
-                            <div class="delete-controls hidden" id="delete-controls-completedB"> <button class="delete-confirm-btn" data-list-type="completedB">Delete Selected</button> </div>
-                            <ul id="completed-by-B-list" class="task-list completed-list"></ul>
-                            <p class="status-message empty-list hidden" id="empty-completed-B">No topics completed by Nitika yet.</p>
-                        </div>
-                   </div>
-                </div>
-            </div>
-            <!-- End Main Layout Grid -->
-        </div>
-    </div>
-
-    <!-- Dashboard Area -->
-    <div id="dashboard-area" class="hidden">
-         <div class="dashboard-header">
-             <h1>Dashboard</h1>
-             <div class="dashboard-controls">
-                <span>View:</span>
-                <button class="dashboard-view-control active" data-view="combined">Combined</button>
-                <button class="dashboard-view-control" data-view="userA">Parth</button>
-                <button class="dashboard-view-control" data-view="userB">Nitika</button>
-                <span style="margin-left: 15px;">Graph:</span>
-                <button class="dashboard-graph-control active" data-graph="bar">Bar</button>
-                <button class="dashboard-graph-control" data-graph="line">Line</button>
-             </div>
-             <button class="dashboard-back-button" id="dashboard-back-btn">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                    <path fill-rule="evenodd" d="M7.78 12.53a.75.75 0 0 1-1.06 0L2.47 8.28a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 1.06L4.81 7h7.44a.75.75 0 0 1 0 1.5H4.81l2.97 2.97a.75.75 0 0 1 0 1.06z"></path>
-                 </svg>
-                 Back to Tracker
-             </button>
-         </div>
-
-        <div class="dashboard-grid">
-            <!-- Overall Stats Section -->
-            <div class="dashboard-section">
-                <h3>Overall Stats</h3>
-                <div class="stat-item"><span>Total Topics:</span> <span id="stats-total-topics">--</span></div>
-                <div class="stat-item"><span>Pending Topics:</span> <span id="stats-pending-topics">--</span></div>
-                <div class="stat-item"><span>Fully Completed:</span> <span id="stats-fully-completed">--</span></div>
-                <div class="stat-item"><span>Total Subtopics:</span> <span id="stats-total-subtopics">--</span></div>
-                 <div class="stat-item"><span>Active Subjects:</span> <span id="stats-active-subjects">--</span></div>
-                 <div class="stat-item"><span>Currently Studying:</span> <span id="stats-currently-studying">--</span></div>
-            </div>
-
-            <!-- Scoreboard Section -->
-            <div class="dashboard-section">
-                <h3>Scoreboard</h3>
-                <div class="scoreboard-grid">
-                    <div class="scoreboard-header">Metric</div>
-                    <div class="scoreboard-header" id="scoreboard-header-a">Parth</div>
-                    <div class="scoreboard-header" id="scoreboard-header-b">Nitika</div>
-                    <div class="scoreboard-metric">Topics Completed</div>
-                    <div class="scoreboard-score user-a" id="score-user-a-topics">--</div>
-                    <div class="scoreboard-score user-b" id="score-user-b-topics">--</div>
-                    <div class="scoreboard-metric">Subtopics Completed</div>
-                    <div class="scoreboard-score user-a" id="score-user-a-subtopics">--</div>
-                    <div class="scoreboard-score user-b" id="score-user-b-subtopics">--</div>
-                     <div class="scoreboard-metric">Avg. Subtopics/Topic</div>
-                    <div class="scoreboard-score user-a" id="score-user-a-avg-sub">--</div>
-                    <div class="scoreboard-score user-b" id="score-user-b-avg-sub">--</div>
-                    <div class="scoreboard-metric">Topics Added</div>
-                    <div class="scoreboard-score user-a" id="score-user-a-added">--</div>
-                    <div class="scoreboard-score user-b" id="score-user-b-added">--</div>
-                </div>
-            </div>
-
-            <!-- Graph Section (Updated) -->
-            <div class="dashboard-section">
-                <h3 id="graph-title">Completion Chart</h3> <!-- Title updated dynamically by JS -->
-                <div style="position: relative; height: 250px; width: 100%;"> <!-- Wrapper for chart sizing -->
-                    <canvas id="completionChartCanvas"></canvas> <!-- Canvas for Chart.js -->
-                </div>
-            </div>
-
-             <!-- Activity Log Section (Updated) -->
-             <div class="dashboard-section">
-                <div class="activity-log-header">
-                    <h3>Activity Log</h3>
-                    <button id="clear-log-btn" title="Delete all activity logs">Clear All Logs</button>
-                </div>
-                <ul id="activity-log-list">
-                    <li class="status-message">Loading activity...</li>
-                    <!-- Populated by JS -->
-                </ul>
-                <button id="load-more-logs-btn" class="hidden">Load More Logs</button>
-             </div>
-
-        </div>
-    </div>
-    <!-- End Dashboard Area -->
-
-    <!-- Manage Subjects Modal -->
-    <div class="modal-overlay hidden" id="manage-subjects-modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" id="manage-subjects-modal-close-button">×</button>
-            <h3>Manage Subjects</h3>
-            <ul id="manage-subjects-list"></ul>
-            <form id="add-subject-form">
-                <input type="text" id="add-subject-input" placeholder="Add new subject..." required>
-                <button type="submit">Add Subject</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Custom Dialog Modal -->
-    <div class="modal-overlay hidden" id="dialog-modal-overlay">
-         <div class="modal-content" id="dialog-modal-content">
-             <h3 id="dialog-title">Alert</h3>
-             <div id="dialog-message">Dialog message goes here...</div>
-             <div id="dialog-buttons">
-                 <button id="dialog-confirm-btn" class="hidden">Confirm</button>
-                 <button id="dialog-cancel-btn" class="hidden">Cancel</button>
-                 <button id="dialog-ok-btn" class="hidden">OK</button>
-             </div>
-         </div>
-     </div>
-
-<!-- End of first half (HTML Structure) -->
-    <!-- START OF SCRIPT PART 1 of 2 -->
     <script>
-    // --- Configuration (v8.3 Charting) ---
-    const USERS = { 'UserA': { name: 'Parth', pin: '2108', color: 'var(--user-a-color)', lightColor: 'var(--user-a-light-color)', indicatorClass: 'indicator-user-a', chartBg: 'var(--chart-user-a-bg)', chartBorder: 'var(--chart-user-a-border)' }, 'UserB': { name: 'Nitika', pin: '0821', color: 'var(--user-b-color)', lightColor: 'var(--user-b-light-color)', indicatorClass: 'indicator-user-b', chartBg: 'var(--chart-user-b-bg)', chartBorder: 'var(--chart-user-b-border)' } };
-    const USER_A_ID = 'UserA';
-    const USER_B_ID = 'UserB';
-    const TODOS_COLLECTION = 'todos'; // Collection for topics/tasks
-    const SUBJECTS_DOC_PATH = 'management/subjects'; // Document for subject list
-    const ACTIVITY_LOG_COLLECTION = 'activityLog'; // Collection for logs
-    const LOG_LIMIT = 50; // How many log entries to load per batch
-    const THEME_PREFERENCE_KEY = 'studyTrackerThemePreference';
-    const THEME_LIGHT = 'light';
-    const THEME_DARK = 'dark';
-    const THEME_SYSTEM = 'system';
+        document.addEventListener('DOMContentLoaded', () => {
+            function setupProgressCircle(cardId, storageKey) {
+                const card = document.getElementById(cardId);
+                const circle = card.querySelector('.circle-progress');
+                const percentageText = card.querySelector('.percentage-text');
+                const radius = circle.r.baseVal.value;
+                const circumference = 2 * Math.PI * radius;
 
-    // --- Firebase Config & Initialization ---
-    const firebaseConfig = { apiKey: "AIzaSyBZ4_nvAE0_ZlDbnYSdD0QvAZnNL0Usb9Q", authDomain: "to-do-pbz.firebaseapp.com", projectId: "to-do-pbz", storageBucket: "to-do-pbz.appspot.com", messagingSenderId: "358081287969", appId: "1:358081287969:web:02b9a125fb403c1e269060" };
-    let db = null; // Initialize as null
-    let todosRef = null;
-    let subjectsDocRef = null;
-    let activityLogRef = null;
-    try {
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        db = firebase.firestore();
-        if (db) {
-            db.enablePersistence({synchronizeTabs: true})
-                .then(() => console.log("Firestore persistence enabled."))
-                .catch((err) => {
-                  if (err.code == 'failed-precondition') { console.warn('Firestore Persistence: Multiple tabs open, persistence can only be enabled in one primary tab.'); }
-                  else if (err.code == 'unimplemented') { console.warn('Firestore Persistence: Browser does not support persistence.'); }
-                  else { console.error("Firestore Persistence error: ", err); }
-                });
-            todosRef = db.collection(TODOS_COLLECTION);
-            subjectsDocRef = db.doc(SUBJECTS_DOC_PATH);
-            activityLogRef = db.collection(ACTIVITY_LOG_COLLECTION);
-            console.log("Firestore initialized and refs created.");
-        } else { throw new Error("Firestore failed to initialize."); }
-    } catch (e) {
-        console.error("CRITICAL: Firebase initialization failed:", e);
-        try { alert("CRITICAL: Database connection failed. Please check your connection and refresh the page. " + e.message); }
-        catch(alertErr) { alert("CRITICAL: Database connection failed and error alert failed."); }
-    }
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                circle.style.strokeDashoffset = circumference;
 
-    // --- DOM Element References ---
-    const pinDialog = document.getElementById('pin-entry-dialog');
-    const mainAppContainer = document.getElementById('main-app-container');
-    const pinInput = document.getElementById('pin-input');
-    const pinSubmitBtn = document.getElementById('pin-submit-btn');
-    const pinError = document.getElementById('pin-error');
-    const userIndicator = document.getElementById('user-indicator');
-    const userCircle = document.getElementById('user-circle');
-    const logoutPopup = document.getElementById('logout-popup');
-    const popupUserName = document.getElementById('popup-user-name');
-    const logoutButton = document.getElementById('logout-button');
-    const addTodoForm = document.getElementById('add-todo-form');
-    const todoInput = document.getElementById('todo-input');
-    const subjectSelect = document.getElementById('subject-select');
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const pendingListEl = document.getElementById('pending-list');
-    const completedListAEl = document.getElementById('completed-by-A-list');
-    const completedListBEl = document.getElementById('completed-by-B-list');
-    const emptyPending = document.getElementById('empty-pending');
-    const emptyCompletedA = document.getElementById('empty-completed-A');
-    const emptyCompletedB = document.getElementById('empty-completed-B');
-    const completedATitle = document.getElementById('completed-A-title');
-    const completedBTitle = document.getElementById('completed-B-title');
-    const deleteModeToggles = document.querySelectorAll('.delete-mode-toggle');
-    const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
-    const subjectFilterPillsContainer = document.getElementById('subject-filter-pills-container');
-    const manageSubjectsButton = document.getElementById('manage-subjects-button');
-    const manageSubjectsModalOverlay = document.getElementById('manage-subjects-modal-overlay');
-    const manageSubjectsListUl = document.getElementById('manage-subjects-list');
-    const addSubjectForm = document.getElementById('add-subject-form');
-    const addSubjectInput = document.getElementById('add-subject-input');
-    const manageSubjectsModalCloseButton = document.getElementById('manage-subjects-modal-close-button');
-    const dialogModalOverlay = document.getElementById('dialog-modal-overlay');
-    const dialogTitle = document.getElementById('dialog-title');
-    const dialogMessage = document.getElementById('dialog-message');
-    const dialogConfirmBtn = document.getElementById('dialog-confirm-btn');
-    const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
-    const dialogOkBtn = document.getElementById('dialog-ok-btn');
-    const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
-    // Dashboard Elements
-    const dashboardArea = document.getElementById('dashboard-area');
-    const dashboardButton = document.getElementById('dashboard-button');
-    const dashboardBackButton = document.getElementById('dashboard-back-btn');
-    const dashboardViewControls = document.querySelectorAll('.dashboard-view-control');
-    const dashboardGraphControls = document.querySelectorAll('.dashboard-graph-control');
-    const activityLogListEl = document.getElementById('activity-log-list');
-    const loadMoreLogsButton = document.getElementById('load-more-logs-btn');
-    const clearLogButton = document.getElementById('clear-log-btn');
-    // Dashboard Stat Elements
-    const statsTotalTopics = document.getElementById('stats-total-topics');
-    const statsPendingTopics = document.getElementById('stats-pending-topics');
-    const statsFullyCompleted = document.getElementById('stats-fully-completed');
-    const statsTotalSubtopics = document.getElementById('stats-total-subtopics');
-    const statsActiveSubjects = document.getElementById('stats-active-subjects');
-    const statsCurrentlyStudying = document.getElementById('stats-currently-studying');
-    const scoreUserATopics = document.getElementById('score-user-a-topics');
-    const scoreUserBTopics = document.getElementById('score-user-b-topics');
-    const scoreUserASubtopics = document.getElementById('score-user-a-subtopics');
-    const scoreUserBSubtopics = document.getElementById('score-user-b-subtopics');
-    const scoreUserAAvgSub = document.getElementById('score-user-a-avg-sub');
-    const scoreUserBAvgSub = document.getElementById('score-user-b-avg-sub');
-    const scoreUserAAdded = document.getElementById('score-user-a-added');
-    const scoreUserBAdded = document.getElementById('score-user-b-added');
-
-
-    // --- State ---
-    let currentUserIdentifier = null;
-    let currentUserData = null;
-    let isAuthenticated = false;
-    let unsubscribeTodos = null;
-    let unsubscribeSubjects = null;
-    let unsubscribeActivityLog = null;
-    let isDataLoading = true;
-    let deleteModes = { pending: false, completedA: false, completedB: false };
-    let activeSubjectFilter = '--all--';
-    let currentTasksData = [];
-    let availableSubjects = [];
-    let dialogPromiseResolve = null;
-    const collapsedSubtopics = new Set();
-    let systemThemeListener = null;
-    let currentDashboardView = 'combined';
-    let currentGraphStyle = 'bar';
-    let lastVisibleLogDoc = null;
-    let completionChart = null; // Chart.js instance
-
-
-    // --- Custom Dialog Functions ---
-    function showDialog(message, type = 'alert', title = 'Alert') {
-        if (!dialogModalOverlay || !dialogTitle || !dialogMessage || !dialogOkBtn || !dialogConfirmBtn || !dialogCancelBtn) { console.error("CRITICAL DIALOG ERROR: Elements missing!"); alert(`${title}: ${message.replace(/<br>/g, '\n').replace(/<\/?b>/g, '').replace(/<\/?small>/g, '')}`); return; }
-        try {
-            dialogTitle.textContent = title; dialogMessage.innerHTML = message; dialogOkBtn.classList.add('hidden'); dialogConfirmBtn.classList.add('hidden'); dialogCancelBtn.classList.add('hidden');
-            if (type === 'alert') { dialogOkBtn.classList.remove('hidden'); try { dialogOkBtn.focus(); } catch (fe) { console.warn("Could not focus OK button:", fe); } }
-            else if (type === 'confirm') { dialogConfirmBtn.classList.remove('hidden'); dialogCancelBtn.classList.remove('hidden'); try { dialogConfirmBtn.focus(); } catch (fe) { console.warn("Could not focus Confirm button:", fe); } }
-            dialogModalOverlay.classList.remove('hidden'); requestAnimationFrame(() => { dialogModalOverlay.classList.add('visible'); });
-        } catch (error) { console.error("Error showing dialog:", error); alert(`${title}: ${message.replace(/<br>/g, '\n').replace(/<\/?b>/g, '').replace(/<\/?small>/g, '')}`); }
-    }
-    function showAlertDialog(message, title = 'Alert') { showDialog(message, 'alert', title); }
-    function showConfirmDialog(message, title = 'Confirmation') { showDialog(message, 'confirm', title); return new Promise((resolve) => { dialogPromiseResolve = resolve; }); }
-    function handleDialogResponse(confirmed) {
-        if (!dialogModalOverlay) { console.error("Cannot handle dialog response: Overlay missing."); if (dialogPromiseResolve) { dialogPromiseResolve(false); dialogPromiseResolve = null; } return; }
-        dialogModalOverlay.classList.remove('visible'); setTimeout(() => { dialogModalOverlay.classList.add('hidden'); if (dialogPromiseResolve) { dialogPromiseResolve(confirmed); dialogPromiseResolve = null; } }, 300);
-    }
-
-    // --- Dark Mode / Theme Functions ---
-    function getThemePreference() { return localStorage.getItem(THEME_PREFERENCE_KEY) || THEME_SYSTEM; }
-    function setThemePreference(theme) { if ([THEME_LIGHT, THEME_DARK, THEME_SYSTEM].includes(theme)) { localStorage.setItem(THEME_PREFERENCE_KEY, theme); } else { localStorage.setItem(THEME_PREFERENCE_KEY, THEME_SYSTEM); } }
-    function applyTheme(theme) { if (!themeToggleCheckbox) { console.warn("Theme toggle checkbox not found."); return; } const body = document.body; let isDarkMode; if (theme === THEME_DARK) { isDarkMode = true; } else if (theme === THEME_LIGHT) { isDarkMode = false; } else { try {isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;} catch(e){console.warn("matchMedia not supported, defaulting to light theme for system preference.", e); isDarkMode = false;} } body.classList.toggle('dark-mode', isDarkMode); themeToggleCheckbox.checked = isDarkMode; listenToSystemThemeChanges(theme === THEME_SYSTEM); /* Update chart colors after theme change */ if (completionChart) { completionChart.options.plugins.title.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-title-color').trim(); completionChart.options.plugins.legend.labels.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-legend-color').trim(); completionChart.options.scales.y.ticks.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-tick-color').trim(); completionChart.options.scales.y.grid.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color').trim(); completionChart.options.scales.x.ticks.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-tick-color').trim(); completionChart.update(); } }
-    function initializeTheme() { try { const preferredTheme = getThemePreference(); console.log("Initializing theme preference:", preferredTheme); applyTheme(preferredTheme); } catch (e) { console.error("Error initializing theme:", e); } }
-    function handleThemeToggle(event) { try { const isChecked = event.target.checked; const newTheme = isChecked ? THEME_DARK : THEME_LIGHT; console.log("Theme toggled to:", newTheme); setThemePreference(newTheme); applyTheme(newTheme); } catch(e) { console.error("Error handling theme toggle:", e); } }
-    function systemThemeChangeHandler(event) { try { if (getThemePreference() === THEME_SYSTEM) { console.log("System theme changed, applying:", event.matches ? THEME_DARK : THEME_LIGHT); applyTheme(THEME_SYSTEM); } else { console.log("System theme changed, but user preference is set. Ignoring."); } } catch(e) { console.error("Error handling system theme change:", e); } }
-    function listenToSystemThemeChanges(shouldListen) { try { const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)'); if (systemThemeListener) { try { mediaQuery.removeEventListener('change', systemThemeListener); } catch (e) { console.warn("Using deprecated removeListener for media query."); mediaQuery.removeListener(systemThemeListener); } systemThemeListener = null; console.log("Removed system theme listener."); } if (shouldListen) { systemThemeListener = systemThemeChangeHandler; try { mediaQuery.addEventListener('change', systemThemeListener); } catch (e) { console.warn("Using deprecated addListener for media query."); mediaQuery.addListener(systemThemeListener); } console.log("Added system theme listener."); } } catch(e) { console.error("Error setting up system theme listener:", e); } }
-
-    // --- Initialization ---
-    document.addEventListener('DOMContentLoaded', initializeApp);
-    function initializeApp() {
-        console.log('initializeApp (v8.3): Running...');
-        if (!checkElementsExist()) { console.error("initializeApp: Aborting due to missing critical DOM elements."); if (pinDialog && pinError) pinError.textContent = "Critical Error: UI elements missing."; else alert("Critical Error: UI elements missing. App cannot start."); return; }
-        if (!db || !todosRef || !subjectsDocRef || !activityLogRef) { console.error("initializeApp: Firestore references not initialized. Aborting."); if (pinDialog && pinError) { pinError.textContent = "Database connection error."; } else { alert("Database connection error.") } if (pinInput) pinInput.disabled = true; if (pinSubmitBtn) pinSubmitBtn.disabled = true; return; }
-        try { setupEventListeners(); initializeTheme(); checkStoredUser(); updateColumnTitles(); console.log('initializeApp: Setup complete.'); } catch (error) { console.error("Error during initializeApp:", error); if (pinDialog && pinError) { pinError.textContent = "Error initializing app."; } else { alert("An error occurred initializing the app."); } }
-    }
-
-    // --- Element Check ---
-    function checkElementsExist() {
-        const essentialElements = { pinDialog, mainAppContainer, pinInput, pinSubmitBtn, pinError, userIndicator, userCircle, logoutPopup, popupUserName, logoutButton, addTodoForm, todoInput, subjectSelect, loadingIndicator, pendingListEl, completedListAEl, completedListBEl, emptyPending, emptyCompletedA, emptyCompletedB, completedATitle, completedBTitle, subjectFilterPillsContainer, manageSubjectsButton, manageSubjectsModalOverlay, manageSubjectsListUl, addSubjectForm, addSubjectInput, manageSubjectsModalCloseButton, dialogModalOverlay, dialogTitle, dialogMessage, dialogConfirmBtn, dialogCancelBtn, dialogOkBtn, themeToggleCheckbox, dashboardArea, dashboardButton, dashboardBackButton, activityLogListEl, loadMoreLogsButton, clearLogButton, statsTotalTopics, statsPendingTopics, statsFullyCompleted, statsTotalSubtopics, statsActiveSubjects, statsCurrentlyStudying, scoreUserATopics, scoreUserBTopics, scoreUserASubtopics, scoreUserBSubtopics, scoreUserAAvgSub, scoreUserBAvgSub, scoreUserAAdded, scoreUserBAdded };
-        for (const key in essentialElements) { if (!essentialElements[key]) { console.error(`CRITICAL ERROR: Essential UI element missing: ID/Var = ${key}.`); return false; } }
-        if (!deleteModeToggles || deleteModeToggles.length === 0) { console.warn("Warning: Delete mode toggle buttons not found."); }
-        if (!deleteConfirmBtns || deleteConfirmBtns.length === 0) { console.warn("Warning: Delete confirmation buttons not found."); }
-        if (!dashboardViewControls || dashboardViewControls.length === 0) { console.warn("Warning: Dashboard view control buttons not found."); }
-        if (!dashboardGraphControls || dashboardGraphControls.length === 0) { console.warn("Warning: Dashboard graph control buttons not found."); }
-        console.log("checkElementsExist: All essential elements found.");
-        return true;
-    }
-
-    // --- Event Listener Setup ---
-    function setupEventListeners() {
-        console.log('setupEventListeners: Running...');
-        pinSubmitBtn?.addEventListener('click', handlePinSubmit); pinInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); handlePinSubmit(); } }); userCircle?.addEventListener('click', toggleLogoutPopup); logoutButton?.addEventListener('click', logout); addTodoForm?.addEventListener('submit', handleAddTodo); deleteModeToggles.forEach(btn => btn?.addEventListener('click', toggleDeleteMode)); deleteConfirmBtns.forEach(btn => btn?.addEventListener('click', handleDeleteSelected)); document.addEventListener('click', handleOutsideClicks); manageSubjectsButton?.addEventListener('click', showManageSubjectsModal); manageSubjectsModalCloseButton?.addEventListener('click', hideManageSubjectsModal); manageSubjectsModalOverlay?.addEventListener('click', (e) => { if (e.target === manageSubjectsModalOverlay) hideManageSubjectsModal(); }); addSubjectForm?.addEventListener('submit', handleAddSubject); dialogConfirmBtn?.addEventListener('click', () => handleDialogResponse(true)); dialogCancelBtn?.addEventListener('click', () => handleDialogResponse(false)); dialogOkBtn?.addEventListener('click', () => handleDialogResponse(true)); dialogModalOverlay?.addEventListener('click', (e) => { if (e.target === dialogModalOverlay && dialogOkBtn && !dialogOkBtn.classList.contains('hidden')) { handleDialogResponse(true); } }); themeToggleCheckbox?.addEventListener('change', handleThemeToggle); dashboardButton?.addEventListener('click', showDashboard); dashboardBackButton?.addEventListener('click', hideDashboard); document.querySelectorAll('.dashboard-view-control').forEach(btn => btn?.addEventListener('click', handleDashboardViewChange)); document.querySelectorAll('.dashboard-graph-control').forEach(btn => btn?.addEventListener('click', handleDashboardGraphChange));
-        loadMoreLogsButton?.addEventListener('click', loadMoreLogs); clearLogButton?.addEventListener('click', handleClearLogs);
-        console.log('setupEventListeners: Complete.');
-    }
-
-    // --- Activity Logging ---
-    function logActivity(action, details = {}) {
-        if (!activityLogRef || !currentUserIdentifier || !currentUserData) { console.warn("Cannot log activity: Firestore ref or user data missing. Action:", action, "User:", currentUserIdentifier); return; }
-        const logEntry = { action: action, userId: currentUserIdentifier, userName: currentUserData.name, timestamp: firebase.firestore.FieldValue.serverTimestamp(), details: details };
-        activityLogRef.add(logEntry).then(() => console.log("Activity logged:", action, details)).catch(error => { console.error("Error logging activity:", error); });
-    }
-    async function loadAndRenderActivityLog() {
-        if (!isAuthenticated || !activityLogRef || !activityLogListEl) { console.warn("Cannot load activity log: Not authenticated or elements missing."); if (activityLogListEl) activityLogListEl.innerHTML = '<li class="status-message">Activity log unavailable.</li>'; if (loadMoreLogsButton) loadMoreLogsButton.classList.add('hidden'); lastVisibleLogDoc = null; return; }
-        if (unsubscribeActivityLog) { console.log("Detaching previous activity log listener (if any)."); try{unsubscribeActivityLog();}catch(e){} unsubscribeActivityLog = null; }
-        console.log("Loading initial activity logs..."); activityLogListEl.innerHTML = '<li class="status-message">Loading activity...</li>'; if (loadMoreLogsButton) loadMoreLogsButton.classList.add('hidden'); lastVisibleLogDoc = null;
-        try {
-            const query = activityLogRef.orderBy('timestamp', 'desc').limit(LOG_LIMIT); const snapshot = await query.get();
-            console.log(`Initial activity log fetch complete (${snapshot.size} docs)`); if (!activityLogListEl) return;
-            if (snapshot.empty) { activityLogListEl.innerHTML = '<li class="status-message">No activity found.</li>'; if (loadMoreLogsButton) loadMoreLogsButton.classList.add('hidden'); lastVisibleLogDoc = null; return; }
-            let logHTML = ''; snapshot.forEach(doc => { logHTML += renderLogEntry(doc.data()); }); activityLogListEl.innerHTML = logHTML; lastVisibleLogDoc = snapshot.docs[snapshot.docs.length - 1];
-            if (snapshot.size === LOG_LIMIT && loadMoreLogsButton) { loadMoreLogsButton.classList.remove('hidden'); } else if (loadMoreLogsButton) { loadMoreLogsButton.classList.add('hidden'); }
-        } catch (error) {
-            console.error("Error fetching initial activity log:", error); if (!activityLogListEl) return; let errorMsg = "Error loading activity log.";
-            if (error.code === 'permission-denied') { errorMsg = "Permission denied to read activity log."; showAlertDialog(errorMsg, "Permission Error"); } else if (error.code === 'unauthenticated') { errorMsg = "Authentication error loading log."; showAlertDialog(errorMsg, "Authentication Error"); }
-            activityLogListEl.innerHTML = `<li class="status-message error-message">${errorMsg}</li>`; if (loadMoreLogsButton) loadMoreLogsButton.classList.add('hidden'); lastVisibleLogDoc = null;
-        }
-    }
-    function renderLogEntry(log) {
-        if (!log || !log.timestamp || typeof log.timestamp.toDate !== 'function') { console.warn("Skipping invalid log entry:", log); return ''; }
-        try {
-            const date = log.timestamp.toDate(); const timeString = date.toLocaleTimeString ? date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true }) : '??:?? ??'; const dateString = date.toLocaleDateString ? date.toLocaleDateString([], { month: 'short', day: 'numeric'}) : '??? ??'; let message = ''; const userName = log.userName || 'Unknown User'; const userId = log.userId || 'unknown'; const userClass = userId === USER_A_ID ? 'user-a' : (userId === USER_B_ID ? 'user-b' : '');
-            const safeDetails = {}; if (log.details && typeof log.details === 'object') { for (const key in log.details) { if (typeof log.details[key] === 'string') { safeDetails[key] = log.details[key].replace(/</g, "<").replace(/>/g, ">"); } else { safeDetails[key] = log.details[key]; } } } else { safeDetails.topicText='N/A'; safeDetails.subtopicText='N/A'; safeDetails.parentTopicText='N/A'; safeDetails.subject='N/A'; safeDetails.status='done'; }
-            switch (log.action) {
-                case 'ADD_TOPIC':       message = `<strong class="${userClass}">${userName}</strong> added topic <i>"${safeDetails.topicText}"</i> to subject <i>${safeDetails.subject}</i>`; break;
-                case 'COMPLETE_TOPIC':  message = `<strong class="${userClass}">${userName}</strong> marked topic <i>"${safeDetails.topicText}"</i> as ${safeDetails.status}`; break;
-                case 'ADD_SUBTOPIC':    message = `<strong class="${userClass}">${userName}</strong> added subtopic <i>"${safeDetails.subtopicText}"</i> to <i>"${safeDetails.parentTopicText}"</i>`; break;
-                case 'COMPLETE_SUBTOPIC': message = `<strong class="${userClass}">${userName}</strong> marked subtopic <i>"${safeDetails.subtopicText}"</i> as ${safeDetails.status}`; break;
-                case 'DELETE_TOPIC':    message = `<strong class="${userClass}">${userName}</strong> deleted topic <i>"${safeDetails.topicText}"</i>`; break;
-                case 'DELETE_SUBTOPIC': message = `<strong class="${userClass}">${userName}</strong> deleted subtopic <i>"${safeDetails.subtopicText}"</i> from <i>"${safeDetails.parentTopicText}"</i>`; break;
-                case 'ADD_SUBJECT':     message = `<strong class="${userClass}">${userName}</strong> added subject <i>"${safeDetails.subject}"</i>`; break;
-                case 'DELETE_SUBJECT':  message = `<strong class="${userClass}">${userName}</strong> deleted subject <i>"${safeDetails.subject}"</i>`; break;
-                case 'START_STUDYING':  message = `<strong class="${userClass}">${userName}</strong> started studying <i>"${safeDetails.topicText}"</i>`; break;
-                case 'STOP_STUDYING':   message = `<strong class="${userClass}">${userName}</strong> stopped studying <i>"${safeDetails.topicText}"</i>`; break;
-                case 'LOGIN':           message = `<strong class="${userClass}">${userName}</strong> logged in`; break;
-                case 'LOGOUT':          message = `<strong class="${userClass}">${userName}</strong> logged out`; break;
-                default:                message = `<strong class="${userClass}">${userName}</strong> performed unknown action: ${log.action} ${JSON.stringify(safeDetails)}`;
-            }
-            return `<li><span class="log-message">${message}</span><span class="log-time" title="${date.toLocaleString ? date.toLocaleString() : ''}">${dateString} ${timeString}</span></li>`;
-        } catch (error) { console.error("Error rendering log entry:", error, log); return `<li><span class="log-message error">Error rendering log entry</span><span class="log-time">--</span></li>`; }
-    }
-
-    // --- UI Updates & Auth Flow ---
-    function updateColumnTitles() { try { if(completedATitle && USERS[USER_A_ID]) completedATitle.textContent = `Completed by ${USERS[USER_A_ID].name}`; if(completedBTitle && USERS[USER_B_ID]) completedBTitle.textContent = `Completed by ${USERS[USER_B_ID].name}`; } catch (e) {console.error("Error updating column titles:", e)} }
-    function updateScoreboardHeaders() { try { const headerA = document.getElementById('scoreboard-header-a'); const headerB = document.getElementById('scoreboard-header-b'); if(headerA && USERS[USER_A_ID]) headerA.textContent = USERS[USER_A_ID].name; if(headerB && USERS[USER_B_ID]) headerB.textContent = USERS[USER_B_ID].name; } catch(e) {console.error("Error updating scoreboard headers:", e)} }
-    function handleOutsideClicks(event) { try { if (userIndicator && logoutPopup && !userIndicator.contains(event.target) && logoutPopup.style.display === 'block') { logoutPopup.style.display = 'none'; } } catch(e) {console.error("Error handling outside clicks:", e)} }
-    function checkStoredUser() { console.log("checkStoredUser: Checking..."); try { const storedUserId = localStorage.getItem('currentUserIdentifier'); if (storedUserId && USERS[storedUserId]) { console.log(`checkStoredUser: Found ${storedUserId}. Attempting authentication.`); authenticateUser(storedUserId); } else { console.log("checkStoredUser: No valid user found in storage."); displayLogin(); } } catch(e) { console.error("Error checking stored user:", e); displayLogin(); } }
-    function displayLogin() { console.log("displayLogin: Showing PIN dialog."); try { if(pinDialog) pinDialog.classList.remove('hidden'); if(mainAppContainer) mainAppContainer.classList.add('hidden'); if(userIndicator) userIndicator.classList.add('hidden'); if(dashboardArea) dashboardArea.classList.add('hidden'); isAuthenticated = false; if(pinInput) { pinInput.value = ''; pinInput.disabled = false; try{pinInput.focus();}catch(fe){} } if(pinSubmitBtn) pinSubmitBtn.disabled = false; if(pinError) pinError.textContent = '\u00A0'; } catch(e) {console.error("Error displaying login:", e)} }
-    function handlePinSubmit() {
-        if (!pinInput || !pinError || !pinSubmitBtn) { console.error("PIN elements missing."); return; } const enteredPin = pinInput.value; pinError.textContent = '\u00A0';
-        if (!enteredPin) { pinError.textContent = 'Please enter PIN.'; try{pinInput.focus();}catch(e){} return; }
-        pinSubmitBtn.disabled = true; pinInput.disabled = true; let foundUser = null; try { foundUser = Object.keys(USERS).find(id => USERS[id].pin === enteredPin); } catch (e) { console.error("Error finding user by PIN:", e); }
-        if (foundUser) { const tempUserData = USERS[foundUser]; const tempUserId = foundUser; currentUserIdentifier = tempUserId; currentUserData = tempUserData; logActivity('LOGIN'); authenticateUser(foundUser); }
-        else { pinError.textContent = 'Incorrect PIN.'; pinInput.value = ''; pinSubmitBtn.disabled = false; pinInput.disabled = false; try{pinInput.focus();}catch(e){} if (typeof pinInput.animate === 'function') { try { pinInput.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' } ], { duration: 350, easing: 'ease-in-out' }); } catch(animError){console.warn("Animation failed:", animError)} } }
-    }
-    function authenticateUser(userId) {
-        console.log(`authenticateUser: Authenticating ${userId}`); if (!USERS[userId]) { console.error(`authenticateUser: Invalid userId "${userId}" provided.`); displayLogin(); if(pinSubmitBtn) pinSubmitBtn.disabled = false; if(pinInput) pinInput.disabled = false; return; }
-        try { currentUserIdentifier = userId; currentUserData = USERS[userId]; isAuthenticated = true; isDataLoading = true; localStorage.setItem('currentUserIdentifier', currentUserIdentifier);
-            // logActivity('LOGIN'); // <<--- Login logged only via handlePinSubmit now
-            console.log('authenticateUser: Updating UI...'); if(pinDialog) pinDialog.classList.add('hidden'); if(mainAppContainer) mainAppContainer.classList.remove('hidden'); if(dashboardArea) dashboardArea.classList.add('hidden'); if(loadingIndicator) loadingIndicator.classList.remove('hidden'); document.body.classList.remove('user-a-active', 'user-b-active'); document.body.classList.add(currentUserIdentifier === USER_A_ID ? 'user-a-active' : 'user-b-active');
-            if(userCircle && currentUserData) { userCircle.style.backgroundColor = currentUserData.color; userCircle.textContent = currentUserData.name.charAt(0); userCircle.title = `Logged in as ${currentUserData.name}. Click for options.`; }
-            if(popupUserName && currentUserData) popupUserName.textContent = currentUserData.name; if(userIndicator) userIndicator.classList.remove('hidden'); if(logoutPopup) logoutPopup.style.display = 'none'; updateScoreboardHeaders();
-            const deleteToggleA = document.querySelector('.delete-mode-toggle[data-list-type="completedA"]'); const deleteToggleB = document.querySelector('.delete-mode-toggle[data-list-type="completedB"]'); const deleteTogglePending = document.querySelector('.delete-mode-toggle[data-list-type="pending"]');
-            if (deleteTogglePending) deleteTogglePending.classList.remove('hidden'); if (deleteToggleA && deleteToggleB) { deleteToggleA.classList.toggle('hidden', currentUserIdentifier !== USER_A_ID); deleteToggleB.classList.toggle('hidden', currentUserIdentifier !== USER_B_ID); }
-            console.log('authenticateUser: UI updates done. Starting data listeners...'); listenForAvailableSubjects(); loadAndRenderTasks();
-            if(pinSubmitBtn) pinSubmitBtn.disabled = false; if(pinInput) pinInput.disabled = false;
-        } catch (e) { console.error("Error during authentication UI update or listener setup:", e); showAlertDialog("An error occurred during login. Please try again.", "Login Error"); logout(); }
-    }
-    function logout() { console.log("logout: Logging out."); try { if (currentUserIdentifier && currentUserData) { logActivity('LOGOUT'); } else { console.warn("Logout called but no user authenticated."); } if (unsubscribeTodos) { try{unsubscribeTodos();}catch(e){} unsubscribeTodos = null; console.log("Detached todos listener."); } if (unsubscribeSubjects) { try{unsubscribeSubjects();}catch(e){} unsubscribeSubjects = null; console.log("Detached subjects listener."); } if (unsubscribeActivityLog) { try{unsubscribeActivityLog();}catch(e){} unsubscribeActivityLog = null; console.log("Detached activity log listener."); } isAuthenticated = false; currentUserIdentifier = null; currentUserData = null; isDataLoading = false; localStorage.removeItem('currentUserIdentifier'); document.body.classList.remove('user-a-active', 'user-b-active'); Object.keys(deleteModes).forEach(key => { if (deleteModes[key]) try {toggleDeleteModeUI(key, false);} catch(uiErr){} deleteModes[key] = false; }); clearAllLists(); collapsedSubtopics.clear(); const allDeleteToggles = document.querySelectorAll('.delete-mode-toggle'); allDeleteToggles.forEach(toggle => toggle?.classList.add('hidden')); if(subjectFilterPillsContainer) subjectFilterPillsContainer.innerHTML = ''; activeSubjectFilter = '--all--'; availableSubjects = []; populateSubjectDropdown(); hideManageSubjectsModal(); if(pinInput) pinInput.value = ''; hideDashboard(); if(activityLogListEl) activityLogListEl.innerHTML = ''; lastVisibleLogDoc = null; if(completionChart) { try{completionChart.destroy();}catch(e){} completionChart = null; } displayLogin(); if(loadingIndicator) loadingIndicator.classList.add('hidden'); console.log("logout: Complete."); } catch (e) { console.error("Error during logout:", e); try { displayLogin(); } catch(dispErr){} } }
-    function toggleLogoutPopup() { try { if (logoutPopup) logoutPopup.style.display = logoutPopup.style.display === 'block' ? 'none' : 'block'; } catch(e){console.error("Error toggling logout popup:", e)} }
-    function toggleDeleteMode(event) { try { const listType = event.target?.dataset?.listType; if (!listType || typeof deleteModes[listType] === 'undefined') return; if ((listType === 'completedA' && currentUserIdentifier !== USER_A_ID) || (listType === 'completedB' && currentUserIdentifier !== USER_B_ID)) return; const newDeleteState = !deleteModes[listType]; deleteModes[listType] = newDeleteState; toggleDeleteModeUI(listType, newDeleteState); } catch(e){console.error("Error toggling delete mode:", e)} }
-    function toggleDeleteModeUI(listType, isActive) { try { const listElement = getListElementByType(listType); const controlsElement = document.getElementById(`delete-controls-${listType}`); const toggleButton = document.querySelector(`.delete-mode-toggle[data-list-type="${listType}"]`); if (!listElement || !controlsElement || !toggleButton) { console.warn(`toggleDeleteModeUI: Missing elements for ${listType}`); return; } listElement.classList.toggle('delete-mode-active', isActive); controlsElement.classList.toggle('hidden', !isActive); listElement.querySelectorAll('li').forEach(li => { li?.classList.toggle('delete-mode', isActive); if (!isActive) { const delCheckbox = li?.querySelector('.delete-checkbox'); if (delCheckbox) delCheckbox.checked = false; } }); toggleButton.style.color = isActive ? 'var(--accent-color-danger)' : 'var(--secondary-text-color)'; toggleButton.textContent = isActive ? '✕' : '🗑️'; toggleButton.title = isActive ? 'Cancel Delete Mode' : 'Toggle Delete Mode'; filterAndRenderLists(); } catch(e){console.error("Error toggling delete mode UI:", e)} }
-
-    // --- Dashboard Functions ---
-    function showDashboard() { console.log("Showing Dashboard"); try { if(!isAuthenticated || !dashboardArea || !mainAppContainer) { console.warn("Cannot show dashboard: Not authenticated or elements missing."); return; } mainAppContainer.classList.add('hidden'); dashboardArea.classList.remove('hidden'); if (logoutPopup) logoutPopup.style.display = 'none'; updateDashboardStats(); loadAndRenderActivityLog(); window.scrollTo(0, 0); } catch(e){console.error("Error showing dashboard:", e)} }
-    function hideDashboard() { console.log("Hiding Dashboard"); try { if (dashboardArea) dashboardArea.classList.add('hidden'); if (mainAppContainer && isAuthenticated) mainAppContainer.classList.remove('hidden'); if (unsubscribeActivityLog) { console.log("Detaching activity log listener on dashboard hide."); try{unsubscribeActivityLog();}catch(unsubErr){} unsubscribeActivityLog = null; } } catch(e){console.error("Error hiding dashboard:", e)} }
-    function handleDashboardViewChange(event) { try { const newView = event.target?.dataset?.view; if (!newView || newView === currentDashboardView) return; currentDashboardView = newView; console.log("Dashboard view changed to:", currentDashboardView); document.querySelectorAll('.dashboard-view-control').forEach(btn => { btn?.classList.toggle('active', btn.dataset.view === newView); }); updateDashboardStats(); } catch(e){console.error("Error handling dashboard view change:", e)} }
-    function handleDashboardGraphChange(event) { try { const newGraphStyle = event.target?.dataset?.graph; if (!newGraphStyle || newGraphStyle === currentGraphStyle) return; currentGraphStyle = newGraphStyle; console.log("Dashboard graph style changed to:", currentGraphStyle); document.querySelectorAll('.dashboard-graph-control').forEach(btn => { btn?.classList.toggle('active', btn.dataset.graph === newGraphStyle); }); updateDashboardStats(); } catch(e){console.error("Error handling dashboard graph change:", e)} }
-    function updateDashboardStats() {
-        if (!isAuthenticated || !currentTasksData || !availableSubjects) { console.warn("Cannot update dashboard stats: Missing data or not authenticated."); [statsTotalTopics, statsPendingTopics, statsFullyCompleted, statsTotalSubtopics, statsActiveSubjects, statsCurrentlyStudying, scoreUserATopics, scoreUserBTopics, scoreUserASubtopics, scoreUserBSubtopics, scoreUserAAvgSub, scoreUserBAvgSub, scoreUserAAdded, scoreUserBAdded].forEach(el => { if (el) el.textContent = '--'; }); return; }
-        try {
-            console.log("Updating dashboard stats for view:", currentDashboardView);
-            const totalTopics = currentTasksData.length; const pendingTopics = currentTasksData.filter(t => !t.completedByA || !t.completedByB).length; const fullyCompleted = currentTasksData.filter(t => t.completedByA && t.completedByB).length; const totalSubtopics = currentTasksData.reduce((sum, task) => sum + (task.subtopics?.length || 0), 0); const activeSubjectsCount = availableSubjects.length; const currentlyStudyingCount = currentTasksData.filter(t => t.studying && (t.studying[USER_A_ID] || t.studying[USER_B_ID])).length;
-            if(statsTotalTopics) statsTotalTopics.textContent = totalTopics; if(statsPendingTopics) statsPendingTopics.textContent = pendingTopics; if(statsFullyCompleted) statsFullyCompleted.textContent = fullyCompleted; if(statsTotalSubtopics) statsTotalSubtopics.textContent = totalSubtopics; if(statsActiveSubjects) statsActiveSubjects.textContent = activeSubjectsCount; if(statsCurrentlyStudying) statsCurrentlyStudying.textContent = currentlyStudyingCount;
-            let filteredTasks = currentTasksData; const topicsCompletedA = filteredTasks.filter(t => t.completedByA).length; const topicsCompletedB = filteredTasks.filter(t => t.completedByB).length; const subtopicsCompletedA = filteredTasks.reduce((sum, task) => sum + (task.subtopics?.filter(st => st.completedByA).length || 0), 0); const subtopicsCompletedB = filteredTasks.reduce((sum, task) => sum + (task.subtopics?.filter(st => st.completedByB).length || 0), 0); const topicsWithSubtopicsA = filteredTasks.filter(t => t.subtopics?.length > 0 && t.completedByA); const topicsWithSubtopicsB = filteredTasks.filter(t => t.subtopics?.length > 0 && t.completedByB); const avgSubtopicsA = topicsWithSubtopicsA.length > 0 ? (topicsWithSubtopicsA.reduce((sum, t) => sum + t.subtopics.length, 0) / topicsWithSubtopicsA.length).toFixed(1) : '0.0'; const avgSubtopicsB = topicsWithSubtopicsB.length > 0 ? (topicsWithSubtopicsB.reduce((sum, t) => sum + t.subtopics.length, 0) / topicsWithSubtopicsB.length).toFixed(1) : '0.0'; const topicsAddedA = filteredTasks.filter(t => t.addedBy === USER_A_ID).length; const topicsAddedB = filteredTasks.filter(t => t.addedBy === USER_B_ID).length;
-            if(scoreUserATopics) scoreUserATopics.textContent = topicsCompletedA; if(scoreUserBTopics) scoreUserBTopics.textContent = topicsCompletedB; if(scoreUserASubtopics) scoreUserASubtopics.textContent = subtopicsCompletedA; if(scoreUserBSubtopics) scoreUserBSubtopics.textContent = subtopicsCompletedB; if(scoreUserAAvgSub) scoreUserAAvgSub.textContent = avgSubtopicsA; if(scoreUserBAvgSub) scoreUserBAvgSub.textContent = avgSubtopicsB; if(scoreUserAAdded) scoreUserAAdded.textContent = topicsAddedA; if(scoreUserBAdded) scoreUserBAdded.textContent = topicsAddedB;
-            // Chart Update
-            const chartData = processDataForChart(currentDashboardView); const chartType = currentGraphStyle; let chartTitle = 'Topics Completed per Subject ';
-            if (currentDashboardView === 'userA') chartTitle += `(${USERS[USER_A_ID]?.name || 'User A'})`; else if (currentDashboardView === 'userB') chartTitle += `(${USERS[USER_B_ID]?.name || 'User B'})`; else chartTitle += '(Comparison)';
-            const graphTitleEl = document.getElementById('graph-title'); if (graphTitleEl) graphTitleEl.textContent = chartTitle;
-            renderCompletionChart(chartData, chartType, chartTitle);
-            console.log("Dashboard stats and chart updated.");
-        } catch(e){console.error("Error updating dashboard stats:", e)}
-    }
-
-    // --- Subject Management ---
-    function listenForAvailableSubjects() { if (!isAuthenticated || !subjectsDocRef) { console.warn("Cannot listen for subjects: Not authenticated or Firestore ref missing."); availableSubjects = []; try{populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList();}catch(uiErr){} return; } if (unsubscribeSubjects) { console.log("Detaching previous subjects listener."); try{unsubscribeSubjects();}catch(unsubErr){console.error("Error unsubscribing subjects:", unsubErr)} unsubscribeSubjects = null; } console.log("Listening for available subjects..."); try { unsubscribeSubjects = subjectsDocRef.onSnapshot(doc => { try { if (doc.exists) { const data = doc.data(); availableSubjects = Array.isArray(data?.available) ? data.available.filter(s => typeof s === 'string' && s.trim() !== '') : []; console.log("Subjects Updated:", availableSubjects); } else { console.warn("Subjects doc missing! Creating one."); availableSubjects = []; subjectsDocRef.set({ available: [] }).then(() => console.log("Created missing subjects document.")).catch(err => { console.error("Error creating subjects doc:", err); if (err.code === 'permission-denied') { showAlertDialog("Permission denied to create the subjects list document.", "Permission Error"); } else { showAlertDialog("Failed to initialize the subjects list.", "Error"); } }); } populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); } catch (snapError) { console.error("Error processing subjects snapshot:", snapError); availableSubjects = []; populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); } }, error => { console.error("Error listening to subjects:", error); let errorMsg = "Error fetching subject list."; if (error.code === 'permission-denied') { errorMsg = "Permission denied to access subject list."; showAlertDialog(errorMsg, "Permission Error"); } else { showAlertDialog(errorMsg + " Subject functionality may be limited.", "Error"); } availableSubjects = []; populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); if (unsubscribeSubjects) { try{unsubscribeSubjects();}catch(unsubErr){} unsubscribeSubjects = null; } }); } catch (listenerError) { console.error("Failed to attach subjects listener:", listenerError); availableSubjects = []; populateSubjectDropdown(); renderSubjectFilterPills(); renderManageSubjectsList(); } }
-    function populateSubjectDropdown() { if (!subjectSelect) {console.warn("Subject select dropdown not found."); return;} try { const currentSelection = subjectSelect.value; subjectSelect.innerHTML = '<option value="" disabled>-- Select Subject --</option>'; if (availableSubjects.length === 0) { subjectSelect.value = ""; subjectSelect.options[0].selected = true; subjectSelect.disabled = true; const placeholderOption = document.createElement('option'); placeholderOption.value = ""; placeholderOption.textContent = "No subjects available"; placeholderOption.disabled = true; subjectSelect.appendChild(placeholderOption); return; } subjectSelect.disabled = false; const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const option = document.createElement('option'); option.value = subject; option.textContent = subject; subjectSelect.appendChild(option); }); if (availableSubjects.includes(currentSelection)) { subjectSelect.value = currentSelection; } else { subjectSelect.value = ""; subjectSelect.options[0].selected = true; } } catch(e){console.error("Error populating subject dropdown:", e)} }
-    function showManageSubjectsModal() { try { if (!manageSubjectsModalOverlay) return; renderManageSubjectsList(); manageSubjectsModalOverlay.classList.remove('hidden'); manageSubjectsModalOverlay.classList.add('visible'); if (logoutPopup) logoutPopup.style.display = 'none'; } catch(e){console.error("Error showing manage subjects modal:", e)} }
-    function hideManageSubjectsModal() { try { if (!manageSubjectsModalOverlay) return; manageSubjectsModalOverlay.classList.remove('visible'); setTimeout(() => { manageSubjectsModalOverlay.classList.add('hidden'); }, 300); } catch(e){console.error("Error hiding manage subjects modal:", e)} }
-    function renderManageSubjectsList() { if (!manageSubjectsListUl) {console.warn("Manage subjects list UL not found."); return;} try { manageSubjectsListUl.innerHTML = ''; if (availableSubjects.length === 0) { manageSubjectsListUl.innerHTML = '<li class="status-message">No subjects defined yet.</li>'; return; } const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const li = document.createElement('li'); const span = document.createElement('span'); span.textContent = subject; const deleteBtn = document.createElement('button'); deleteBtn.textContent = 'Delete'; deleteBtn.title = `Delete subject "${subject}"`; deleteBtn.onclick = async (e) => { e.stopPropagation(); try { const confirmed = await showConfirmDialog(`Delete subject "<b>${subject}</b>"?<br><small>This won't remove the subject from existing tasks.</small>`, "Confirm Deletion"); if (confirmed) { handleDeleteSubject(subject); } } catch (confirmError) { console.error("Error during subject delete confirmation:", confirmError); } }; li.appendChild(span); li.appendChild(deleteBtn); manageSubjectsListUl.appendChild(li); }); } catch(e){console.error("Error rendering manage subjects list:", e)} }
-    async function handleAddSubject(e) { e.preventDefault(); if (!addSubjectInput || !subjectsDocRef || !isAuthenticated) { console.warn("Cannot add subject: Prerequisites missing."); return; } const newSubject = addSubjectInput.value.trim(); if (!newSubject) { await showAlertDialog("Please enter a subject name."); try{addSubjectInput.focus();}catch(fe){} return; } if (availableSubjects.some(s => s.toLowerCase() === newSubject.toLowerCase())) { await showAlertDialog(`Subject "${newSubject}" already exists (case-insensitive).`); try{addSubjectInput.select();}catch(se){} return; } console.log("Adding subject:", newSubject); const addButton = addSubjectForm?.querySelector('button[type="submit"]'); if (addButton) addButton.disabled = true; addSubjectInput.disabled = true; try { await subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayUnion(newSubject) }); console.log("Subject added successfully."); logActivity('ADD_SUBJECT', { subject: newSubject }); addSubjectInput.value = ''; } catch (error) { console.error("Error adding subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to add subject.", "Permission Error"); } else { await showAlertDialog("Failed to add subject. Please try again.", "Error"); } } finally { if (addButton) addButton.disabled = false; addSubjectInput.disabled = false; try{addSubjectInput.focus();}catch(fe){} } }
-    async function handleDeleteSubject(subjectToDelete) { if (!subjectsDocRef || !subjectToDelete || !isAuthenticated) { console.warn("Cannot delete subject: Prerequisites missing."); return; } console.log("Deleting subject:", subjectToDelete); try { await subjectsDocRef.update({ available: firebase.firestore.FieldValue.arrayRemove(subjectToDelete) }); console.log("Subject deleted successfully."); logActivity('DELETE_SUBJECT', { subject: subjectToDelete }); if (activeSubjectFilter === subjectToDelete) { activeSubjectFilter = '--all--'; filterAndRenderLists(); } } catch (error) { console.error("Error deleting subject:", error); if (error.code === 'permission-denied') { await showAlertDialog("Permission denied to delete subject.", "Permission Error"); } else { await showAlertDialog("Failed to delete subject. Please try again.", "Error"); } } }
-
-    // --- END OF SCRIPT PART 1 ---
-    
-     <!-- START OF SCRIPT PART 2 of 2 -->
-
-    // --- Charting Functions (NEW) ---
-
-    /**
-     * Renders or updates the completion chart on the canvas.
-     * @param {object} chartData - The data object formatted for Chart.js (labels, datasets).
-     * @param {string} chartType - 'bar' or 'line'.
-     * @param {string} chartTitle - The title to display for the chart.
-     */
-    function renderCompletionChart(chartData, chartType, chartTitle) {
-        const canvas = document.getElementById('completionChartCanvas');
-        if (!canvas) { console.error("Chart canvas element not found!"); return; }
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { console.error("Could not get 2D context for chart canvas."); return; }
-
-        // Destroy previous chart instance if it exists
-        if (completionChart) { console.log("Destroying previous chart instance."); try { completionChart.destroy(); } catch(e){console.error("Error destroying chart:", e)} completionChart = null; }
-
-        console.log(`Rendering ${chartType} chart titled: ${chartTitle}`);
-
-        try {
-            // Get current theme colors from CSS variables
-            const style = getComputedStyle(document.documentElement);
-            const titleColor = style.getPropertyValue('--chart-title-color').trim();
-            const legendColor = style.getPropertyValue('--chart-legend-color').trim();
-            const tickColor = style.getPropertyValue('--chart-tick-color').trim();
-            const gridColor = style.getPropertyValue('--chart-grid-color').trim();
-
-            completionChart = new Chart(ctx, {
-                type: chartType,
-                data: chartData,
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        title: { display: true, text: chartTitle, font: { size: 16 }, color: titleColor },
-                        legend: { position: 'top', labels: { color: legendColor } },
-                        tooltip: { mode: 'index', intersect: false, }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: tickColor, precision: 0 }, grid: { color: gridColor } },
-                        x: { ticks: { color: tickColor }, grid: { display: false } }
-                    }
+                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
+                
+                if (savedProgress) {
+                    const totalCount = Object.keys(savedProgress).length;
+                    const checkedCount = Object.values(savedProgress).filter(Boolean).length;
+                    const percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
+                    
+                    const offset = circumference - (percentage / 100) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                    percentageText.textContent = `${Math.round(percentage)}%`;
                 }
-            });
-        } catch (error) {
-            console.error("Error creating chart:", error);
-            if (canvas.parentElement) { canvas.parentElement.innerHTML = '<p class="status-message error">Could not render chart.</p>';}
-        }
-    }
-
-    /**
-     * Processes task data to generate labels and datasets for the chart.
-     * @param {string} view - 'combined', 'userA', or 'userB'.
-     * @returns {object} - Object containing { labels: [], datasets: [] } for Chart.js.
-     */
-    function processDataForChart(view) {
-        if (!currentTasksData || !availableSubjects) { console.warn("Cannot process chart data: Missing tasks or subjects."); return { labels: [], datasets: [] }; }
-
-        // Use availableSubjects for labels, ensures consistency even if a subject has no tasks yet
-        const labels = [...availableSubjects].sort((a,b) => a.localeCompare(b));
-        const datasets = [];
-        const countsA = {}; const countsB = {}; const countsBoth = {};
-        labels.forEach(subject => { countsA[subject] = 0; countsB[subject] = 0; countsBoth[subject] = 0; });
-
-        currentTasksData.forEach(task => {
-            if (labels.includes(task.subject)) { // Ensure subject is in our known list
-                if (task.completedByA) countsA[task.subject]++;
-                if (task.completedByB) countsB[task.subject]++;
-                if (task.completedByA && task.completedByB) countsBoth[task.subject]++;
             }
+
+            // Initialize both progress circles
+            setupProgressCircle('forensic-card', 'forensicChecklistProgress');
+            setupProgressCircle('community-card', 'communityMedicineChecklistProgress');
         });
-
-        // Get current theme chart colors from CSS Variables
-        const style = getComputedStyle(document.documentElement);
-        const userABg = style.getPropertyValue('--chart-user-a-bg').trim();
-        const userABorder = style.getPropertyValue('--chart-user-a-border').trim();
-        const userBBg = style.getPropertyValue('--chart-user-b-bg').trim();
-        const userBBorder = style.getPropertyValue('--chart-user-b-border').trim();
-        // const bothBg = style.getPropertyValue('--chart-both-bg').trim(); // If using 'Both' dataset
-        // const bothBorder = style.getPropertyValue('--chart-both-border').trim();
-
-        const dataA = labels.map(subject => countsA[subject]);
-        const dataB = labels.map(subject => countsB[subject]);
-        // const dataBoth = labels.map(subject => countsBoth[subject]); // If using 'Both' dataset
-
-        if (view === 'combined') {
-            datasets.push({ label: USERS[USER_A_ID]?.name || 'User A', data: dataA, backgroundColor: userABg, borderColor: userABorder, borderWidth: 1, tension: 0.1 });
-            datasets.push({ label: USERS[USER_B_ID]?.name || 'User B', data: dataB, backgroundColor: userBBg, borderColor: userBBorder, borderWidth: 1, tension: 0.1 });
-            // Optional 'Both' dataset
-            // datasets.push({ label: 'Fully Completed', data: dataBoth, backgroundColor: bothBg, borderColor: bothBorder, borderWidth: 1, tension: 0.1 });
-        } else if (view === 'userA') {
-            datasets.push({ label: USERS[USER_A_ID]?.name || 'User A', data: dataA, backgroundColor: userABg, borderColor: userABorder, borderWidth: 1, tension: 0.1 });
-        } else if (view === 'userB') {
-             datasets.push({ label: USERS[USER_B_ID]?.name || 'User B', data: dataB, backgroundColor: userBBg, borderColor: userBBorder, borderWidth: 1, tension: 0.1 });
-        }
-
-        return { labels, datasets };
-    }
-
-
-    // --- Firestore Operations & Task Data Handling (Continued) ---
-    function loadAndRenderTasks() {
-        if (!isAuthenticated || !todosRef) { console.warn("loadAndRenderTasks: Not authenticated or todosRef missing."); clearAllLists(); if(loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; currentTasksData = []; if (pendingListEl) pendingListEl.innerHTML = '<li class="status-message error">Cannot load tasks.</li>'; return; }
-        if (unsubscribeTodos) { console.log("loadAndRenderTasks: Detaching previous listener."); try{unsubscribeTodos();}catch(e){} unsubscribeTodos = null; }
-        console.log("loadAndRenderTasks: Starting listener..."); if(isDataLoading && loadingIndicator) loadingIndicator.classList.remove('hidden');
-        try {
-             unsubscribeTodos = todosRef.orderBy('createdAt', 'asc').onSnapshot(snapshot => {
-                    try {
-                         console.log(`loadAndRenderTasks: Snapshot received (${snapshot.docs?.length || 0} docs).`); let allTasksRawData = [];
-                         snapshot.forEach(doc => {
-                             const data = doc.data(); const id = doc.id;
-                             if (!data || typeof data.text !== 'string' || data.text.trim() === '') { console.warn(`Skipping invalid doc: ID=${id}`, data); return; }
-                             const isCompletedA = data.completedByA === true; const isCompletedB = data.completedByB === true; const addedBy = data.addedBy || null; const subject = data.subject || null;
-                             const studyingMap = (data.studying && typeof data.studying === 'object') ? { [USER_A_ID]: data.studying[USER_A_ID] === true, [USER_B_ID]: data.studying[USER_B_ID] === true } : { [USER_A_ID]: false, [USER_B_ID]: false };
-                             const subtopics = Array.isArray(data.subtopics) ? data.subtopics.filter(st => st && typeof st.id === 'string' && typeof st.text === 'string').map(st => ({ id: st.id, text: st.text, completedByA: st.completedByA === true, completedByB: st.completedByB === true })) : [];
-                             let createdAt = null; if (data.createdAt?.toDate) { createdAt = data.createdAt.toDate(); } else if (data.createdAt) { console.warn(`Invalid createdAt format for task ${id}:`, data.createdAt); }
-                             allTasksRawData.push({ id, text: data.text.trim(), subject, completedByA: isCompletedA, completedByB: isCompletedB, studying: studyingMap, subtopics, addedBy, createdAt });
-                         });
-                         currentTasksData = allTasksRawData; console.log("Current Tasks loaded:", currentTasksData.length);
-                         populateSubjectDropdown(); renderSubjectFilterPills(); filterAndRenderLists();
-                         if (isDataLoading) { if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; }
-                         if (dashboardArea && !dashboardArea.classList.contains('hidden')) { updateDashboardStats(); } // Update dashboard if visible
-                     } catch (snapError) { console.error("Error processing tasks snapshot:", snapError); if (pendingListEl) pendingListEl.innerHTML = `<li class="status-message error">Error processing task data.</li>`; if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; }
-                 }, error => { /* Error callback */
-                     console.error("Error fetching todos:", error); let errorMsg = "Error loading tasks.";
-                     if (error.code === 'permission-denied') { errorMsg = "Permission denied reading topics."; showAlertDialog(errorMsg, "Permission Error"); }
-                     else if (error.code === 'unauthenticated') { errorMsg = "Authentication error loading tasks."; showAlertDialog(errorMsg, "Authentication Error"); }
-                     else { showAlertDialog(errorMsg + " Please refresh.", "Error"); }
-                     if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists(); currentTasksData = []; if (pendingListEl) pendingListEl.innerHTML = `<li class="status-message error">${errorMsg}</li>`;
-                     if (unsubscribeTodos) { console.log("Detaching todos listener due to error."); try{unsubscribeTodos();}catch(e){} unsubscribeTodos = null; }
-                 });
-         } catch (listenerError) { console.error("Failed to attach tasks listener:", listenerError); if (loadingIndicator) loadingIndicator.classList.add('hidden'); isDataLoading = false; clearAllLists(); currentTasksData = []; if (pendingListEl) pendingListEl.innerHTML = `<li class="status-message error">Failed to connect to tasks database.</li>`; }
-    }
-    function renderSubjectFilterPills() { if (!subjectFilterPillsContainer || !availableSubjects) { console.warn("Cannot render filter pills."); return; } try { subjectFilterPillsContainer.innerHTML = ''; subjectFilterPillsContainer.classList.toggle('hidden', availableSubjects.length === 0); if (availableSubjects.length === 0) return; const allPill = document.createElement('button'); allPill.className = 'filter-pill'; allPill.textContent = 'All Subjects'; allPill.dataset.subject = '--all--'; allPill.classList.toggle('active', activeSubjectFilter === '--all--'); allPill.addEventListener('click', () => handleSubjectFilter('--all--')); subjectFilterPillsContainer.appendChild(allPill); const sortedSubjects = [...availableSubjects].sort((a, b) => a.localeCompare(b)); sortedSubjects.forEach(subject => { const pill = document.createElement('button'); pill.className = 'filter-pill'; pill.textContent = subject; pill.dataset.subject = subject; pill.classList.toggle('active', activeSubjectFilter === subject); pill.addEventListener('click', () => handleSubjectFilter(subject)); subjectFilterPillsContainer.appendChild(pill); }); } catch(e){console.error("Error rendering subject filter pills:", e)} }
-    function handleSubjectFilter(subject) { try { if (activeSubjectFilter === subject) return; console.log("Filtering by subject:", subject); activeSubjectFilter = subject; subjectFilterPillsContainer?.querySelectorAll('.filter-pill').forEach(pill => { pill?.classList.toggle('active', pill.dataset.subject === subject); }); filterAndRenderLists(); } catch(e){console.error("Error handling subject filter:", e)} }
-    function filterAndRenderLists() { if (!isAuthenticated || !currentTasksData) { console.warn("Cannot render lists: Not authenticated or data missing."); clearAllLists(); return; } try { console.log(`Filtering and rendering lists. Filter: ${activeSubjectFilter}`); clearAllLists(); let pendingCount = 0; let completedACount = 0; let completedBCount = 0; const filteredTasks = activeSubjectFilter === '--all--' ? currentTasksData : currentTasksData.filter(task => task.subject === activeSubjectFilter); filteredTasks.forEach(taskData => { if (taskData.completedByA && taskData.completedByB) { if (completedListAEl) { renderTask(taskData, completedListAEl); completedACount++; } if (completedListBEl) { renderTask(taskData, completedListBEl); completedBCount++; } } else if (taskData.completedByA) { if (completedListAEl) { renderTask(taskData, completedListAEl); completedACount++; } if (pendingListEl) { renderTask(taskData, pendingListEl); pendingCount++; } } else if (taskData.completedByB) { if (completedListBEl) { renderTask(taskData, completedListBEl); completedBCount++; } if (pendingListEl) { renderTask(taskData, pendingListEl); pendingCount++; } } else { if (pendingListEl) { renderTask(taskData, pendingListEl); pendingCount++; } } }); console.log(`Rendered counts - P:${pendingCount}, CA:${completedACount}, CB:${completedBCount}`); updateEmptyMessages({ pending: pendingCount, completedA: completedACount, completedB: completedBCount }); } catch(e){console.error("Error filtering/rendering lists:", e); clearAllLists(); if(pendingListEl) pendingListEl.innerHTML = '<li class="status-message error">Error displaying tasks.</li>';} }
-
-    // --- List Management ---
-    function clearAllLists() { try { if(pendingListEl) pendingListEl.innerHTML = ''; if(completedListAEl) completedListAEl.innerHTML = ''; if(completedListBEl) completedListBEl.innerHTML = ''; hideStatusMessages(); } catch(e){console.error("Error clearing lists:", e)} }
-    function hideStatusMessages() { try { if(emptyPending) emptyPending.classList.add('hidden'); if(emptyCompletedA) emptyCompletedA.classList.add('hidden'); if(emptyCompletedB) emptyCompletedB.classList.add('hidden'); } catch(e){console.error("Error hiding status messages:", e)} }
-    function updateEmptyMessages(counts) { try { hideStatusMessages(); if (counts.pending === 0 && emptyPending) emptyPending.classList.remove('hidden'); if (counts.completedA === 0 && emptyCompletedA) emptyCompletedA.classList.remove('hidden'); if (counts.completedB === 0 && emptyCompletedB) emptyCompletedB.classList.remove('hidden'); } catch(e){console.error("Error updating empty messages:", e)} }
-
-    // --- Task Rendering ---
-    function renderTask(taskData, targetListElement) {
-        if (!targetListElement || !currentUserData || !taskData?.id ) { console.error("renderTask: Aborting - Missing data. Task ID:", taskData?.id); return; }
-        try {
-             const { id, text, subject, completedByA, completedByB, studying = {}, subtopics = [] } = taskData;
-             const li = document.createElement('li'); li.setAttribute('data-id', id); const listType = getListTypeFromElement(targetListElement); if (!listType) { console.error(`renderTask: No list type for element`, targetListElement); return; }
-             li.classList.toggle('delete-mode', deleteModes[listType]); li.classList.toggle('pending-list-item', listType === 'pending'); li.classList.toggle('completed-task-item', listType !== 'pending');
-             const mainTaskContent = document.createElement('div'); mainTaskContent.className = 'main-task-content';
-             const completionSection = document.createElement('div'); completionSection.className = 'completion-section'; const isCompletedByCurrentUser = (currentUserIdentifier === USER_A_ID && completedByA) || (currentUserIdentifier === USER_B_ID && completedByB);
-             const topicCheckbox = document.createElement('input'); topicCheckbox.type = 'checkbox'; topicCheckbox.className = 'topic-completion-checkbox'; topicCheckbox.checked = isCompletedByCurrentUser; topicCheckbox.title = `Mark MAIN topic as ${isCompletedByCurrentUser ? 'Pending' : 'Done'}`;
-             const isViewingOtherUserCompleted = (listType === 'completedA' && currentUserIdentifier !== USER_A_ID) || (listType === 'completedB' && currentUserIdentifier !== USER_B_ID);
-             if (isViewingOtherUserCompleted) { topicCheckbox.disabled = true; const ownerName = listType === 'completedA' ? (USERS.UserA?.name || 'User A') : (USERS.UserB?.name || 'User B'); topicCheckbox.title = `Completed by ${ownerName}`; } else { topicCheckbox.addEventListener('change', (e) => { e.stopPropagation(); toggleComplete(id, e.target.checked); }); }
-             completionSection.appendChild(topicCheckbox); mainTaskContent.appendChild(completionSection);
-             const deleteCheckbox = document.createElement('input'); deleteCheckbox.type = 'checkbox'; deleteCheckbox.className = 'delete-checkbox'; deleteCheckbox.title = "Mark for deletion"; mainTaskContent.appendChild(deleteCheckbox);
-             const textSpan = document.createElement('span'); textSpan.className = 'todo-text'; textSpan.textContent = text; mainTaskContent.appendChild(textSpan);
-             const indicatorsContainer = document.createElement('div'); indicatorsContainer.className = 'topic-indicators-container'; const indicatorA = document.createElement('span'); indicatorA.className = 'topic-indicator user-a'; indicatorA.classList.toggle('is-complete', completedByA); indicatorA.title = `${USERS.UserA?.name || 'User A'}: ${completedByA ? 'Done' : 'Pending'}`; indicatorsContainer.appendChild(indicatorA); const indicatorB = document.createElement('span'); indicatorB.className = 'topic-indicator user-b'; indicatorB.classList.toggle('is-complete', completedByB); indicatorB.title = `${USERS.UserB?.name || 'User B'}: ${completedByB ? 'Done' : 'Pending'}`; indicatorsContainer.appendChild(indicatorB); mainTaskContent.appendChild(indicatorsContainer);
-             if (subject) { const subjectBadge = document.createElement('span'); subjectBadge.className = 'task-subject'; subjectBadge.textContent = subject; mainTaskContent.appendChild(subjectBadge); }
-             if (listType === 'pending') {
-                 const actionsContainer = document.createElement('div'); actionsContainer.className = 'actions-container'; const userAStudying = studying[USER_A_ID] === true; const userBStudying = studying[USER_B_ID] === true;
-                 if (userAStudying) { const studyIndicatorA = document.createElement('span'); studyIndicatorA.className = `studying-indicator ${USERS.UserA.indicatorClass}`; studyIndicatorA.textContent = USERS.UserA.name; studyIndicatorA.title = `${USERS.UserA.name} is studying this`; actionsContainer.appendChild(studyIndicatorA); }
-                 if (userBStudying) { const studyIndicatorB = document.createElement('span'); studyIndicatorB.className = `studying-indicator ${USERS.UserB.indicatorClass}`; studyIndicatorB.textContent = USERS.UserB.name; studyIndicatorB.title = `${USERS.UserB.name} is studying this`; actionsContainer.appendChild(studyIndicatorB); }
-                 const currentUserStudying = studying[currentUserIdentifier] === true; const actionBtn = document.createElement('button'); actionBtn.className = 'action-button';
-                 if (currentUserStudying) { actionBtn.classList.add('stop-studying-btn'); actionBtn.textContent = `Stop`; actionBtn.title = `Stop studying "${text}"`; } else { actionBtn.classList.add('studying-btn'); actionBtn.textContent = 'Study'; actionBtn.title = `Start studying "${text}"`; }
-                 actionBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleStudying(id); }); actionsContainer.appendChild(actionBtn);
-                 const addSubtopicToggle = document.createElement('button'); addSubtopicToggle.className = 'add-subtopic-toggle-btn'; addSubtopicToggle.innerHTML = '+'; addSubtopicToggle.title = 'Add Subtopic';
-                 addSubtopicToggle.addEventListener('click', (e) => { e.stopPropagation(); try { const subSec = li.querySelector('.subtopics-section'); const addForm = subSec?.querySelector('.add-subtopic-form'); const subList = subSec?.querySelector('.subtopic-list'); const collBtn = subSec?.querySelector('.toggle-subtopics-btn'); const subCtrl = subSec?.querySelector('.subtopics-controls'); if (subSec && addForm && subList && collBtn && subCtrl) { subSec.classList.remove('hidden'); subCtrl.classList.remove('hidden'); if (subList.classList.contains('hidden')) { subList.classList.remove('hidden'); collBtn.innerHTML = '▼'; collBtn.setAttribute('aria-expanded', 'true'); collapsedSubtopics.delete(id); } const isFormHidden = addForm.classList.toggle('hidden'); if (!isFormHidden) { try{addForm.querySelector('input[type="text"]')?.focus();}catch(fe){} } addSubtopicToggle.innerHTML = isFormHidden ? '+' : '−'; addSubtopicToggle.title = isFormHidden ? 'Add Subtopic' : 'Hide Add Form'; } else { console.warn("Subtopic elements missing for add form toggle. ID:", id); } } catch(toggleErr){ console.error("Error toggling add sub form:", toggleErr); } });
-                 actionsContainer.appendChild(addSubtopicToggle); mainTaskContent.appendChild(actionsContainer);
-             }
-             li.appendChild(mainTaskContent);
-             if (listType === 'pending') {
-                 const subtopicsSection = document.createElement('div'); subtopicsSection.className = 'subtopics-section'; subtopicsSection.classList.toggle('hidden', subtopics.length === 0);
-                 const subtopicsControls = document.createElement('div'); subtopicsControls.className = 'subtopics-controls'; subtopicsControls.title = 'Show/Hide Subtopics'; subtopicsControls.classList.toggle('hidden', subtopics.length === 0);
-                 const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-subtopics-btn'; toggleBtn.setAttribute('aria-label', 'Toggle subtopics'); const isCollapsed = collapsedSubtopics.has(id); toggleBtn.innerHTML = isCollapsed ? '▶' : '▼'; toggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
-                 const subtopicsSummary = document.createElement('span'); subtopicsSummary.className = 'subtopics-summary'; subtopicsSummary.textContent = `(${subtopics.length} subtopic${subtopics.length === 1 ? '' : 's'})`;
-                 subtopicsControls.appendChild(toggleBtn); subtopicsControls.appendChild(subtopicsSummary);
-                 subtopicsControls.addEventListener('click', (e) => { e.stopPropagation(); try { const subList = subtopicsSection.querySelector('.subtopic-list'); if (!subList) return; const isHidden = subList.classList.toggle('hidden'); const isExpanded = !isHidden; toggleBtn.innerHTML = isExpanded ? '▼' : '▶'; toggleBtn.setAttribute('aria-expanded', String(isExpanded)); if (isHidden) collapsedSubtopics.add(id); else collapsedSubtopics.delete(id); } catch(collErr){ console.error("Error toggling sub list:", collErr); } });
-                 subtopicsSection.appendChild(subtopicsControls);
-                 const subtopicList = document.createElement('ul'); subtopicList.className = 'subtopic-list'; subtopicList.classList.toggle('hidden', isCollapsed);
-                 subtopics.forEach((subtopic) => {
-                     if (!subtopic?.id || !subtopic.text) { console.warn("Invalid subtopic:", subtopic, "in task:", id); return; }
-                     const subLi = document.createElement('li'); subLi.className = 'subtopic-item'; const isDoneA = subtopic.completedByA === true; const isDoneB = subtopic.completedByB === true; subLi.classList.toggle('is-done-a', isDoneA); subLi.classList.toggle('is-done-b', isDoneB); subLi.setAttribute('data-subtopic-id', subtopic.id);
-                     const subCheck = document.createElement('input'); subCheck.type = 'checkbox'; subCheck.className = 'subtopic-completion-checkbox'; const isSubDoneUser = (currentUserIdentifier === USER_A_ID && isDoneA) || (currentUserIdentifier === USER_B_ID && isDoneB); subCheck.checked = isSubDoneUser; subCheck.title = `Mark "${subtopic.text}" ${isSubDoneUser ? 'Pending' : 'Done'}`; subCheck.addEventListener('change', (e) => { e.stopPropagation(); toggleSubtopicCompletion(id, subtopic.id, e.target.checked); }); subLi.appendChild(subCheck);
-                     const subText = document.createElement('span'); subText.className = 'subtopic-text'; subText.textContent = subtopic.text; subLi.appendChild(subText);
-                     const subIndCont = document.createElement('div'); subIndCont.className = 'subtopic-indicators-container'; const subIndA = document.createElement('span'); subIndA.className = 'subtopic-indicator user-a'; subIndA.classList.toggle('is-complete', isDoneA); subIndA.title = `${USERS.UserA?.name||'A'}: ${isDoneA?'Done':'Pending'}`; const subIndB = document.createElement('span'); subIndB.className = 'subtopic-indicator user-b'; subIndB.classList.toggle('is-complete', isDoneB); subIndB.title = `${USERS.UserB?.name||'B'}: ${isDoneB?'Done':'Pending'}`; subIndCont.appendChild(subIndA); subIndCont.appendChild(subIndB); subLi.appendChild(subIndCont);
-                     const delSubBtn = document.createElement('button'); delSubBtn.className = 'delete-subtopic-btn'; delSubBtn.innerHTML = '×'; delSubBtn.title = `Delete: "${subtopic.text}"`; delSubBtn.setAttribute('aria-label', `Delete: "${subtopic.text}"`);
-                     delSubBtn.addEventListener('click', async (e) => { e.stopPropagation(); try { const truncText = subtopic.text.length > 50 ? subtopic.text.substring(0, 47) + '...' : subtopic.text; const confirmed = await showConfirmDialog(`Delete subtopic: "<b>${truncText}</b>"?`, "Confirm Delete"); if (confirmed) { handleDeleteSubtopic(id, subtopic.id, subtopic.text); } } catch (delConfirmErr) { console.error("Error sub del confirm:", delConfirmErr); } });
-                     subLi.appendChild(delSubBtn); subtopicList.appendChild(subLi);
-                 });
-                 subtopicsSection.appendChild(subtopicList);
-                 const addSubtopicForm = document.createElement('form'); addSubtopicForm.className = 'add-subtopic-form hidden';
-                 const addSubtopicInput = document.createElement('input'); addSubtopicInput.type = 'text'; addSubtopicInput.placeholder = 'Add new subtopic...'; addSubtopicInput.required = true; addSubtopicInput.setAttribute("autocomplete", "off");
-                 const addSubtopicBtn = document.createElement('button'); addSubtopicBtn.type = 'submit'; addSubtopicBtn.textContent = '+ Add'; addSubtopicBtn.title="Add Subtopic";
-                 addSubtopicForm.appendChild(addSubtopicInput); addSubtopicForm.appendChild(addSubtopicBtn);
-                 addSubtopicForm.addEventListener('submit', (e) => { e.preventDefault(); try { const newText = addSubtopicInput.value.trim(); if (newText) { addSubtopic(id, newText); addSubtopicInput.value = ''; try{addSubtopicInput.focus();}catch(fe){} const currentTaskData = currentTasksData.find(task => task.id === id); const newCount = (currentTaskData?.subtopics?.length || 0) + 1; if(subtopicsSummary) subtopicsSummary.textContent = `(${newCount} subtopic${newCount === 1 ? '' : 's'})`; if(subtopicsControls) subtopicsControls.classList.remove('hidden'); if(subtopicsSection) subtopicsSection.classList.remove('hidden'); if (subtopicList?.classList.contains('hidden')) { subtopicList.classList.remove('hidden'); if (toggleBtn) { toggleBtn.innerHTML = '▼'; toggleBtn.setAttribute('aria-expanded', 'true'); } collapsedSubtopics.delete(id); } } } catch(addSubmitErr){ console.error("Error submitting add sub form:", addSubmitErr); } });
-                 subtopicsSection.appendChild(addSubtopicForm); li.appendChild(subtopicsSection);
-             }
-             targetListElement.appendChild(li);
-        } catch (error) { console.error(`Error rendering task ${taskData?.id}:`, error); const errorLi = document.createElement('li'); errorLi.className = 'status-message error'; errorLi.textContent = `Error rendering task ${taskData?.id || '(unknown)'}.`; targetListElement.appendChild(errorLi); }
-    }
-
-    // --- Task Actions ---
-    async function handleAddTodo(e) { e.preventDefault(); if (!isAuthenticated || !todosRef || !todoInput || !subjectSelect || !currentUserIdentifier) { await showAlertDialog("Cannot add topic. Login/fields needed.", "Error"); return; } const text = todoInput.value.trim(); const subject = subjectSelect.value; if (!text) { await showAlertDialog("Please enter topic name."); try{todoInput.focus();}catch(fe){} return; } if (!subject) { await showAlertDialog("Please select subject."); try{subjectSelect.focus();}catch(fe){} return; } const newTask = { text: text, subject: subject, completedByA: false, completedByB: false, studying: { [USER_A_ID]: false, [USER_B_ID]: false }, subtopics: [], addedBy: currentUserIdentifier, createdAt: firebase.firestore.FieldValue.serverTimestamp() }; todoInput.disabled = true; subjectSelect.disabled = true; const submitButton = addTodoForm?.querySelector('button[type="submit"]'); if(submitButton) submitButton.disabled = true; try { const docRef = await todosRef.add(newTask); console.log("Todo added:", docRef.id); logActivity('ADD_TOPIC', { topicText: text, subject: subject }); todoInput.value = ''; subjectSelect.value = ''; subjectSelect.options[0].selected = true; } catch (error) { console.error("Error adding todo:", error); let errorMsg = "Error adding topic."; if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); } finally { todoInput.disabled = false; subjectSelect.disabled = false; if(submitButton) submitButton.disabled = false; } }
-    function toggleComplete(id, isCompleting) { if (!isAuthenticated || !todosRef || !currentUserIdentifier) { return; } const updateField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; let updateData = { [updateField]: isCompleting }; if (isCompleting) { updateData[`studying.${currentUserIdentifier}`] = false; } const taskData = currentTasksData.find(task => task.id === id); const topicText = taskData?.text || 'Unknown Topic'; todosRef.doc(id).update(updateData).then(() => { console.log(`Topic ${id} updated for ${currentUserIdentifier} to ${isCompleting}.`); logActivity('COMPLETE_TOPIC', { topicText: topicText, status: isCompleting ? 'done' : 'pending' }); }).catch(async error => { console.error(`Error updating ${updateField} for ${id}:`, error); let errorMsg = `Error updating status.`; if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); }); }
-    function toggleStudying(id) { if (!isAuthenticated || !db || !todosRef || !currentUserIdentifier) { return; } const docRef = todosRef.doc(id); const fieldToUpdate = `studying.${currentUserIdentifier}`; let newStudyingState; let topicText = 'Unknown Topic'; db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) throw new Error("Task does not exist!"); const data = doc.data(); topicText = data.text || topicText; const currentStudyingState = (data.studying && data.studying[currentUserIdentifier] === true); newStudyingState = !currentStudyingState; console.log(`Toggling study for ${currentUserIdentifier} on ${id} to ${newStudyingState}`); let updateData = { [fieldToUpdate]: newStudyingState }; if (newStudyingState) { const userCompleteField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; if (data[userCompleteField]) { updateData[userCompleteField] = false; console.log(`Uncompleting task ${id} for ${currentUserIdentifier}.`); } } transaction.update(docRef, updateData); }); }).then(() => { console.log(`Study status updated for ${id} to ${newStudyingState}.`); const action = newStudyingState ? 'START_STUDYING' : 'STOP_STUDYING'; logActivity(action, { topicText: topicText }); }).catch(async error => { console.error(`Error toggling study for ${id}:`, error); let errorMsg = "Could not update study status."; if (error.message.includes("does not exist")) { errorMsg = "Task may have been deleted."; } else if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); }); }
-    async function handleDeleteSelected(event) { if (!isAuthenticated || !db || !todosRef || !currentUserIdentifier) { return; } const listType = event.target?.dataset?.listType; const listElement = getListElementByType(listType); if (!listElement || !listType) { console.error("handleDeleteSelected: Bad list."); return; } if ((listType === 'completedA' && currentUserIdentifier !== USER_A_ID) || (listType === 'completedB' && currentUserIdentifier !== USER_B_ID)) { const ownerName = listType === 'completedA' ? (USERS.UserA?.name || 'User A') : (USERS.UserB?.name || 'User B'); await showAlertDialog(`Only ${ownerName} can delete from their list.`); return; } const itemsToDelete = Array.from(listElement.querySelectorAll('li.delete-mode .delete-checkbox:checked')).map(cb => cb.closest('li')).filter(li => li?.dataset.id); if (itemsToDelete.length === 0) { await showAlertDialog("Select tasks to delete."); return; } const confirmed = await showConfirmDialog(`Permanently delete ${itemsToDelete.length} task(s)?<br><b>Cannot be undone.</b>`, "Confirm Delete"); if (!confirmed) return; const batch = db.batch(); const deletedTexts = []; itemsToDelete.forEach(li => { const id = li.dataset.id; const textEl = li.querySelector('.todo-text'); const topicText = textEl?.textContent || 'Unknown Topic'; deletedTexts.push(topicText); batch.delete(todosRef.doc(id)); collapsedSubtopics.delete(id); }); const deleteButton = event.target; if(deleteButton) deleteButton.disabled = true; try { await batch.commit(); console.log(`${itemsToDelete.length} task(s) deleted.`); deletedTexts.forEach(text => { logActivity('DELETE_TOPIC', { topicText: text }); }); deleteModes[listType] = false; toggleDeleteModeUI(listType, false); } catch (error) { console.error("Error deleting batch:", error); let errorMsg = "Failed to delete tasks."; if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); } finally { if(deleteButton) deleteButton.disabled = false; } }
-
-    // --- Subtopic Functions ---
-    function toggleSubtopicCompletion(mainTaskId, subtopicId, newCheckedState) { if (!isAuthenticated || !db || !todosRef || !subtopicId || !currentUserIdentifier) { return; } const docRef = todosRef.doc(mainTaskId); const userField = currentUserIdentifier === USER_A_ID ? 'completedByA' : 'completedByB'; console.log(`Updating sub ${subtopicId} in ${mainTaskId}. ${userField}=${newCheckedState}`); let subtopicText = 'Unknown Subtopic'; const parentTaskData = currentTasksData.find(task => task.id === mainTaskId); if (parentTaskData?.subtopics) { const subtopicData = parentTaskData.subtopics.find(st => st.id === subtopicId); if (subtopicData) subtopicText = subtopicData.text; } db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) throw new Error("Task does not exist!"); const data = doc.data(); const currentSubtopics = Array.isArray(data.subtopics) ? data.subtopics : []; let subtopicFound = false; const updatedSubtopics = currentSubtopics.map(st => { if (st?.id === subtopicId) { subtopicFound = true; return { ...st, [userField]: newCheckedState }; } return st; }); if (!subtopicFound) throw new Error(`Subtopic ${subtopicId} not found in ${mainTaskId}.`); transaction.update(docRef, { subtopics: updatedSubtopics }); }); }).then(() => { console.log(`Subtopic ${subtopicId} updated.`); logActivity('COMPLETE_SUBTOPIC', { subtopicText: subtopicText, status: newCheckedState ? 'done' : 'pending' }); }).catch(async error => { console.error("Sub update failed: ", error); let errorMsg = "Error updating subtopic."; if (error.message.includes("not found") || error.message.includes("does not exist")) { errorMsg = "Could not update: Subtopic/Task deleted?"; } else if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); }); }
-    async function addSubtopic(mainTaskId, subtaskText) { if (!isAuthenticated || !todosRef || !subtaskText || !currentUserIdentifier) { return; } const docRef = todosRef.doc(mainTaskId); const subtopicId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9); const newSubtopic = { id: subtopicId, text: subtaskText.trim(), completedByA: false, completedByB: false }; const parentTaskData = currentTasksData.find(task => task.id === mainTaskId); const parentTopicText = parentTaskData?.text || 'Unknown Topic'; const addButton = document.querySelector(`li[data-id="${mainTaskId}"] .add-subtopic-form button[type="submit"]`); if (addButton) addButton.disabled = true; try { await docRef.update({ subtopics: firebase.firestore.FieldValue.arrayUnion(newSubtopic) }); console.log(`Sub added to ${mainTaskId}`); logActivity('ADD_SUBTOPIC', { subtopicText: newSubtopic.text, parentTopicText: parentTopicText }); collapsedSubtopics.delete(mainTaskId); const subListEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopic-list`); const subControlsEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-controls`); const subSectionEl = document.querySelector(`li[data-id="${mainTaskId}"] .subtopics-section`); const toggleBtn = subControlsEl?.querySelector('.toggle-subtopics-btn'); if (subSectionEl) subSectionEl.classList.remove('hidden'); if (subControlsEl) subControlsEl.classList.remove('hidden'); if (subListEl?.classList.contains('hidden')) { subListEl.classList.remove('hidden'); if (toggleBtn) { toggleBtn.innerHTML = '▼'; toggleBtn.setAttribute('aria-expanded', 'true'); } } } catch (error) { console.error("Error adding sub:", error); let errorMsg = "Error adding subtopic."; if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } else if (error.code === 'not-found') { errorMsg = "Parent task deleted?"; } await showAlertDialog(errorMsg, "Error"); } finally { if (addButton) addButton.disabled = false; } }
-    async function handleDeleteSubtopic(mainTaskId, subtopicId, subtopicText) { if (!isAuthenticated || !db || !todosRef || !subtopicId) { return; } const docRef = todosRef.doc(mainTaskId); const parentTaskData = currentTasksData.find(task => task.id === mainTaskId); const parentTopicText = parentTaskData?.text || 'Unknown Topic'; db.runTransaction(transaction => { return transaction.get(docRef).then(doc => { if (!doc.exists) throw new Error("Task does not exist!"); const data = doc.data(); const currentSubtopics = Array.isArray(data.subtopics) ? data.subtopics : []; let subtopicFound = false; const updatedSubtopics = currentSubtopics.filter(st => { if (st?.id === subtopicId) { subtopicFound = true; return false; } return true; }); if (!subtopicFound) { console.warn(`Sub ${subtopicId} not found in ${mainTaskId} during delete.`); } transaction.update(docRef, { subtopics: updatedSubtopics }); }); }).then(() => { console.log(`Sub ${subtopicId} deleted from ${mainTaskId}.`); logActivity('DELETE_SUBTOPIC', { subtopicText: subtopicText, parentTopicText: parentTopicText }); }).catch(async error => { console.error("Sub delete failed: ", error); let errorMsg = "Error deleting subtopic."; if (error.message.includes("does not exist")) { errorMsg = "Task deleted?"; } else if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); }); }
-
-    // --- Log Pagination & Clearing ---
-    async function loadMoreLogs() { if (!isAuthenticated || !activityLogRef || !activityLogListEl || !loadMoreLogsButton) { return; } if (!lastVisibleLogDoc) { if(loadMoreLogsButton) loadMoreLogsButton.classList.add('hidden'); return; } console.log("Loading more logs..."); loadMoreLogsButton.disabled = true; loadMoreLogsButton.textContent = 'Loading...'; try { const query = activityLogRef.orderBy('timestamp', 'desc').startAfter(lastVisibleLogDoc).limit(LOG_LIMIT); const snapshot = await query.get(); console.log(`Loaded ${snapshot.size} more logs.`); if (!activityLogListEl) return; if (snapshot.empty) { loadMoreLogsButton.textContent = 'No More Logs'; loadMoreLogsButton.classList.add('hidden'); lastVisibleLogDoc = null; return; } let newLogHTML = ''; snapshot.forEach(doc => { newLogHTML += renderLogEntry(doc.data()); }); activityLogListEl.insertAdjacentHTML('beforeend', newLogHTML); lastVisibleLogDoc = snapshot.docs[snapshot.docs.length - 1]; if (snapshot.size < LOG_LIMIT) { loadMoreLogsButton.classList.add('hidden'); loadMoreLogsButton.textContent = 'Load More Logs'; loadMoreLogsButton.disabled = false; } else { loadMoreLogsButton.disabled = false; loadMoreLogsButton.textContent = 'Load More Logs'; } } catch (error) { console.error("Error loading more logs:", error); showAlertDialog("Could not load more logs.", "Error"); loadMoreLogsButton.disabled = false; loadMoreLogsButton.textContent = 'Load More Logs'; } }
-    async function handleClearLogs() { if (!isAuthenticated || !db || !activityLogRef || !clearLogButton) { return; } const confirmed = await showConfirmDialog( "Delete <b>ALL</b> activity logs?<br><b>Cannot be undone.</b>", "Confirm Clear Logs" ); if (!confirmed) return; console.log("Clearing logs..."); clearLogButton.disabled = true; clearLogButton.textContent = 'Clearing...'; if(activityLogListEl) activityLogListEl.innerHTML = '<li class="status-message">Clearing logs...</li>'; try { const deleteCounter = await clearActivityLogBatch(); console.log(`Deleted ${deleteCounter} logs.`); showAlertDialog(`Deleted ${deleteCounter} logs.`, "Logs Cleared"); loadAndRenderActivityLog(); } catch (error) { console.error("Error clearing logs:", error); let errorMsg = "Failed to clear logs."; if (error.code === 'permission-denied') { errorMsg = "Permission denied."; } await showAlertDialog(errorMsg, "Error"); loadAndRenderActivityLog(); } finally { clearLogButton.disabled = false; clearLogButton.textContent = 'Clear All Logs'; } }
-    async function clearActivityLogBatch() { const BATCH_SIZE = 400; let deleteCounter = 0; let snapshot; console.log("Starting batch delete logs..."); do { const query = activityLogRef.orderBy('__name__').limit(BATCH_SIZE); snapshot = await query.get(); if (!snapshot.empty) { const batch = db.batch(); snapshot.docs.forEach(doc => { batch.delete(doc.ref); }); await batch.commit(); deleteCounter += snapshot.size; console.log(`Deleted batch: ${snapshot.size}. Total: ${deleteCounter}`); } else { console.log("No more docs, deletion complete."); } } while (snapshot?.size === BATCH_SIZE); return deleteCounter; }
-
-    // --- Helper functions ---
-    function getListElementByType(listType) { try { switch (listType) { case 'pending': return pendingListEl; case 'completedA': return completedListAEl; case 'completedB': return completedListBEl; default: console.warn(`getListElementByType: Unknown type "${listType}"`); return null; } } catch(e){console.error("Error in getListElementByType:",e); return null;} }
-    function getListTypeFromElement(element) { try { if (element === pendingListEl) return 'pending'; if (element === completedListAEl) return 'completedA'; if (element === completedListBEl) return 'completedB'; console.warn("getListTypeFromElement: Unknown element:", element); return null; } catch(e){console.error("Error in getListTypeFromElement:", e); return null;} }
-
-    // --- PWA Service Worker Registration ---
-    window.addEventListener('load', () => { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').then(reg => { console.log('SW registered scope:', reg.scope); reg.onupdatefound = () => { console.log("SW update found."); const worker = reg.installing; if (worker) { worker.onstatechange = () => { console.log("SW state:", worker.state); if (worker.state === 'installed') { if (navigator.serviceWorker.controller) { console.log('New content available; refresh.'); showAlertDialog("New version available! Refresh page.", "Update Available"); } else { console.log('Content cached.'); } } }; } }; }).catch(err => { console.error('SW registration failed:', err); }); navigator.serviceWorker.addEventListener('controllerchange', () => { console.log('SW controller changed, reloading.'); window.location.reload(); }); } else { console.log('Service workers not supported.'); } });
-
-    console.log("Study Tracker (v8.3) script - PART 1 - loaded.");
-
-// --- END OF SCRIPT PART 2 --
-
-</script>
+    </script>
 
 </body>
 </html>
