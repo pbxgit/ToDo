@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Medicine Checklist</title>
+    
+    <!-- === Favicon Links === -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
         :root {
@@ -16,13 +21,42 @@
             --shadow-color: rgba(0, 0, 0, 0.08); 
             --progress-bg: #e2e8f0;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            /* === Disable tap highlight on mobile === */
+            -webkit-tap-highlight-color: transparent;
+        }
         body { 
             font-family: 'Lato', sans-serif; 
             background-color: var(--background-color); 
             color: var(--primary-text); 
             line-height: 1.6; 
             padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        /* === Loading Spinner Styling === */
+        #loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--accent-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* === Hide content by default for smooth loading === */
+        #main-content {
+            display: none;
+            width: 100%;
         }
         .container { 
             max-width: 800px; 
@@ -32,17 +66,21 @@
             box-shadow: 0 8px 25px var(--shadow-color); 
             padding: 40px; 
         }
-        /* New Style for Back Link */
+        /* === Improved Back Link Styling === */
         .back-link {
-            display: block;
-            text-align: center;
-            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
             color: var(--accent-color);
             text-decoration: none;
             font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
         }
         .back-link:hover {
-            text-decoration: underline;
+            background-color: #e6fcf7;
         }
         h1 { 
             text-align: center; 
@@ -95,7 +133,7 @@
             border-radius: 6px; 
             transition: background-color 0.2s ease-in-out; 
         }
-        li:hover { background-color: var(--background-color); }
+        li:hover { background-color: #f8f9fa; }
         .chapter-tasks { padding-left: 20px; }
         input[type="checkbox"] { display: none; }
         label { 
@@ -137,286 +175,310 @@
     </style>
 </head>
 <body>
+    <!-- Loading Spinner (visible by default) -->
+    <div id="loader"></div>
 
-    <div class="container">
-        <a href="index.html" class="back-link">← Back to Dashboard</a>
-        <h1>Community Medicine Checklist</h1>
-        
-        <div class="progress-section">
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
+    <div id="main-content">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <h1>Community Medicine Checklist</h1>
+            <div class="progress-section">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <span id="progressText">0% Complete</span>
             </div>
-            <span id="progressText">0% Complete</span>
-        </div>
 
-        <!-- All existing HTML checklist content -->
-        <div class="unit">
-            <h2>Demography and Family Planning</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="d_fp-mod"><label for="d_fp-mod">Modules</label></li>
-                <li><input type="checkbox" id="d_fp-anki"><label for="d_fp-anki">Anki</label></li>
-                <li><input type="checkbox" id="d_fp-pyq"><label for="d_fp-pyq">PYQs</label></li>
-            </ul>
-            <h3>Demographic Cycle</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c1-lec"><label for="d_fp-c1-lec">Lecture</label></li></ul>
-            <h3>Demographic Trends</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c2-lec"><label for="d_fp-c2-lec">Lecture</label></li></ul>
-            <h3>Fertility Rates</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c3-lec"><label for="d_fp-c3-lec">Lecture</label></li></ul>
-            <h3>Survey Techniques</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c4-lec"><label for="d_fp-c4-lec">Lecture</label></li></ul>
-            <h3>Family Planning and Contraception : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c5-lec"><label for="d_fp-c5-lec">Lecture</label></li></ul>
-            <h3>Family Planning and Contraception : Part 2</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c6-lec"><label for="d_fp-c6-lec">Lecture</label></li></ul>
-            <h3>National Family Planning Program</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c7-lec"><label for="d_fp-c7-lec">Lecture</label></li></ul>
+            <div class="unit">
+                <h2>Demography and Family Planning</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="d_fp-mod"><label for="d_fp-mod">Modules</label></li>
+                    <li><input type="checkbox" id="d_fp-anki"><label for="d_fp-anki">Anki</label></li>
+                    <li><input type="checkbox" id="d_fp-pyq"><label for="d_fp-pyq">PYQs</label></li>
+                </ul>
+                <h3>Demographic Cycle</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c1-lec"><label for="d_fp-c1-lec">Lecture</label></li></ul>
+                <h3>Demographic Trends</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c2-lec"><label for="d_fp-c2-lec">Lecture</label></li></ul>
+                <h3>Fertility Rates</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c3-lec"><label for="d_fp-c3-lec">Lecture</label></li></ul>
+                <h3>Survey Techniques</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c4-lec"><label for="d_fp-c4-lec">Lecture</label></li></ul>
+                <h3>Family Planning and Contraception : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c5-lec"><label for="d_fp-c5-lec">Lecture</label></li></ul>
+                <h3>Family Planning and Contraception : Part 2</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c6-lec"><label for="d_fp-c6-lec">Lecture</label></li></ul>
+                <h3>National Family Planning Program</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c7-lec"><label for="d_fp-c7-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Maternal and Child Health</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="mch-mod"><label for="mch-mod">Modules</label></li>
+                    <li><input type="checkbox" id="mch-anki"><label for="mch-anki">Anki</label></li>
+                    <li><input type="checkbox" id="mch-pyq"><label for="mch-pyq">PYQs</label></li>
+                </ul>
+                <h3>Indicators of MCH Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c1-lec"><label for="mch-c1-lec">Lecture</label></li></ul>
+                <h3>Preventive Obstetrics: Antenatal Care and Post Natal Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c2-lec"><label for="mch-c2-lec">Lecture</label></li></ul>
+                <h3>Preventive Pediatrics : Early Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c3-lec"><label for="mch-c3-lec">Lecture</label></li></ul>
+                <h3>Preventive Paediatrics : Growth And Development</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c4-lec"><label for="mch-c4-lec">Lecture</label></li></ul>
+                <h3>Social Paediatrics</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c5-lec"><label for="mch-c5-lec">Lecture</label></li></ul>
+                <h3>RMNCAH + N : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c6-lec"><label for="mch-c6-lec">Lecture</label></li></ul>
+                <h3>RMNCAH + N : Part 2 - IMNCI, FRU, Organisation of MCH Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c7-lec"><label for="mch-c7-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>Vaccine and Immunization</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="v_i-mod"><label for="v_i-mod">Modules</label></li>
+                    <li><input type="checkbox" id="v_i-anki"><label for="v_i-anki">Anki</label></li>
+                    <li><input type="checkbox" id="v_i-pyq"><label for="v_i-pyq">PYQs</label></li>
+                </ul>
+                <h3>Universal Immunization Programme</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c1-lec"><label for="v_i-c1-lec">Lecture</label></li></ul>
+                <h3>Immunization : Frequently Asked Questions</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c2-lec"><label for="v_i-c2-lec">Lecture</label></li></ul>
+                <h3>Cold Chain and Vaccine Requirement</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c3-lec"><label for="v_i-c3-lec">Lecture</label></li></ul>
+                <h3>Vaccine Strains, Waste Management And AEFI</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c4-lec"><label for="v_i-c4-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>Epidemiology</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="epi-mod"><label for="epi-mod">Modules</label></li>
+                    <li><input type="checkbox" id="epi-anki"><label for="epi-anki">Anki</label></li>
+                    <li><input type="checkbox" id="epi-pyq"><label for="epi-pyq">PYQs</label></li>
+                </ul>
+                <h3>Aim of Epidemiology and Historical Perspective</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c1-lec"><label for="epi-c1-lec">Lecture</label></li></ul>
+                <h3>Basics in Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c2-lec"><label for="epi-c2-lec">Lecture</label></li></ul>
+                <h3>Epidemiological Methods and Descriptive Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c3-lec"><label for="epi-c3-lec">Lecture</label></li></ul>
+                <h3>Analytical and Experimental Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c4-lec"><label for="epi-c4-lec">Lecture</label></li></ul>
+                <h3>Bias and Confounding</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c5-lec"><label for="epi-c5-lec">Lecture</label></li></ul>
+                <h3>Advanced Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c6-lec"><label for="epi-c6-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Screening of Disease</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="sod-mod"><label for="sod-mod">Modules</label></li>
+                    <li><input type="checkbox" id="sod-anki"><label for="sod-anki">Anki</label></li>
+                    <li><input type="checkbox" id="sod-pyq"><label for="sod-pyq">PYQs</label></li>
+                </ul>
+                <h3>Screening of Disease Concepts</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c1-lec"><label for="sod-c1-lec">Lecture</label></li></ul>
+                <h3>Determinants in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c2-lec"><label for="sod-c2-lec">Lecture</label></li></ul>
+                <h3>Advanced Concepts in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c3-lec"><label for="sod-c3-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Biostatistics</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="bio-mod"><label for="bio-mod">Modules</label></li>
+                    <li><input type="checkbox" id="bio-anki"><label for="bio-anki">Anki</label></li>
+                    <li><input type="checkbox" id="bio-pyq"><label for="bio-pyq">PYQs</label></li>
+                </ul>
+                <h3>Data Types and Scales</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c1-lec"><label for="bio-c1-lec">Lecture</label></li></ul>
+                <h3>Measures of Central Tendency and Variation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c2-lec"><label for="bio-c2-lec">Lecture</label></li></ul>
+                <h3>Normal Distribution Curve</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c3-lec"><label for="bio-c3-lec">Lecture</label></li></ul>
+                <h3>Concepts of P - Value</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c4-lec"><label for="bio-c4-lec">Lecture</label></li></ul>
+                <h3>Tests of Significance, Probability Rules and Regression Analysis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c5-lec"><label for="bio-c5-lec">Lecture</label></li></ul>
+                <h3>Skew and Tiles</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c6-lec"><label for="bio-c6-lec">Lecture</label></li></ul>
+                <h3>Sampling Methods and Sample Size Calculation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c7-lec"><label for="bio-c7-lec">Lecture</label></li></ul>
+                <h3>Graphs</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c8-lec"><label for="bio-c8-lec">Lecture</label></li></ul>
+            </div>
+            
+            <div class="unit">
+                <h2>National Health Programmes</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="nhp-mod"><label for="nhp-mod">Modules</label></li>
+                    <li><input type="checkbox" id="nhp-anki"><label for="nhp-anki">Anki</label></li>
+                    <li><input type="checkbox" id="nhp-pyq"><label for="nhp-pyq">PYQs</label></li>
+                </ul>
+                <h3>TB : Epidemiology and Investigations</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c1-lec"><label for="nhp-c1-lec">Lecture</label></li></ul>
+                <h3>NTEP : Targets, Diagnosis and Management Guidelines</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c2-lec"><label for="nhp-c2-lec">Lecture</label></li></ul>
+                <h3>NTEP : Strategies, Organisation and Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c3-lec"><label for="nhp-c3-lec">Lecture</label></li></ul>
+                <h3>NACP : Targets, Diagnosis and Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c4-lec"><label for="nhp-c4-lec">Lecture</label></li></ul>
+                <h3>NACP : Strategies, Organisation and Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c5-lec"><label for="nhp-c5-lec">Lecture</label></li></ul>
+                <h3>NVBDCP : Malaria Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c6-lec"><label for="nhp-c6-lec">Lecture</label></li></ul>
+                <h3>NVBDCP : Malaria Diagnosis, Treatment and Control</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c7-lec"><label for="nhp-c7-lec">Lecture</label></li></ul>
+                <h3>NVBDCP: Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c8-lec"><label for="nhp-c8-lec">Lecture</label></li></ul>
+                <h3>Japanese Encephalitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c9-lec"><label for="nhp-c9-lec">Lecture</label></li></ul>
+                <h3>Dengue</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c10-lec"><label for="nhp-c10-lec">Lecture</label></li></ul>
+                <h3>Lymphatic Filariasis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c11-lec"><label for="nhp-c11-lec">Lecture</label></li></ul>
+                <h3>Kala - Azar</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c12-lec"><label for="nhp-c12-lec">Lecture</label></li></ul>
+                <h3>National Leprosy Eradication Program</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c13-lec"><label for="nhp-c13-lec">Lecture</label></li></ul>
+                <h3>National Polio Surveillance Project</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c14-lec"><label for="nhp-c14-lec">Lecture</label></li></ul>
+                <h3>NIDDCP, IDSP and IDCS</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c15-lec"><label for="nhp-c15-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Healthcare Planning in India</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="hcpi-mod"><label for="hcpi-mod">Modules</label></li>
+                    <li><input type="checkbox" id="hcpi-anki"><label for="hcpi-anki">Anki</label></li>
+                    <li><input type="checkbox" id="hcpi-pyq"><label for="hcpi-pyq">PYQs</label></li>
+                </ul>
+                <h3>Recent Advances in Community Medicine - 2023</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c1-lec"><label for="hcpi-c1-lec">Lecture</label></li></ul>
+                <h3>Health Care System in India</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c2-lec"><label for="hcpi-c2-lec">Lecture</label></li></ul>
+                <h3>Health Planning and Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c3-lec"><label for="hcpi-c3-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Infectious Disease Epidemiology</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="ide-mod"><label for="ide-mod">Modules</label></li>
+                    <li><input type="checkbox" id="ide-anki"><label for="ide-anki">Anki</label></li>
+                    <li><input type="checkbox" id="ide-pyq"><label for="ide-pyq">PYQs</label></li>
+                </ul>
+                <h3>Infectious Diseases : Basic Definitions, Chain of Transmission</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c1-lec"><label for="ide-c1-lec">Lecture</label></li></ul>
+                <h3>Infectious Diseases : Agent, Host, Case, Carrier</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c2-lec"><label for="ide-c2-lec">Lecture</label></li></ul>
+                <h3>Infectious Diseases : Modes of Transmission, PPE, Handwashing</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c3-lec"><label for="ide-c3-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Communicable Diseases</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="cd-mod"><label for="cd-mod">Modules</label></li>
+                    <li><input type="checkbox" id="cd-anki"><label for="cd-anki">Anki</label></li>
+                    <li><input type="checkbox" id="cd-pyq"><label for="cd-pyq">PYQs</label></li>
+                </ul>
+                <h3>Smallpox and Chickenpox</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c1-lec"><label for="cd-c1-lec">Lecture</label></li></ul>
+                <h3>Measles, Mumps and Rubella</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c2-lec"><label for="cd-c2-lec">Lecture</label></li></ul>
+                <h3>Flu, Diphtheria and Pertussis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c3-lec"><label for="cd-c3-lec">Lecture</label></li></ul>
+                <h3>Meningitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c4-lec"><label for="cd-c4-lec">Lecture</label></li></ul>
+                <h3>Cholera and Diarrhea Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c5-lec"><label for="cd-c5-lec">Lecture</label></li></ul>
+                <h3>Typhoid</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c6-lec"><label for="cd-c6-lec">Lecture</label></li></ul>
+                <h3>Hepatitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c7-lec"><label for="cd-c7-lec">Lecture</label></li></ul>
+                <h3>Soil Transmitted Helminthic Infections</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c8-lec"><label for="cd-c8-lec">Lecture</label></li></ul>
+                <h3>Zoonoses and Rabies</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c9-lec"><label for="cd-c9-lec">Lecture</label></li></ul>
+                <h3>Plague, Yellow Fever and KFD</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c10-lec"><label for="cd-c10-lec">Lecture</label></li></ul>
+                <h3>Tetanus</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c11-lec"><label for="cd-c11-lec">Lecture</label></li></ul>
+                <h3>Rickettsia</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c12-lec"><label for="cd-c12-lec">Lecture</label></li></ul>
+                <h3>Leptospirosis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c13-lec"><label for="cd-c13-lec">Lecture</label></li></ul>
+                <h3>Ebola, Zika, and Nipah</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c14-lec"><label for="cd-c14-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Non - Communicable Diseases</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="ncd-mod"><label for="ncd-mod">Modules</label></li>
+                    <li><input type="checkbox" id="ncd-anki"><label for="ncd-anki">Anki</label></li>
+                    <li><input type="checkbox" id="ncd-pyq"><label for="ncd-pyq">PYQs</label></li>
+                </ul>
+                <h3>CVD, Hypertension and Obesity</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c1-lec"><label for="ncd-c1-lec">Lecture</label></li></ul>
+                <h3>Rheumatic Fever, Cancer and Sickle Cell Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c2-lec"><label for="ncd-c2-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Nutrition</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="nut-mod"><label for="nut-mod">Modules</label></li>
+                    <li><input type="checkbox" id="nut-anki"><label for="nut-anki">Anki</label></li>
+                    <li><input type="checkbox" id="nut-pyq"><label for="nut-pyq">PYQs</label></li>
+                </ul>
+                <h3>Nutrition : Concepts and Macronutrients</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c1-lec"><label for="nut-c1-lec">Lecture</label></li></ul>
+                <h3>Nutrition : Micronutrients</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c2-lec"><label for="nut-c2-lec">Lecture</label></li></ul>
+                <h3>Nutrition : Recommended Dietary Allowance and Millets</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c3-lec"><label for="nut-c3-lec">Lecture</label></li></ul>
+                <h3>Nutrition: Food Products, Adulterants and Standards</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c4-lec"><label for="nut-c4-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Environment</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="env-mod"><label for="env-mod">Modules</label></li>
+                    <li><input type="checkbox" id="env-anki"><label for="env-anki">Anki</label></li>
+                    <li><input type="checkbox" id="env-pyq"><label for="env-pyq">PYQs</label></li>
+                </ul>
+                <h3>Air and Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c1-lec"><label for="env-c1-lec">Lecture</label></li></ul>
+                <h3>Water Sources and Quality Of Water</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c2-lec"><label for="env-c2-lec">Lecture</label></li></ul>
+                <h3>Water Purification Methods</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c3-lec"><label for="env-c3-lec">Lecture</label></li></ul>
+                <h3>Housing, Ventilation, Light, Sound, Radiation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c4-lec"><label for="env-c4-lec">Lecture</label></li></ul>
+                <h3>Waste Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c5-lec"><label for="env-c5-lec">Lecture</label></li></ul>
+                <h3>Entomology : Mosquitoes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c6-lec"><label for="env-c6-lec">Lecture</label></li></ul>
+                <h3>Entomology : Lice, Ticks, Mites and Sandfly</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c7-lec"><label for="env-c7-lec">Lecture</label></li></ul>
+                <h3>Mosquito Control Measures and Insecticides</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c8-lec"><label for="env-c8-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Biomedical Waste Management</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="bwm-mod"><label for="bwm-mod">Modules</label></li>
+                    <li><input type="checkbox" id="bwm-anki"><label for="bwm-anki">Anki</label></li>
+                    <li><input type="checkbox" id="bwm-pyq"><label for="bwm-pyq">PYQs</label></li>
+                </ul>
+                <h3>Biomedical Waste Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bwm-c1-lec"><label for="bwm-c1-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Occupational Health</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="oh-mod"><label for="oh-mod">Modules</label></li>
+                    <li><input type="checkbox" id="oh-anki"><label for="oh-anki">Anki</label></li>
+                    <li><input type="checkbox" id="oh-pyq"><label for="oh-pyq">PYQs</label></li>
+                </ul>
+                <h3>Occupational Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c1-lec"><label for="oh-c1-lec">Lecture</label></li></ul>
+                <h3>ESI and Factories Act</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c2-lec"><label for="oh-c2-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Concept of Health and Disease</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="chd-mod"><label for="chd-mod">Modules</label></li>
+                    <li><input type="checkbox" id="chd-anki"><label for="chd-anki">Anki</label></li>
+                    <li><input type="checkbox" id="chd-pyq"><label for="chd-pyq">PYQs</label></li>
+                </ul>
+                <h3>Concepts in Community Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c1-lec"><label for="chd-c1-lec">Lecture</label></li></ul>
+                <h3>Concepts of Control and Prevention</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c2-lec"><label for="chd-c2-lec">Lecture</label></li></ul>
+                <h3>Health and Disability Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c3-lec"><label for="chd-c3-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Disaster Management</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="dm-mod"><label for="dm-mod">Modules</label></li>
+                    <li><input type="checkbox" id="dm-anki"><label for="dm-anki">Anki</label></li>
+                    <li><input type="checkbox" id="dm-pyq"><label for="dm-pyq">PYQs</label></li>
+                </ul>
+                <h3>Disaster Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="dm-c1-lec"><label for="dm-c1-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Health Communication</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="hc-mod"><label for="hc-mod">Modules</label></li>
+                    <li><input type="checkbox" id="hc-anki"><label for="hc-anki">Anki</label></li>
+                    <li><input type="checkbox" id="hc-pyq"><label for="hc-pyq">PYQs</label></li>
+                </ul>
+                <h3>Health Communication</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hc-c1-lec"><label for="hc-c1-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>International Health Organisations</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="iho-mod"><label for="iho-mod">Modules</label></li>
+                    <li><input type="checkbox" id="iho-anki"><label for="iho-anki">Anki</label></li>
+                    <li><input type="checkbox" id="iho-pyq"><label for="iho-pyq">PYQs</label></li>
+                </ul>
+                <h3>International Health Organisations</h3><ul class="chapter-tasks"><li><input type="checkbox" id="iho-c1-lec"><label for="iho-c1-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Social Medicine</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="sm-mod"><label for="sm-mod">Modules</label></li>
+                    <li><input type="checkbox" id="sm-anki"><label for="sm-anki">Anki</label></li>
+                    <li><input type="checkbox" id="sm-pyq"><label for="sm-pyq">PYQs</label></li>
+                </ul>
+                <h3>Social Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sm-c1-lec"><label for="sm-c1-lec">Lecture</label></li></ul>
+            </div>
+    
+            <div class="unit">
+                <h2>Miscellaneous Topics</h2>
+                <ul class="unit-tasks">
+                    <li><input type="checkbox" id="mt-mod"><label for="mt-mod">Modules</label></li>
+                    <li><input type="checkbox" id="mt-anki"><label for="mt-anki">Anki</label></li>
+                    <li><input type="checkbox" id="mt-pyq"><label for="mt-pyq">PYQs</label></li>
+                </ul>
+                <h3>History and Evolution of Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c1-lec"><label for="mt-c1-lec">Lecture</label></li></ul>
+                <h3>Preventive Geriatrics</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c2-lec"><label for="mt-c2-lec">Lecture</label></li></ul>
+                <h3>Mental Health Programme</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c3-lec"><label for="mt-c3-lec">Lecture</label></li></ul>
+                <h3>Genetics and Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c4-lec"><label for="mt-c4-lec">Lecture</label></li></ul>
+            </div>
         </div>
-        <div class="unit">
-            <h2>Maternal and Child Health</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="mch-mod"><label for="mch-mod">Modules</label></li>
-                <li><input type="checkbox" id="mch-anki"><label for="mch-anki">Anki</label></li>
-                <li><input type="checkbox" id="mch-pyq"><label for="mch-pyq">PYQs</label></li>
-            </ul>
-            <h3>Indicators of MCH Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c1-lec"><label for="mch-c1-lec">Lecture</label></li></ul>
-            <h3>Preventive Obstetrics: Antenatal Care and Post Natal Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c2-lec"><label for="mch-c2-lec">Lecture</label></li></ul>
-            <h3>Preventive Pediatrics : Early Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c3-lec"><label for="mch-c3-lec">Lecture</label></li></ul>
-            <h3>Preventive Paediatrics : Growth And Development</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c4-lec"><label for="mch-c4-lec">Lecture</label></li></ul>
-            <h3>Social Paediatrics</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c5-lec"><label for="mch-c5-lec">Lecture</label></li></ul>
-            <h3>RMNCAH + N : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c6-lec"><label for="mch-c6-lec">Lecture</label></li></ul>
-            <h3>RMNCAH + N : Part 2 - IMNCI, FRU, Organisation of MCH Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c7-lec"><label for="mch-c7-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Vaccine and Immunization</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="v_i-mod"><label for="v_i-mod">Modules</label></li>
-                <li><input type="checkbox" id="v_i-anki"><label for="v_i-anki">Anki</label></li>
-                <li><input type="checkbox" id="v_i-pyq"><label for="v_i-pyq">PYQs</label></li>
-            </ul>
-            <h3>Universal Immunization Programme</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c1-lec"><label for="v_i-c1-lec">Lecture</label></li></ul>
-            <h3>Immunization : Frequently Asked Questions</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c2-lec"><label for="v_i-c2-lec">Lecture</label></li></ul>
-            <h3>Cold Chain and Vaccine Requirement</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c3-lec"><label for="v_i-c3-lec">Lecture</label></li></ul>
-            <h3>Vaccine Strains, Waste Management And AEFI</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c4-lec"><label for="v_i-c4-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Epidemiology</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="epi-mod"><label for="epi-mod">Modules</label></li>
-                <li><input type="checkbox" id="epi-anki"><label for="epi-anki">Anki</label></li>
-                <li><input type="checkbox" id="epi-pyq"><label for="epi-pyq">PYQs</label></li>
-            </ul>
-            <h3>Aim of Epidemiology and Historical Perspective</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c1-lec"><label for="epi-c1-lec">Lecture</label></li></ul>
-            <h3>Basics in Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c2-lec"><label for="epi-c2-lec">Lecture</label></li></ul>
-            <h3>Epidemiological Methods and Descriptive Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c3-lec"><label for="epi-c3-lec">Lecture</label></li></ul>
-            <h3>Analytical and Experimental Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c4-lec"><label for="epi-c4-lec">Lecture</label></li></ul>
-            <h3>Bias and Confounding</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c5-lec"><label for="epi-c5-lec">Lecture</label></li></ul>
-            <h3>Advanced Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c6-lec"><label for="epi-c6-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Screening of Disease</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="sod-mod"><label for="sod-mod">Modules</label></li>
-                <li><input type="checkbox" id="sod-anki"><label for="sod-anki">Anki</label></li>
-                <li><input type="checkbox" id="sod-pyq"><label for="sod-pyq">PYQs</label></li>
-            </ul>
-            <h3>Screening of Disease Concepts</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c1-lec"><label for="sod-c1-lec">Lecture</label></li></ul>
-            <h3>Determinants in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c2-lec"><label for="sod-c2-lec">Lecture</label></li></ul>
-            <h3>Advanced Concepts in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c3-lec"><label for="sod-c3-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Biostatistics</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="bio-mod"><label for="bio-mod">Modules</label></li>
-                <li><input type="checkbox" id="bio-anki"><label for="bio-anki">Anki</label></li>
-                <li><input type="checkbox" id="bio-pyq"><label for="bio-pyq">PYQs</label></li>
-            </ul>
-            <h3>Data Types and Scales</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c1-lec"><label for="bio-c1-lec">Lecture</label></li></ul>
-            <h3>Measures of Central Tendency and Variation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c2-lec"><label for="bio-c2-lec">Lecture</label></li></ul>
-            <h3>Normal Distribution Curve</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c3-lec"><label for="bio-c3-lec">Lecture</label></li></ul>
-            <h3>Concepts of P - Value</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c4-lec"><label for="bio-c4-lec">Lecture</label></li></ul>
-            <h3>Tests of Significance, Probability Rules and Regression Analysis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c5-lec"><label for="bio-c5-lec">Lecture</label></li></ul>
-            <h3>Skew and Tiles</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c6-lec"><label for="bio-c6-lec">Lecture</label></li></ul>
-            <h3>Sampling Methods and Sample Size Calculation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c7-lec"><label for="bio-c7-lec">Lecture</label></li></ul>
-            <h3>Graphs</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c8-lec"><label for="bio-c8-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>National Health Programmes</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="nhp-mod"><label for="nhp-mod">Modules</label></li>
-                <li><input type="checkbox" id="nhp-anki"><label for="nhp-anki">Anki</label></li>
-                <li><input type="checkbox" id="nhp-pyq"><label for="nhp-pyq">PYQs</label></li>
-            </ul>
-            <h3>TB : Epidemiology and Investigations</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c1-lec"><label for="nhp-c1-lec">Lecture</label></li></ul>
-            <h3>NTEP : Targets, Diagnosis and Management Guidelines</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c2-lec"><label for="nhp-c2-lec">Lecture</label></li></ul>
-            <h3>NTEP : Strategies, Organisation and Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c3-lec"><label for="nhp-c3-lec">Lecture</label></li></ul>
-            <h3>NACP : Targets, Diagnosis and Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c4-lec"><label for="nhp-c4-lec">Lecture</label></li></ul>
-            <h3>NACP : Strategies, Organisation and Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c5-lec"><label for="nhp-c5-lec">Lecture</label></li></ul>
-            <h3>NVBDCP : Malaria Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c6-lec"><label for="nhp-c6-lec">Lecture</label></li></ul>
-            <h3>NVBDCP : Malaria Diagnosis, Treatment and Control</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c7-lec"><label for="nhp-c7-lec">Lecture</label></li></ul>
-            <h3>NVBDCP: Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c8-lec"><label for="nhp-c8-lec">Lecture</label></li></ul>
-            <h3>Japanese Encephalitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c9-lec"><label for="nhp-c9-lec">Lecture</label></li></ul>
-            <h3>Dengue</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c10-lec"><label for="nhp-c10-lec">Lecture</label></li></ul>
-            <h3>Lymphatic Filariasis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c11-lec"><label for="nhp-c11-lec">Lecture</label></li></ul>
-            <h3>Kala - Azar</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c12-lec"><label for="nhp-c12-lec">Lecture</label></li></ul>
-            <h3>National Leprosy Eradication Program</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c13-lec"><label for="nhp-c13-lec">Lecture</label></li></ul>
-            <h3>National Polio Surveillance Project</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c14-lec"><label for="nhp-c14-lec">Lecture</label></li></ul>
-            <h3>NIDDCP, IDSP and IDCS</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c15-lec"><label for="nhp-c15-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Healthcare Planning in India</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="hcpi-mod"><label for="hcpi-mod">Modules</label></li>
-                <li><input type="checkbox" id="hcpi-anki"><label for="hcpi-anki">Anki</label></li>
-                <li><input type="checkbox" id="hcpi-pyq"><label for="hcpi-pyq">PYQs</label></li>
-            </ul>
-            <h3>Recent Advances in Community Medicine - 2023</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c1-lec"><label for="hcpi-c1-lec">Lecture</label></li></ul>
-            <h3>Health Care System in India</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c2-lec"><label for="hcpi-c2-lec">Lecture</label></li></ul>
-            <h3>Health Planning and Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c3-lec"><label for="hcpi-c3-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Infectious Disease Epidemiology</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="ide-mod"><label for="ide-mod">Modules</label></li>
-                <li><input type="checkbox" id="ide-anki"><label for="ide-anki">Anki</label></li>
-                <li><input type="checkbox" id="ide-pyq"><label for="ide-pyq">PYQs</label></li>
-            </ul>
-            <h3>Infectious Diseases : Basic Definitions, Chain of Transmission</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c1-lec"><label for="ide-c1-lec">Lecture</label></li></ul>
-            <h3>Infectious Diseases : Agent, Host, Case, Carrier</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c2-lec"><label for="ide-c2-lec">Lecture</label></li></ul>
-            <h3>Infectious Diseases : Modes of Transmission, PPE, Handwashing</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c3-lec"><label for="ide-c3-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Communicable Diseases</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="cd-mod"><label for="cd-mod">Modules</label></li>
-                <li><input type="checkbox" id="cd-anki"><label for="cd-anki">Anki</label></li>
-                <li><input type="checkbox" id="cd-pyq"><label for="cd-pyq">PYQs</label></li>
-            </ul>
-            <h3>Smallpox and Chickenpox</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c1-lec"><label for="cd-c1-lec">Lecture</label></li></ul>
-            <h3>Measles, Mumps and Rubella</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c2-lec"><label for="cd-c2-lec">Lecture</label></li></ul>
-            <h3>Flu, Diphtheria and Pertussis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c3-lec"><label for="cd-c3-lec">Lecture</label></li></ul>
-            <h3>Meningitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c4-lec"><label for="cd-c4-lec">Lecture</label></li></ul>
-            <h3>Cholera and Diarrhea Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c5-lec"><label for="cd-c5-lec">Lecture</label></li></ul>
-            <h3>Typhoid</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c6-lec"><label for="cd-c6-lec">Lecture</label></li></ul>
-            <h3>Hepatitis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c7-lec"><label for="cd-c7-lec">Lecture</label></li></ul>
-            <h3>Soil Transmitted Helminthic Infections</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c8-lec"><label for="cd-c8-lec">Lecture</label></li></ul>
-            <h3>Zoonoses and Rabies</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c9-lec"><label for="cd-c9-lec">Lecture</label></li></ul>
-            <h3>Plague, Yellow Fever and KFD</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c10-lec"><label for="cd-c10-lec">Lecture</label></li></ul>
-            <h3>Tetanus</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c11-lec"><label for="cd-c11-lec">Lecture</label></li></ul>
-            <h3>Rickettsia</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c12-lec"><label for="cd-c12-lec">Lecture</label></li></ul>
-            <h3>Leptospirosis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c13-lec"><label for="cd-c13-lec">Lecture</label></li></ul>
-            <h3>Ebola, Zika, and Nipah</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c14-lec"><label for="cd-c14-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Non - Communicable Diseases</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="ncd-mod"><label for="ncd-mod">Modules</label></li>
-                <li><input type="checkbox" id="ncd-anki"><label for="ncd-anki">Anki</label></li>
-                <li><input type="checkbox" id="ncd-pyq"><label for="ncd-pyq">PYQs</label></li>
-            </ul>
-            <h3>CVD, Hypertension and Obesity</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c1-lec"><label for="ncd-c1-lec">Lecture</label></li></ul>
-            <h3>Rheumatic Fever, Cancer and Sickle Cell Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c2-lec"><label for="ncd-c2-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Nutrition</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="nut-mod"><label for="nut-mod">Modules</label></li>
-                <li><input type="checkbox" id="nut-anki"><label for="nut-anki">Anki</label></li>
-                <li><input type="checkbox" id="nut-pyq"><label for="nut-pyq">PYQs</label></li>
-            </ul>
-            <h3>Nutrition : Concepts and Macronutrients</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c1-lec"><label for="nut-c1-lec">Lecture</label></li></ul>
-            <h3>Nutrition : Micronutrients</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c2-lec"><label for="nut-c2-lec">Lecture</label></li></ul>
-            <h3>Nutrition : Recommended Dietary Allowance and Millets</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c3-lec"><label for="nut-c3-lec">Lecture</label></li></ul>
-            <h3>Nutrition: Food Products, Adulterants and Standards</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c4-lec"><label for="nut-c4-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Environment</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="env-mod"><label for="env-mod">Modules</label></li>
-                <li><input type="checkbox" id="env-anki"><label for="env-anki">Anki</label></li>
-                <li><input type="checkbox" id="env-pyq"><label for="env-pyq">PYQs</label></li>
-            </ul>
-            <h3>Air and Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c1-lec"><label for="env-c1-lec">Lecture</label></li></ul>
-            <h3>Water Sources and Quality Of Water</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c2-lec"><label for="env-c2-lec">Lecture</label></li></ul>
-            <h3>Water Purification Methods</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c3-lec"><label for="env-c3-lec">Lecture</label></li></ul>
-            <h3>Housing, Ventilation, Light, Sound, Radiation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c4-lec"><label for="env-c4-lec">Lecture</label></li></ul>
-            <h3>Waste Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c5-lec"><label for="env-c5-lec">Lecture</label></li></ul>
-            <h3>Entomology : Mosquitoes</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c6-lec"><label for="env-c6-lec">Lecture</label></li></ul>
-            <h3>Entomology : Lice, Ticks, Mites and Sandfly</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c7-lec"><label for="env-c7-lec">Lecture</label></li></ul>
-            <h3>Mosquito Control Measures and Insecticides</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c8-lec"><label for="env-c8-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Biomedical Waste Management</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="bwm-mod"><label for="bwm-mod">Modules</label></li>
-                <li><input type="checkbox" id="bwm-anki"><label for="bwm-anki">Anki</label></li>
-                <li><input type="checkbox" id="bwm-pyq"><label for="bwm-pyq">PYQs</label></li>
-            </ul>
-            <h3>Biomedical Waste Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bwm-c1-lec"><label for="bwm-c1-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Occupational Health</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="oh-mod"><label for="oh-mod">Modules</label></li>
-                <li><input type="checkbox" id="oh-anki"><label for="oh-anki">Anki</label></li>
-                <li><input type="checkbox" id="oh-pyq"><label for="oh-pyq">PYQs</label></li>
-            </ul>
-            <h3>Occupational Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c1-lec"><label for="oh-c1-lec">Lecture</label></li></ul>
-            <h3>ESI and Factories Act</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c2-lec"><label for="oh-c2-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Concept of Health and Disease</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="chd-mod"><label for="chd-mod">Modules</label></li>
-                <li><input type="checkbox" id="chd-anki"><label for="chd-anki">Anki</label></li>
-                <li><input type="checkbox" id="chd-pyq"><label for="chd-pyq">PYQs</label></li>
-            </ul>
-            <h3>Concepts in Community Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c1-lec"><label for="chd-c1-lec">Lecture</label></li></ul>
-            <h3>Concepts of Control and Prevention</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c2-lec"><label for="chd-c2-lec">Lecture</label></li></ul>
-            <h3>Health and Disability Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c3-lec"><label for="chd-c3-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Disaster Management</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="dm-mod"><label for="dm-mod">Modules</label></li>
-                <li><input type="checkbox" id="dm-anki"><label for="dm-anki">Anki</label></li>
-                <li><input type="checkbox" id="dm-pyq"><label for="dm-pyq">PYQs</label></li>
-            </ul>
-            <h3>Disaster Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="dm-c1-lec"><label for="dm-c1-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Health Communication</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="hc-mod"><label for="hc-mod">Modules</label></li>
-                <li><input type="checkbox" id="hc-anki"><label for="hc-anki">Anki</label></li>
-                <li><input type="checkbox" id="hc-pyq"><label for="hc-pyq">PYQs</label></li>
-            </ul>
-            <h3>Health Communication</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hc-c1-lec"><label for="hc-c1-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>International Health Organisations</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="iho-mod"><label for="iho-mod">Modules</label></li>
-                <li><input type="checkbox" id="iho-anki"><label for="iho-anki">Anki</label></li>
-                <li><input type="checkbox" id="iho-pyq"><label for="iho-pyq">PYQs</label></li>
-            </ul>
-            <h3>International Health Organisations</h3><ul class="chapter-tasks"><li><input type="checkbox" id="iho-c1-lec"><label for="iho-c1-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Social Medicine</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="sm-mod"><label for="sm-mod">Modules</label></li>
-                <li><input type="checkbox" id="sm-anki"><label for="sm-anki">Anki</label></li>
-                <li><input type="checkbox" id="sm-pyq"><label for="sm-pyq">PYQs</label></li>
-            </ul>
-            <h3>Social Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sm-c1-lec"><label for="sm-c1-lec">Lecture</label></li></ul>
-        </div>
-        <div class="unit">
-            <h2>Miscellaneous Topics</h2>
-            <ul class="unit-tasks">
-                <li><input type="checkbox" id="mt-mod"><label for="mt-mod">Modules</label></li>
-                <li><input type="checkbox" id="mt-anki"><label for="mt-anki">Anki</label></li>
-                <li><input type="checkbox" id="mt-pyq"><label for="mt-pyq">PYQs</label></li>
-            </ul>
-            <h3>History and Evolution of Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c1-lec"><label for="mt-c1-lec">Lecture</label></li></ul>
-            <h3>Preventive Geriatrics</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c2-lec"><label for="mt-c2-lec">Lecture</label></li></ul>
-            <h3>Mental Health Programme</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c3-lec"><label for="mt-c3-lec">Lecture</label></li></ul>
-            <h3>Genetics and Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mt-c4-lec"><label for="mt-c4-lec">Lecture</label></li></ul>
-        </div>
-
     </div>
     
     <!-- Firebase SDKs -->
@@ -429,9 +491,9 @@
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const progressBar = document.getElementById('progressBar');
             const progressText = document.getElementById('progressText');
+            const loader = document.getElementById('loader');
+            const mainContent = document.getElementById('main-content');
             
-            // --- Firebase Configuration ---
-            // IMPORTANT: Replace these with your actual Firebase project keys
             const firebaseConfig = {
                 apiKey: "AIzaSyAf1ueSHso1bXfWd_MmcgpZUXmqBA6uwD8",
   authDomain: "to-do-19a63.firebaseapp.com",
@@ -442,7 +504,6 @@
   measurementId: "G-X940W5RV9G"
             };
             
-            // --- Initialize Firebase ---
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
@@ -450,8 +511,7 @@
             const db = firebase.firestore();
 
             let currentUser = null;
-            // *** The only change needed from forensic.html is this line ***
-            const subject = 'community'; 
+            const subject = 'community';
 
             function updateProgressUI() {
                 const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
@@ -461,70 +521,55 @@
                 progressText.textContent = Math.round(percentage) + '% Complete';
             }
 
-            // --- Load Progress from Firestore ---
             function loadProgressFromFirestore() {
                 if (!currentUser) return;
-
                 const docRef = db.collection('progress').doc(currentUser.uid);
-
                 docRef.get().then((doc) => {
                     if (doc.exists) {
-                        const savedProgress = doc.data()[subject]; // Get data specifically for 'community'
+                        const savedProgress = doc.data()[subject];
                         if (savedProgress) {
                             checkboxes.forEach(box => {
                                 box.checked = savedProgress[box.id] === true;
                             });
                         }
                     }
-                    updateProgressUI(); // Update UI after loading is complete
-                }).catch((error) => {
-                    console.error("Error loading progress: ", error);
-                });
+                    updateProgressUI();
+                }).catch(error => console.error("Error loading progress: ", error));
             }
 
-            // --- Save Progress to Firestore (debounced for efficiency) ---
             let saveTimeout;
             function saveProgressToFirestore() {
                 if (!currentUser) return;
-
                 clearTimeout(saveTimeout);
                 saveTimeout = setTimeout(() => {
                     const progress = {};
                     checkboxes.forEach(box => {
                         progress[box.id] = box.checked;
                     });
-
                     const docRef = db.collection('progress').doc(currentUser.uid);
-                    
-                    docRef.set({
-                        [subject]: progress 
-                    }, { merge: true }).catch((error) => {
-                        console.error("Error saving progress: ", error);
-                    });
-                }, 1000); // 1-second delay
+                    docRef.set({ [subject]: progress }, { merge: true })
+                          .catch(error => console.error("Error saving progress: ", error));
+                }, 1000);
             }
             
-            // --- Attach Event Listeners ---
             checkboxes.forEach(box => {
                 box.addEventListener('change', () => {
-                    updateProgressUI();      // Update the UI instantly for good UX
-                    saveProgressToFirestore(); // Save to Firestore after a small delay
+                    updateProgressUI();
+                    saveProgressToFirestore();
                 });
             });
 
-            // --- Auth State Change Listener ---
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // User is signed in.
                     currentUser = user;
-                    loadProgressFromFirestore(); // Load their saved data
+                    loadProgressFromFirestore();
+                    loader.style.display = 'none';
+                    mainContent.style.display = 'block';
                 } else {
-                    // User is signed out. Redirect to login page.
                     window.location.href = 'index.html';
                 }
             });
         });
     </script>
-
 </body>
 </html>
