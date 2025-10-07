@@ -18,6 +18,7 @@
             --accent-color-1: #4a90e2; /* Forensic Blue */
             --accent-color-2: #50e3c2; /* Community Green */
             --shadow-color: rgba(0, 0, 0, 0.08);
+            --border-color: #e2e8f0;
         }
         body {
             font-family: 'Lato', sans-serif;
@@ -36,6 +37,90 @@
             margin-bottom: 40px;
             color: var(--primary-text);
             text-align: center;
+        }
+        /* Hide elements by default */
+        #dashboard-wrapper, #user-info {
+            display: none;
+        }
+        /* Auth Form Styling */
+        #auth-container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--secondary-text);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #btnLogin {
+            background-color: var(--accent-color-1);
+            color: white;
+        }
+        #btnSignup {
+            background-color: #f0f0f0;
+            color: var(--primary-text);
+        }
+        #auth-error {
+            color: #e53e3e;
+            text-align: center;
+            margin-top: 20px;
+            height: 1.2em;
+        }
+         /* User Info and Logout Styling */
+        #user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        #btnLogout {
+            border: none;
+            background-color: var(--secondary-text);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         .dashboard-container {
             display: flex;
@@ -69,105 +154,189 @@
             position: relative;
             margin: 0 auto;
         }
-        .progress-circle svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-        }
-        .progress-circle circle {
-            fill: none;
-            stroke-width: 12;
-        }
-        .circle-bg {
-            stroke: #e2e8f0;
-        }
-        .circle-progress {
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.5s ease-out;
-        }
-        .percentage-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-text);
-        }
+        .progress-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .progress-circle circle { fill: none; stroke-width: 12; }
+        .circle-bg { stroke: #e2e8f0; }
+        .circle-progress { stroke-linecap: round; transition: stroke-dashoffset 0.5s ease-out; }
+        .percentage-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: bold; color: var(--primary-text); }
 
-        /* NEW: MEDIA QUERIES FOR RESPONSIVENESS */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
+            h1 { font-size: 2rem; }
+            .dashboard-container { flex-direction: column; gap: 25px; }
+            .checklist-card { width: 90vw; max-width: 350px; padding: 25px; }
+            #user-info {
+                position: static;
+                margin-top: 20px;
+                order: 3; /* Place it after the dashboard */
             }
-            .dashboard-container {
-                flex-direction: column;
-                gap: 25px;
+            #dashboard-wrapper {
+                order: 2;
             }
-            .checklist-card {
-                width: 90vw; /* Make cards take up most of the screen width */
-                max-width: 350px; /* But not too wide on tablets */
+             #auth-container {
                 padding: 25px;
-            }
+             }
         }
     </style>
 </head>
 <body>
 
-    <h1>My Study Checklists</h1>
-
-    <div class="dashboard-container">
-        <a href="forensic.html" class="checklist-card" id="forensic-card">
-            <div class="progress-circle">
-                <svg>
-                    <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
-                    <circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-1);"></circle>
-                </svg>
-                <div class="percentage-text">0%</div>
-            </div>
-            <h2>Forensic Medicine</h2>
-        </a>
-
-        <a href="community.html" class="checklist-card" id="community-card">
-            <div class="progress-circle">
-                <svg>
-                    <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
-                    <circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-2);"></circle>
-                </svg>
-                <div class="percentage-text">0%</div>
-            </div>
-            <h2>Community Medicine</h2>
-        </a>
+    <!-- Authentication Form -->
+    <div id="auth-container">
+        <h2 class="form-title">Login to Dashboard</h2>
+        <div class="form-group">
+            <label for="txtEmail">Email</label>
+            <input type="email" id="txtEmail" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+            <label for="txtPassword">Password</label>
+            <input type="password" id="txtPassword" placeholder="••••••••">
+        </div>
+        <div class="button-group">
+            <button class="button" id="btnLogin">Login</button>
+            <button class="button" id="btnSignup">Sign Up</button>
+        </div>
+        <p id="auth-error"></p>
     </div>
 
+    <!-- User Info and Logout Button -->
+    <div id="user-info">
+        <span id="user-email"></span>
+        <button id="btnLogout">Logout</button>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard-wrapper">
+        <h1>My Study Checklists</h1>
+        <div class="dashboard-container">
+            <a href="forensic.html" class="checklist-card" id="forensic-card">
+                <div class="progress-circle">
+                    <svg><circle class="circle-bg" cx="75" cy="75" r="65"></circle><circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-1);"></circle></svg>
+                    <div class="percentage-text">0%</div>
+                </div>
+                <h2>Forensic Medicine</h2>
+            </a>
+            <a href="community.html" class="checklist-card" id="community-card">
+                <div class="progress-circle">
+                    <svg><circle class="circle-bg" cx="75" cy="75" r="65"></circle><circle class="circle-progress" cx="75" cy="75" r="65" style="stroke: var(--accent-color-2);"></circle></svg>
+                    <div class="percentage-text">0%</div>
+                </div>
+                <h2>Community Medicine</h2>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            function setupProgressCircle(cardId, storageKey) {
-                const card = document.getElementById(cardId);
-                const circle = card.querySelector('.circle-progress');
-                const percentageText = card.querySelector('.percentage-text');
-                const radius = circle.r.baseVal.value;
-                const circumference = 2 * Math.PI * radius;
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // --- Initialize Firebase ---
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-                circle.style.strokeDasharray = `${circumference} ${circumference}`;
-                circle.style.strokeDashoffset = circumference;
+        // --- DOM Elements ---
+        const authContainer = document.getElementById('auth-container');
+        const dashboardWrapper = document.getElementById('dashboard-wrapper');
+        const userInfo = document.getElementById('user-info');
+        const userEmailSpan = document.getElementById('user-email');
+        const authError = document.getElementById('auth-error');
 
-                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
-                
-                if (savedProgress) {
-                    const totalCount = Object.keys(savedProgress).length;
-                    const checkedCount = Object.values(savedProgress).filter(Boolean).length;
-                    const percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
-                    
-                    const offset = circumference - (percentage / 100) * circumference;
-                    circle.style.strokeDashoffset = offset;
-                    percentageText.textContent = `${Math.round(percentage)}%`;
-                }
+        let progressListener = null; // To hold our real-time listener
+
+        // --- UI Update Functions ---
+        function updateProgressCircle(cardId, progressData) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+
+            const circle = card.querySelector('.circle-progress');
+            const percentageText = card.querySelector('.percentage-text');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+            let percentage = 0;
+            if (progressData) {
+                const totalCount = Object.keys(progressData).length;
+                const checkedCount = Object.values(progressData).filter(Boolean).length;
+                percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
             }
 
-            // Initialize both progress circles
-            setupProgressCircle('forensic-card', 'forensicChecklistProgress');
-            setupProgressCircle('community-card', 'communityMedicineChecklistProgress');
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+            percentageText.textContent = `${Math.round(percentage)}%`;
+        }
+        
+        // --- Authentication Logic ---
+        const txtEmail = document.getElementById('txtEmail');
+        const txtPassword = document.getElementById('txtPassword');
+        
+        document.getElementById('btnLogin').addEventListener('click', () => {
+            auth.signInWithEmailAndPassword(txtEmail.value, txtPassword.value)
+                .catch(error => { authError.textContent = error.message; });
+        });
+
+        document.getElementById('btnSignup').addEventListener('click', () => {
+            auth.createUserWithEmailAndPassword(txtEmail.value, txtPassword.value)
+                .catch(error => { authError.textContent = error.message; });
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            auth.signOut();
+        });
+
+        // --- Auth State Listener ---
+        auth.onAuthStateChanged(user => {
+            authError.textContent = ''; // Clear any previous errors
+            if (user) {
+                // User is signed in
+                authContainer.style.display = 'none';
+                dashboardWrapper.style.display = 'block';
+                userInfo.style.display = 'flex';
+                userEmailSpan.textContent = user.email;
+
+                // Listen for real-time progress updates
+                const docRef = db.collection('progress').doc(user.uid);
+                progressListener = docRef.onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        updateProgressCircle('forensic-card', data.forensic);
+                        updateProgressCircle('community-card', data.community);
+                    } else {
+                        // No data yet, show 0%
+                        updateProgressCircle('forensic-card', null);
+                        updateProgressCircle('community-card', null);
+                    }
+                });
+
+            } else {
+                // User is signed out
+                authContainer.style.display = 'block';
+                dashboardWrapper.style.display = 'none';
+                userInfo.style.display = 'none';
+
+                // Detach the real-time listener to prevent errors
+                if (progressListener) {
+                    progressListener(); // This function unsubscribes
+                    progressListener = null;
+                }
+                
+                // Reset circles to 0
+                updateProgressCircle('forensic-card', null);
+                updateProgressCircle('community-card', null);
+            }
         });
     </script>
 
