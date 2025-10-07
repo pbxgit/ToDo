@@ -32,6 +32,18 @@
             box-shadow: 0 8px 25px var(--shadow-color); 
             padding: 40px; 
         }
+        /* New Style for Back Link */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
         h1 { 
             text-align: center; 
             color: var(--accent-color); 
@@ -127,6 +139,7 @@
 <body>
 
     <div class="container">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
         <h1>Community Medicine Checklist</h1>
         
         <div class="progress-section">
@@ -136,6 +149,7 @@
             <span id="progressText">0% Complete</span>
         </div>
 
+        <!-- All existing HTML checklist content remains the same -->
         <div class="unit">
             <h2>Demography and Family Planning</h2>
             <ul class="unit-tasks">
@@ -151,7 +165,6 @@
             <h3>Family Planning and Contraception : Part 2</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c6-lec"><label for="d_fp-c6-lec">Lecture</label></li></ul>
             <h3>National Family Planning Program</h3><ul class="chapter-tasks"><li><input type="checkbox" id="d_fp-c7-lec"><label for="d_fp-c7-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Maternal and Child Health</h2>
             <ul class="unit-tasks">
@@ -167,7 +180,6 @@
             <h3>RMNCAH + N : Part 1</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c6-lec"><label for="mch-c6-lec">Lecture</label></li></ul>
             <h3>RMNCAH + N : Part 2 - IMNCI, FRU, Organisation of MCH Care</h3><ul class="chapter-tasks"><li><input type="checkbox" id="mch-c7-lec"><label for="mch-c7-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>Vaccine and Immunization</h2>
             <ul class="unit-tasks">
@@ -180,7 +192,6 @@
             <h3>Cold Chain and Vaccine Requirement</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c3-lec"><label for="v_i-c3-lec">Lecture</label></li></ul>
             <h3>Vaccine Strains, Waste Management And AEFI</h3><ul class="chapter-tasks"><li><input type="checkbox" id="v_i-c4-lec"><label for="v_i-c4-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>Epidemiology</h2>
             <ul class="unit-tasks">
@@ -195,7 +206,6 @@
             <h3>Bias and Confounding</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c5-lec"><label for="epi-c5-lec">Lecture</label></li></ul>
             <h3>Advanced Epidemiology</h3><ul class="chapter-tasks"><li><input type="checkbox" id="epi-c6-lec"><label for="epi-c6-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Screening of Disease</h2>
             <ul class="unit-tasks">
@@ -207,7 +217,6 @@
             <h3>Determinants in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c2-lec"><label for="sod-c2-lec">Lecture</label></li></ul>
             <h3>Advanced Concepts in Screening of Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sod-c3-lec"><label for="sod-c3-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Biostatistics</h2>
             <ul class="unit-tasks">
@@ -224,7 +233,6 @@
             <h3>Sampling Methods and Sample Size Calculation</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c7-lec"><label for="bio-c7-lec">Lecture</label></li></ul>
             <h3>Graphs</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bio-c8-lec"><label for="bio-c8-lec">Lecture</label></li></ul>
         </div>
-        
         <div class="unit">
             <h2>National Health Programmes</h2>
             <ul class="unit-tasks">
@@ -248,7 +256,6 @@
             <h3>National Polio Surveillance Project</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c14-lec"><label for="nhp-c14-lec">Lecture</label></li></ul>
             <h3>NIDDCP, IDSP and IDCS</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nhp-c15-lec"><label for="nhp-c15-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Healthcare Planning in India</h2>
             <ul class="unit-tasks">
@@ -260,7 +267,6 @@
             <h3>Health Care System in India</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c2-lec"><label for="hcpi-c2-lec">Lecture</label></li></ul>
             <h3>Health Planning and Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hcpi-c3-lec"><label for="hcpi-c3-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Infectious Disease Epidemiology</h2>
             <ul class="unit-tasks">
@@ -272,7 +278,6 @@
             <h3>Infectious Diseases : Agent, Host, Case, Carrier</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c2-lec"><label for="ide-c2-lec">Lecture</label></li></ul>
             <h3>Infectious Diseases : Modes of Transmission, PPE, Handwashing</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ide-c3-lec"><label for="ide-c3-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Communicable Diseases</h2>
             <ul class="unit-tasks">
@@ -295,7 +300,6 @@
             <h3>Leptospirosis</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c13-lec"><label for="cd-c13-lec">Lecture</label></li></ul>
             <h3>Ebola, Zika, and Nipah</h3><ul class="chapter-tasks"><li><input type="checkbox" id="cd-c14-lec"><label for="cd-c14-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Non - Communicable Diseases</h2>
             <ul class="unit-tasks">
@@ -306,7 +310,6 @@
             <h3>CVD, Hypertension and Obesity</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c1-lec"><label for="ncd-c1-lec">Lecture</label></li></ul>
             <h3>Rheumatic Fever, Cancer and Sickle Cell Disease</h3><ul class="chapter-tasks"><li><input type="checkbox" id="ncd-c2-lec"><label for="ncd-c2-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Nutrition</h2>
             <ul class="unit-tasks">
@@ -319,7 +322,6 @@
             <h3>Nutrition : Recommended Dietary Allowance and Millets</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c3-lec"><label for="nut-c3-lec">Lecture</label></li></ul>
             <h3>Nutrition: Food Products, Adulterants and Standards</h3><ul class="chapter-tasks"><li><input type="checkbox" id="nut-c4-lec"><label for="nut-c4-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Environment</h2>
             <ul class="unit-tasks">
@@ -336,7 +338,6 @@
             <h3>Entomology : Lice, Ticks, Mites and Sandfly</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c7-lec"><label for="env-c7-lec">Lecture</label></li></ul>
             <h3>Mosquito Control Measures and Insecticides</h3><ul class="chapter-tasks"><li><input type="checkbox" id="env-c8-lec"><label for="env-c8-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Biomedical Waste Management</h2>
             <ul class="unit-tasks">
@@ -346,7 +347,6 @@
             </ul>
             <h3>Biomedical Waste Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="bwm-c1-lec"><label for="bwm-c1-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Occupational Health</h2>
             <ul class="unit-tasks">
@@ -357,7 +357,6 @@
             <h3>Occupational Health</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c1-lec"><label for="oh-c1-lec">Lecture</label></li></ul>
             <h3>ESI and Factories Act</h3><ul class="chapter-tasks"><li><input type="checkbox" id="oh-c2-lec"><label for="oh-c2-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Concept of Health and Disease</h2>
             <ul class="unit-tasks">
@@ -369,7 +368,6 @@
             <h3>Concepts of Control and Prevention</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c2-lec"><label for="chd-c2-lec">Lecture</label></li></ul>
             <h3>Health and Disability Indicators</h3><ul class="chapter-tasks"><li><input type="checkbox" id="chd-c3-lec"><label for="chd-c3-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Disaster Management</h2>
             <ul class="unit-tasks">
@@ -379,7 +377,6 @@
             </ul>
             <h3>Disaster Management</h3><ul class="chapter-tasks"><li><input type="checkbox" id="dm-c1-lec"><label for="dm-c1-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Health Communication</h2>
             <ul class="unit-tasks">
@@ -389,7 +386,6 @@
             </ul>
             <h3>Health Communication</h3><ul class="chapter-tasks"><li><input type="checkbox" id="hc-c1-lec"><label for="hc-c1-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>International Health Organisations</h2>
             <ul class="unit-tasks">
@@ -399,7 +395,6 @@
             </ul>
             <h3>International Health Organisations</h3><ul class="chapter-tasks"><li><input type="checkbox" id="iho-c1-lec"><label for="iho-c1-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Social Medicine</h2>
             <ul class="unit-tasks">
@@ -409,7 +404,6 @@
             </ul>
             <h3>Social Medicine</h3><ul class="chapter-tasks"><li><input type="checkbox" id="sm-c1-lec"><label for="sm-c1-lec">Lecture</label></li></ul>
         </div>
-
         <div class="unit">
             <h2>Miscellaneous Topics</h2>
             <ul class="unit-tasks">
