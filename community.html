@@ -149,7 +149,7 @@
             <span id="progressText">0% Complete</span>
         </div>
 
-        <!-- All existing HTML checklist content remains the same -->
+        <!-- All existing HTML checklist content -->
         <div class="unit">
             <h2>Demography and Family Planning</h2>
             <ul class="unit-tasks">
@@ -419,50 +419,110 @@
 
     </div>
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const progressBar = document.getElementById('progressBar');
             const progressText = document.getElementById('progressText');
-            const storageKey = 'communityMedicineChecklistProgress'; 
+            
+            // --- Firebase Configuration ---
+            // IMPORTANT: Replace these with your actual Firebase project keys
+            const firebaseConfig = {
+                apiKey: "AIzaSyAf1ueSHso1bXfWd_MmcgpZUXmqBA6uwD8",
+  authDomain: "to-do-19a63.firebaseapp.com",
+  projectId: "to-do-19a63",
+  storageBucket: "to-do-19a63.firebasestorage.app",
+  messagingSenderId: "373022724737",
+  appId: "1:373022724737:web:f241d6cd7a6f9953847380",
+  measurementId: "G-X940W5RV9G"
+            };
+            
+            // --- Initialize Firebase ---
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-            function updateProgress() {
+            let currentUser = null;
+            // *** The only change needed from forensic.html is this line ***
+            const subject = 'community'; 
+
+            function updateProgressUI() {
                 const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
                 const totalCount = checkboxes.length;
                 const percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
-                
                 progressBar.style.width = percentage + '%';
                 progressText.textContent = Math.round(percentage) + '% Complete';
             }
 
-            function saveProgress() {
-                const progress = {};
-                checkboxes.forEach(box => {
-                    progress[box.id] = box.checked;
-                });
-                localStorage.setItem(storageKey, JSON.stringify(progress));
-            }
+            // --- Load Progress from Firestore ---
+            function loadProgressFromFirestore() {
+                if (!currentUser) return;
 
-            function loadProgress() {
-                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
-                if (savedProgress) {
-                    checkboxes.forEach(box => {
-                        if (savedProgress[box.id] !== undefined) {
-                           box.checked = savedProgress[box.id];
+                const docRef = db.collection('progress').doc(currentUser.uid);
+
+                docRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const savedProgress = doc.data()[subject]; // Get data specifically for 'community'
+                        if (savedProgress) {
+                            checkboxes.forEach(box => {
+                                box.checked = savedProgress[box.id] === true;
+                            });
                         }
-                    });
-                }
+                    }
+                    updateProgressUI(); // Update UI after loading is complete
+                }).catch((error) => {
+                    console.error("Error loading progress: ", error);
+                });
             }
 
+            // --- Save Progress to Firestore (debounced for efficiency) ---
+            let saveTimeout;
+            function saveProgressToFirestore() {
+                if (!currentUser) return;
+
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    const progress = {};
+                    checkboxes.forEach(box => {
+                        progress[box.id] = box.checked;
+                    });
+
+                    const docRef = db.collection('progress').doc(currentUser.uid);
+                    
+                    docRef.set({
+                        [subject]: progress 
+                    }, { merge: true }).catch((error) => {
+                        console.error("Error saving progress: ", error);
+                    });
+                }, 1000); // 1-second delay
+            }
+            
+            // --- Attach Event Listeners ---
             checkboxes.forEach(box => {
                 box.addEventListener('change', () => {
-                    saveProgress();
-                    updateProgress();
+                    updateProgressUI();      // Update the UI instantly for good UX
+                    saveProgressToFirestore(); // Save to Firestore after a small delay
                 });
             });
 
-            loadProgress();
-            updateProgress();
+            // --- Auth State Change Listener ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in.
+                    currentUser = user;
+                    loadProgressFromFirestore(); // Load their saved data
+                } else {
+                    // User is signed out. Redirect to login page.
+                    window.location.href = 'index.html';
+                }
+            });
         });
     </script>
 
