@@ -19,6 +19,7 @@
             --accent-color-2: #50e3c2; /* Community Green */
             --shadow-color: rgba(0, 0, 0, 0.08);
             --border-color: #e2e8f0;
+            --github-color: #333; /* GitHub Brand Color */
         }
         body {
             font-family: 'Lato', sans-serif;
@@ -42,7 +43,7 @@
         #dashboard-wrapper, #user-info {
             display: none;
         }
-        /* Auth Form Styling */
+        /* Auth Container Styling */
         #auth-container {
             background-color: var(--card-bg);
             padding: 40px;
@@ -50,50 +51,33 @@
             box-shadow: 0 8px 25px var(--shadow-color);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
         .form-title {
             text-align: center;
             font-size: 1.8rem;
             margin-bottom: 25px;
         }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--secondary-text);
-        }
-        .form-group input {
+        /* GitHub Login Button */
+        #btnGithubLogin {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        .button {
-            flex: 1;
-            padding: 12px;
+            padding: 15px;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #btnLogin {
-            background-color: var(--accent-color-1);
+            transition: background-color 0.2s, transform 0.2s;
+            background-color: var(--github-color);
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        #btnSignup {
-            background-color: #f0f0f0;
-            color: var(--primary-text);
+        #btnGithubLogin:hover {
+            background-color: #444;
+            transform: translateY(-2px);
         }
         #auth-error {
             color: #e53e3e;
@@ -111,8 +95,13 @@
             gap: 15px;
             background-color: var(--card-bg);
             padding: 10px 15px;
-            border-radius: 20px;
+            border-radius: 30px;
             box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        #user-info img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
         }
         #btnLogout {
             border: none;
@@ -180,27 +169,22 @@
 </head>
 <body>
 
-    <!-- Authentication Form -->
+    <!-- NEW: Simplified Authentication Container -->
     <div id="auth-container">
         <h2 class="form-title">Login to Dashboard</h2>
-        <div class="form-group">
-            <label for="txtEmail">Email</label>
-            <input type="email" id="txtEmail" placeholder="you@example.com">
-        </div>
-        <div class="form-group">
-            <label for="txtPassword">Password</label>
-            <input type="password" id="txtPassword" placeholder="••••••••">
-        </div>
-        <div class="button-group">
-            <button class="button" id="btnLogin">Login</button>
-            <button class="button" id="btnSignup">Sign Up</button>
-        </div>
+        <button id="btnGithubLogin">
+             <svg aria-hidden="true" height="20" viewBox="0 0 16 16" version="1.1" width="20" fill="white">
+                <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.19.01-.82.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21-.15.46-.55.38A8.013 8.013 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
+            </svg>
+            <span>Login with GitHub</span>
+        </button>
         <p id="auth-error"></p>
     </div>
 
-    <!-- User Info and Logout Button -->
+    <!-- User Info and Logout Button (now includes profile picture) -->
     <div id="user-info">
-        <span id="user-email"></span>
+        <img id="user-photo" src="" alt="User photo">
+        <span id="user-display-name"></span>
         <button id="btnLogout">Logout</button>
     </div>
 
@@ -250,7 +234,8 @@
         const authContainer = document.getElementById('auth-container');
         const dashboardWrapper = document.getElementById('dashboard-wrapper');
         const userInfo = document.getElementById('user-info');
-        const userEmailSpan = document.getElementById('user-email');
+        const userDisplayNameSpan = document.getElementById('user-display-name');
+        const userPhoto = document.getElementById('user-photo');
         const authError = document.getElementById('auth-error');
 
         let progressListener = null; // To hold our real-time listener
@@ -259,38 +244,31 @@
         function updateProgressCircle(cardId, progressData) {
             const card = document.getElementById(cardId);
             if (!card) return;
-
+            // ... (rest of the function is the same, no changes needed here)
             const circle = card.querySelector('.circle-progress');
             const percentageText = card.querySelector('.percentage-text');
             const radius = circle.r.baseVal.value;
             const circumference = 2 * Math.PI * radius;
-
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
-
             let percentage = 0;
             if (progressData) {
                 const totalCount = Object.keys(progressData).length;
                 const checkedCount = Object.values(progressData).filter(Boolean).length;
                 percentage = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
             }
-
             const offset = circumference - (percentage / 100) * circumference;
             circle.style.strokeDashoffset = offset;
             percentageText.textContent = `${Math.round(percentage)}%`;
         }
         
-        // --- Authentication Logic ---
-        const txtEmail = document.getElementById('txtEmail');
-        const txtPassword = document.getElementById('txtPassword');
-        
-        document.getElementById('btnLogin').addEventListener('click', () => {
-            auth.signInWithEmailAndPassword(txtEmail.value, txtPassword.value)
-                .catch(error => { authError.textContent = error.message; });
-        });
-
-        document.getElementById('btnSignup').addEventListener('click', () => {
-            auth.createUserWithEmailAndPassword(txtEmail.value, txtPassword.value)
-                .catch(error => { authError.textContent = error.message; });
+        // --- NEW: GitHub Authentication Logic ---
+        document.getElementById('btnGithubLogin').addEventListener('click', () => {
+            const provider = new firebase.auth.GithubAuthProvider();
+            auth.signInWithPopup(provider)
+                .catch(error => {
+                    console.error("GitHub login error:", error);
+                    authError.textContent = `Error: ${error.message}`;
+                });
         });
 
         document.getElementById('btnLogout').addEventListener('click', () => {
@@ -305,7 +283,9 @@
                 authContainer.style.display = 'none';
                 dashboardWrapper.style.display = 'block';
                 userInfo.style.display = 'flex';
-                userEmailSpan.textContent = user.email;
+                // Use GitHub profile info
+                userDisplayNameSpan.textContent = user.displayName || user.email;
+                userPhoto.src = user.photoURL || 'favicon.png'; // Fallback to a default icon
 
                 // Listen for real-time progress updates
                 const docRef = db.collection('progress').doc(user.uid);
@@ -319,6 +299,8 @@
                         updateProgressCircle('forensic-card', null);
                         updateProgressCircle('community-card', null);
                     }
+                }, error => {
+                    console.error("Firestore snapshot error:", error);
                 });
 
             } else {
