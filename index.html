@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Checklist Dashboard</title>
-
-    <link rel="manifest" href="manifest.json">
+    <title>Master Checklist Dashboard</title>
     
-    <!-- === NEW: Favicon Links === -->
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="favicon.png">
 
@@ -18,17 +16,15 @@
             --card-bg: #ffffff;
             --primary-text: #2d3748;
             --secondary-text: #718096;
-            --accent-color-1: #4a90e2; /* Forensic Blue */
-            --accent-color-2: #50e3c2; /* Community Green */
+            --accent-color-1: #4a90e2;
+            --accent-color-2: #50e3c2;
             --shadow-color: rgba(0, 0, 0, 0.08);
             --border-color: #e2e8f0;
-            --github-color: #24292e;
         }
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* === NEW: Disable tap highlight on mobile === */
             -webkit-tap-highlight-color: transparent;
         }
         body {
@@ -48,8 +44,6 @@
             color: var(--primary-text);
             text-align: center;
         }
-
-        /* === NEW: Loading Spinner Styling === */
         #loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid var(--accent-color-1);
@@ -62,13 +56,9 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* === NEW: Hide content by default for smooth loading === */
         #auth-container, #dashboard-wrapper, #user-info {
             display: none;
         }
-
-        /* Auth Container Styling */
         #auth-container {
             background-color: var(--card-bg);
             padding: 40px;
@@ -82,37 +72,55 @@
             font-size: 1.8rem;
             margin-bottom: 25px;
         }
-        #btnGithubLogin {
+
+        /* === NEW: Container for Social Login Buttons === */
+        .social-login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* === NEW: Base styling for both buttons === */
+        .social-btn {
             width: 100%;
-            padding: 12px;
-            border: none;
+            padding: 10px;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.2s;
-            background-color: var(--github-color);
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
+            background-color: #ffffff;
         }
-        #btnGithubLogin:hover {
-            background-color: #333;
+        .social-btn:hover {
+            background-color: #f8f9fa;
             transform: translateY(-2px);
         }
-        #btnGithubLogin img {
+        .social-btn img {
             height: 24px;
             width: 24px;
         }
+
+        /* === NEW: Specific styling for GitHub button (to contrast black logo) === */
+        #btnGithubLogin {
+            color: #24292e; /* GitHub brand color for text */
+        }
+        
+        /* === NEW: Specific styling for Google button === */
+        #btnGoogleLogin {
+            color: #444444; /* Standard text color for Google buttons */
+        }
+
         #auth-error {
             color: #e53e3e;
             text-align: center;
             margin-top: 20px;
             height: 1.2em;
         }
-        /* User Info and Logout Styling */
         #user-info {
             position: absolute;
             top: 20px;
@@ -139,7 +147,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        /* Dashboard Styling */
         .dashboard-container {
             display: flex;
             gap: 40px;
@@ -177,16 +184,11 @@
         .circle-bg { stroke: #e2e8f0; }
         .circle-progress { stroke-linecap: round; transition: stroke-dashoffset 0.5s ease-out; }
         .percentage-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: bold; color: var(--primary-text); }
-        /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .dashboard-container { flex-direction: column; gap: 25px; }
             .checklist-card { width: 90vw; max-width: 350px; padding: 25px; }
-            #user-info {
-                position: static;
-                margin-top: 30px;
-                order: 3;
-            }
+            #user-info { position: static; margin-top: 30px; order: 3; }
             #dashboard-wrapper { order: 2; }
             #auth-container { padding: 25px; }
         }
@@ -194,28 +196,33 @@
 </head>
 <body>
 
-    <!-- Loading Spinner (visible by default) -->
     <div id="loader"></div>
 
-    <!-- Authentication Container -->
     <div id="auth-container">
         <h2 class="form-title">Login to Dashboard</h2>
-        <button id="btnGithubLogin">
-             <!-- === NEW: Using GitHub's favicon for the button logo === -->
-             <img src="https://github.com/favicon.ico" alt="GitHub icon">
-            <span>Login with GitHub</span>
-        </button>
+        <div class="social-login-container">
+            <!-- Google Login Button -->
+            <button class="social-btn" id="btnGoogleLogin">
+                <!-- IMPORTANT: Replace this src with the direct link to your google-logo.svg on GitHub -->
+                <img src="https://raw.githubusercontent.com/your-username/your-repo/main/google-logo.svg" alt="Google icon">
+                <span>Sign in with Google</span>
+            </button>
+            <!-- GitHub Login Button -->
+            <button class="social-btn" id="btnGithubLogin">
+                 <!-- IMPORTANT: Replace this src with the direct link to your github-logo.svg on GitHub -->
+                 <img src="https://raw.githubusercontent.com/your-username/your-repo/main/github-logo.svg" alt="GitHub icon">
+                <span>Sign in with GitHub</span>
+            </button>
+        </div>
         <p id="auth-error"></p>
     </div>
 
-    <!-- User Info and Logout Button -->
     <div id="user-info">
         <img id="user-photo" src="" alt="User photo">
         <span id="user-display-name"></span>
         <button id="btnLogout">Logout</button>
     </div>
 
-    <!-- Main Dashboard -->
     <div id="dashboard-wrapper">
         <h1>My Study Checklists</h1>
         <div class="dashboard-container">
@@ -253,7 +260,6 @@
   measurementId: "G-X940W5RV9G"
         };
         
-        // --- Initialize Firebase ---
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -269,7 +275,6 @@
 
         let progressListener = null;
 
-        // --- UI Update Function ---
         function updateProgressCircle(cardId, progressData) {
             const card = document.getElementById(cardId);
             if (!card) return;
@@ -289,6 +294,16 @@
             percentageText.textContent = `${Math.round(percentage)}%`;
         }
         
+        // --- Google Authentication Logic ---
+        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .catch(error => {
+                    console.error("Google login error:", error);
+                    authError.textContent = `Error: ${error.message}`;
+                });
+        });
+
         // --- GitHub Authentication Logic ---
         document.getElementById('btnGithubLogin').addEventListener('click', () => {
             const provider = new firebase.auth.GithubAuthProvider();
@@ -305,18 +320,16 @@
 
         // --- Auth State Listener ---
         auth.onAuthStateChanged(user => {
-            loader.style.display = 'none'; // Hide loader once auth state is known
+            loader.style.display = 'none';
             authError.textContent = '';
             
             if (user) {
-                // User is signed in
                 authContainer.style.display = 'none';
                 dashboardWrapper.style.display = 'block';
                 userInfo.style.display = 'flex';
                 userDisplayNameSpan.textContent = user.displayName || user.email;
                 userPhoto.src = user.photoURL || 'favicon.png';
 
-                // Listen for real-time progress updates
                 const docRef = db.collection('progress').doc(user.uid);
                 progressListener = docRef.onSnapshot(doc => {
                     if (doc.exists) {
@@ -330,7 +343,6 @@
                 }, error => console.error("Firestore snapshot error:", error));
 
             } else {
-                // User is signed out
                 authContainer.style.display = 'block';
                 dashboardWrapper.style.display = 'none';
                 userInfo.style.display = 'none';
@@ -345,6 +357,8 @@
             }
         });
     </script>
+    
+    <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
